@@ -1,12 +1,12 @@
 # $File: //member/autrijus/Module-ScanDeps/ScanDeps.pm $ $Author: autrijus $
-# $Revision: #35 $ $Change: 7410 $ $DateTime: 2003/08/10 05:36:57 $
+# $Revision: #37 $ $Change: 7419 $ $DateTime: 2003/08/10 15:43:12 $
 
 package Module::ScanDeps;
 use vars qw/$VERSION @EXPORT @EXPORT_OK/;
 
-$VERSION    = '0.24';
-@EXPORT	    = ('scan_deps');
-@EXPORT_OK  = ('scan_line', 'scan_chunk', 'add_deps');
+$VERSION    = '0.25';
+@EXPORT	    = qw(scan_deps);
+@EXPORT_OK  = qw(scan_line scan_chunk add_deps);
 
 use strict;
 use Exporter;
@@ -21,7 +21,7 @@ Module::ScanDeps - Recursively scan Perl code for dependencies
 
 =head1 VERSION
 
-This document describes version 0.24 of Module::ScanDeps, released
+This document describes version 0.25 of Module::ScanDeps, released
 August 10, 2003.
 
 =head1 SYNOPSIS
@@ -259,9 +259,9 @@ sub scan_deps {
 	    chomp;
 	    my $line = $_;
 	    foreach my $pm ( scan_line($_) ) {
-		last LINE if /^__END__$/;
+		last LINE if $pm eq '__END__';
 
-		if (/^__POD__$/) {
+		if ($pm eq '__POD__') {
 		    while (<FH>) { last if (/^=cut/) }
 		    next LINE;
 		}
@@ -316,8 +316,8 @@ sub scan_line {
 	return if /^\s*(use|require)\s+[\d\._]+/;
 
 	if (my($libs) = /\b(?:use\s+lib\s+|(?:unshift|push)\W+\@INC\W+)(.+)/) {
-	    my $archname = defined($Config{'archname'}) ? $Config{'archname'} : '';
-	    my $ver = defined($Config{'version'}) ? $Config{'version'} : '';
+	    my $archname = defined($Config{archname}) ? $Config{archname} : '';
+	    my $ver = defined($Config{version}) ? $Config{version} : '';
 	    foreach (grep(/\w/, split(/["';() ]/, $libs))) {
 		unshift(@INC, "$_/$ver")		if -d "$_/$ver";
 		unshift(@INC, "$_/$archname")		if -d "$_/$archname";
@@ -351,7 +351,7 @@ sub scan_chunk {
 	return $1 if /(?:^|\s)(?:do|require)\s+[^"]*"(.*?)"/;
 	return $1 if /(?:^|\s)(?:do|require)\s+[^']*'(.*?)'/;
 	return $1 if /[^\$]\b([\w:]+)->\w/ and $1 ne 'Tk';
-	return $1 if /([\w:]+)::\w/ and $1 ne 'Tk';
+	return $1 if /([\w:]+)::\w/ and $1 ne 'Tk' and $1 ne 'PAR';
 	return;
     };
     # }}}

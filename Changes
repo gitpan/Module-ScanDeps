@@ -1,4 +1,14 @@
 ____________________________________________________________________________
+[  7419] By: autrijus                              on 2003/08/10  15:43:12
+        Log: * This be 0.25.
+             * tidy up the source a little.
+	   ! ScanDeps.pm
+____________________________________________________________________________
+[  7417] By: autrijus                              on 2003/08/10  15:39:21
+        Log: * POD and END sections was also scanned. bad.
+             * PAR::read_file() should not imply dependency on PAR.pm.
+	   ! ScanDeps.pm
+____________________________________________________________________________
 [  7410] By: autrijus                              on 2003/08/10  05:36:57
         Log: * This be 0.24.
              * Add support for SOAP::Lite, XMLRPC::Lite and

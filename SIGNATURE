@@ -1,5 +1,5 @@
 This file contains message digests of all files listed in MANIFEST,
-signed via the Module::Signature module, version 0.28.
+signed via the Module::Signature module, version 0.30.
 
 To verify the content in this distribution, first make sure you have
 Module::Signature installed, then type:
@@ -15,19 +15,19 @@ not run its Makefile.PL or Build.PL.
 Hash: SHA1
 
 SHA1 8d53c742fd1a7e9494374f68e0d0d5d60d366877 AUTHORS
-SHA1 26b83e02f072569b554728892dc04c645ef1d14f Changes
+SHA1 af2ae51dafaf9bd335f13e2f562771bd64614d34 Changes
 SHA1 e57057c17f9f660021498d122368b0e31caf80e4 MANIFEST
-SHA1 581c48aa978bba519e86853cd013a45750b1cefc META.yml
+SHA1 e9a1deda222ab012b37d8734a33ffcd10804d40c META.yml
 SHA1 44f8f985d762af9defee1588837457ec0a5ef0a7 Makefile.PL
 SHA1 f20efea1ef16863bdbb4142f2a79a1b7acf591b1 README
-SHA1 e09c35a93678389a6eb76bf354259cdbc75d6cea ScanDeps.pm
+SHA1 402094a36026f28fe26cac2c73a7ed95eb59c3ed ScanDeps.pm
 SHA1 59419fb20dafb280e1b5f30e4453f39a7c5d9688 script/scandeps.pl
 SHA1 c742861151fff929d1a9d0aecf84bb0a6bbc9d61 t/0-signature.t
 SHA1 bcefa09920a182cfce892c2bde06b159655a946c t/1-basic.t
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.2.2 (FreeBSD)
 
-iD8DBQE/NdsFtLPdNzw1AaARApnBAKCOHcaxiaqeVo1qiZiih15MOm3C5QCfZ9//
-kRG+N7qbXYy/lzsdFaVN4Bk=
-=eeUR
+iD8DBQE/NmhftLPdNzw1AaARAt8hAKCoy0/4vcwgyOGfyJm2djbXFvlhMQCfRbUE
+1m8gvJM/2TpPJl0oZ935DPY=
+=WtEw
 -----END PGP SIGNATURE-----
