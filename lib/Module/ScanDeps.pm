@@ -1,10 +1,10 @@
 # $File: //member/autrijus/Module-ScanDeps/lib/Module/ScanDeps.pm $ $Author: autrijus $
-# $Revision: #15 $ $Change: 9766 $ $DateTime: 2004/01/25 16:11:51 $ vim: expandtab shiftwidth=4
+# $Revision: #17 $ $Change: 10181 $ $DateTime: 2004/02/23 21:11:48 $ vim: expandtab shiftwidth=4
 
 package Module::ScanDeps;
 use vars qw( $VERSION @EXPORT @EXPORT_OK );
 
-$VERSION   = '0.39';
+$VERSION   = '0.40';
 @EXPORT    = qw( scan_deps scan_deps_runtime );
 @EXPORT_OK = qw( scan_line scan_chunk add_deps scan_deps_runtime );
 
@@ -28,8 +28,8 @@ Module::ScanDeps - Recursively scan Perl code for dependencies
 
 =head1 VERSION
 
-This document describes version 0.39 of Module::ScanDeps, released
-January 25, 2003.
+This document describes version 0.40 of Module::ScanDeps, released
+February 24, 2003.
 
 =head1 SYNOPSIS
 
@@ -241,11 +241,13 @@ my %Preload = (
     'Win32/TieRegistry.pm' => [qw( Win32API/Registry.pm )],
     'Win32/SystemInfo.pm'  => [qw( Win32/cpuspd.dll )],
     'XML/Parser.pm'        => sub {
-        _glob_in_inc('XML/Parser/Style', 1),;
+        _glob_in_inc('XML/Parser/Style', 1),
+        _glob_in_inc('XML/Parser/Encodings', 1),
     },
     'XML/Parser/Expat.pm' => sub {
         ($] >= 5.008) ? ('utf8.pm') : ();
     },
+    'XML/SAX.pm' => [qw( XML/SAX/ParserDetails.ini ) ],
     'XMLRPC/Lite.pm' => sub {
         _glob_in_inc('XMLRPC/Transport', 1),;
     },
@@ -744,7 +746,7 @@ sub _compile {
     my $line = do { local $/; <$fhin> };
     $line =~ s/use Module::ScanDeps::DataFeed.*?\n//sg;
     $line =~ s/^(.*?)((?:[\r\n]+__(?:DATA|END)__[\r\n]+)|$)/
-use Module::ScanDeps::DataFeed qw($fname.out);
+use Module::ScanDeps::DataFeed '$fname.out';
 sub {
 $1
 }
@@ -771,7 +773,7 @@ sub _execute {
 
     my $line = do { local $/; <$fhin> };
     $line =~ s/use Module::ScanDeps::DataFeed.*?\n//sg;
-    $line = "use Module::ScanDeps::DataFeed qw($fname.out);\n" . $line;
+    $line = "use Module::ScanDeps::DataFeed '$fname.out';\n" . $line;
     $fhout->print($line);
     $fhout->close;
     $fhin->close;

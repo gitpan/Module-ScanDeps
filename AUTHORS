@@ -1,5 +1,5 @@
 # $File: //member/autrijus/Module-ScanDeps/AUTHORS $
-# $Revision: #15 $ $Change: 9509 $ $DateTime: 2003/12/31 09:13:49 $
+# $Revision: #17 $ $Change: 10181 $ $DateTime: 2004/02/23 21:11:48 $
 
 Here is a list of people and their CPAN id, extracted from the ChangeLog
 file and the mailing list archives.  These people have either submitted
@@ -8,8 +8,10 @@ the appropriate patches.  Corrections, additions, deletions welcome:
 
 Bruce Winter
 D. H.		    (PODMASTER)
+Darek Adamkiewicz   (DADAMK)
 Edward S. Peschko
 Germain Garand      (GGARAND)
+Iain Cass
 Indy Singh
 Jan Dubois	    (JDB)
 Jerry Veldhuis
@@ -17,8 +19,9 @@ Jess Robinson
 Jesse Schoch
 Jesse Vincent	    (JESSE)
 Jouke Visser	    (JOUKE)
-Matt Sergeant	    (MSERGEANT)
+Malcolm Nooning
 Markus Jansen
+Matt Sergeant	    (MSERGEANT)
 Nik Clayton	    (NIKC)
 Randal L. Schwartz  (MERLYN)
 Roderich Schupp	    (RSCHUPP)

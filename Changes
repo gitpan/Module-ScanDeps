@@ -1,4 +1,16 @@
 ____________________________________________________________________________
+[ 10181] By: autrijus                              on 2004/02/23  21:11:48
+        Log: * This be 0.40.
+             * Malcolm Nooning noticed that _execute() and _compile()
+             checks were failing under directories that contain spaces,
+             due to a qw() misuse.
+	   ! AUTHORS lib/Module/ScanDeps.pm
+____________________________________________________________________________
+[  9776] By: autrijus                              on 2004/01/26  15:06:47
+        Log: * Add heuristics for XML::SAX and XML::Parser::Expat,
+             reported by Darek Adamkiewicz and Iain Cass.
+	   ! AUTHORS lib/Module/ScanDeps.pm
+____________________________________________________________________________
 [  9766] By: autrijus                              on 2004/01/25  16:11:51
         Log: * This be 0.39.
              * Merged Edward's patch to make DataFeed.pm work with
