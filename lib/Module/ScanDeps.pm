@@ -1,10 +1,10 @@
 # $File: //member/autrijus/Module-ScanDeps/lib/Module/ScanDeps.pm $ $Author: autrijus $
-# $Revision: #5 $ $Change: 8459 $ $DateTime: 2003/10/17 22:34:31 $
+# $Revision: #6 $ $Change: 8568 $ $DateTime: 2003/10/26 10:50:46 $
 
 package Module::ScanDeps;
 use vars qw/$VERSION @EXPORT @EXPORT_OK/;
 
-$VERSION    = '0.31';
+$VERSION    = '0.32';
 @EXPORT	    = qw(scan_deps);
 @EXPORT_OK  = qw(scan_line scan_chunk add_deps);
 
@@ -21,8 +21,8 @@ Module::ScanDeps - Recursively scan Perl code for dependencies
 
 =head1 VERSION
 
-This document describes version 0.31 of Module::ScanDeps, released
-October 18, 2003.
+This document describes version 0.32 of Module::ScanDeps, released
+October 26, 2003.
 
 =head1 SYNOPSIS
 
@@ -163,6 +163,7 @@ my %Preload = (
     'Device/SerialPort.pm'	    => [qw(
 	termios.ph asm/termios.ph sys/termiox.ph sys/termios.ph sys/ttycom.ph
     )],
+#   'Encode.pm'			    => 'sub',
     'ExtUtils/MakeMaker.pm'	    => sub {
 	grep /\bMM_/, _glob_in_inc('ExtUtils', 1);
     },
@@ -184,6 +185,7 @@ my %Preload = (
 	LWP/Protocol/https.pm
     )],
     'Locale/Maketext/Lexicon.pm'    => 'sub',
+    'Locale/Maketext/GutsLoader.pm' => [qw( Locale/Maketext/Guts.pm )],
     'Math/BigInt.pm'		    => 'sub',
     'Math/BigFloat.pm'		    => 'sub',
     'Module/Build.pm'		    => 'sub',
@@ -219,6 +221,9 @@ my %Preload = (
     'Win32/EventLog.pm'		    => [qw( Win32/IPC.pm )],
     'Win32/TieRegistry.pm'	    => [qw( Win32API/Registry.pm )],
     'Win32/SystemInfo.pm'	    => [qw( Win32/cpuspd.dll )],
+    'XML/Parser.pm'		    => sub {
+	_glob_in_inc('XML/Parser/Style', 1),
+    },
     'XML/Parser/Expat.pm'	    => sub {
 	($] >= 5.008) ? ('utf8.pm') : ();
     },
@@ -353,6 +358,10 @@ sub scan_chunk {
 	    grep { length and !/^q[qw]?$/ } split(/[^\w:]+/, $1) ]
 		if /^\s* use \s+ base \s+ (.*)/x;
 
+	return [ 'encoding.pm', map { _find_encoding($_) }
+	    grep { length and !/^q[qw]?$/ } split(/[^\w:]+/, $1) ]
+		if /^\s* use \s+ encoding \s+ (.*)/x;
+
 	return $1 if /(?:^|\s)(?:use|no|require)\s+([\w:\.\-\\\/\"\']+)/;
 	return $1 if /(?:^|\s)(?:use|no|require)\s+\(\s*([\w:\.\-\\\/\"\']+)\s*\)/;
 
@@ -362,6 +371,10 @@ sub scan_chunk {
 
 	return "File/Glob.pm" if /<[^>]*[^\$\w>][^>]*>/;
 	return "DBD/$1.pm" if /\b[Dd][Bb][Ii]:(\w+):/;
+	if (/(?::encoding|\b(?:en|de)code)\(\s*['"]?([-\w]+)/) {
+	    my $mod = _find_encoding($1);
+	    return $mod if $mod;
+	}
 	return $1 if /(?:^|\s)(?:do|require)\s+[^"]*"(.*?)"/;
 	return $1 if /(?:^|\s)(?:do|require)\s+[^']*'(.*?)'/;
 	return $1 if /[^\$]\b([\w:]+)->\w/ and $1 ne 'Tk';
@@ -394,6 +407,14 @@ sub scan_chunk {
 
     $module .= ".pm" unless $module =~ /\./;
     return $module;
+}
+
+sub _find_encoding {
+    return unless $] >= 5.008 and eval { require Encode; %Encode::ExtModule };
+
+    my $mod = $Encode::ExtModule{Encode::find_encoding($_[0])->name} or return;
+    $mod =~ s{::}{/}g;
+    return "$mod.pm";
 }
 
 sub _add_info {

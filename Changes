@@ -1,4 +1,17 @@
 ____________________________________________________________________________
+[  8568] By: autrijus                              on 2003/10/26  10:50:46
+        Log: * This be 0.32.
+             * Support for Locale::Maketext::Guts, reported by Jouke
+	       Visser.
+             * Support for XML::Parser, reported by Jan Dubois.
+             * Support for :encoding(), encoding.pm, and
+	       encode()/decode().
+	   ! lib/Module/ScanDeps.pm
+____________________________________________________________________________
+[  8459] By: autrijus                              on 2003/10/17  22:34:31
+        Log: * This be 0.31.
+	   ! Makefile.PL lib/Module/ScanDeps.pm
+____________________________________________________________________________
 [  8454] By: autrijus                              on 2003/10/17  10:58:24
         Log: * Jesse Schoch reports that LWP::Protocol::https
              is not properly detected.
