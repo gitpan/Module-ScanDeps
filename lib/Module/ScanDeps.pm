@@ -1,10 +1,10 @@
 # $File: //member/autrijus/Module-ScanDeps/lib/Module/ScanDeps.pm $ $Author: autrijus $
-# $Revision: #7 $ $Change: 9371 $ $DateTime: 2003/12/21 01:14:18 $
+# $Revision: #8 $ $Change: 9488 $ $DateTime: 2003/12/30 02:26:54 $
 
 package Module::ScanDeps;
 use vars qw/$VERSION @EXPORT @EXPORT_OK/;
 
-$VERSION    = '0.33';
+$VERSION    = '0.34';
 @EXPORT	    = qw(scan_deps);
 @EXPORT_OK  = qw(scan_line scan_chunk add_deps);
 
@@ -21,8 +21,8 @@ Module::ScanDeps - Recursively scan Perl code for dependencies
 
 =head1 VERSION
 
-This document describes version 0.33 of Module::ScanDeps, released
-December 21, 2003.
+This document describes version 0.34 of Module::ScanDeps, released
+December 30, 2003.
 
 =head1 SYNOPSIS
 
@@ -238,6 +238,8 @@ my %Preload = (
 	    my @files;
 	    if (@files = map "unicore/lib/$_->{name}", _glob_in_inc('unicore/lib')) {
 		push @files, map "unicore/$_.pl", qw(Exact Canonical);
+		push @files, map "unicore/lib/$_->{name}", _glob_in_inc('unicore/lib');
+		push @files, map "unicore/To/$_->{name}", _glob_in_inc('unicore/To');
 	    }
 	    elsif (@files = map "unicode/Is/$_->{name}", _glob_in_inc('unicode/Is')) {
 		push @files, map "unicode/In/$_->{name}", _glob_in_inc('unicode/In');

@@ -1,6 +1,6 @@
 #line 1 "inc/Module/Install/Scripts.pm - /usr/local/lib/perl5/site_perl/5.8.2/Module/Install/Scripts.pm"
 # $File: //depot/cpan/Module-Install/lib/Module/Install/Scripts.pm $ $Author: autrijus $
-# $Revision: #6 $ $Change: 1781 $ $DateTime: 2003/10/22 17:14:03 $ vim: expandtab shiftwidth=4
+# $Revision: #7 $ $Change: 1841 $ $DateTime: 2003/12/28 19:43:56 $ vim: expandtab shiftwidth=4
 
 package Module::Install::Scripts;
 use Module::Install::Base; @ISA = qw(Module::Install::Base);
