@@ -1,10 +1,10 @@
 # $File: //member/autrijus/Module-ScanDeps/ScanDeps.pm $ $Author: autrijus $
-# $Revision: #6 $ $Change: 1910 $ $DateTime: 2002/11/04 11:43:36 $
+# $Revision: #10 $ $Change: 3617 $ $DateTime: 2003/01/18 19:12:20 $
 
 package Module::ScanDeps;
 use vars qw/$VERSION @EXPORT @EXPORT_OK/;
 
-$VERSION    = '0.10';
+$VERSION    = '0.12';
 @EXPORT	    = ('scan_deps');
 @EXPORT_OK  = ('scan_line', 'scan_chunk', 'add_deps');
 
@@ -20,8 +20,8 @@ Module::ScanDeps - Recursively scan Perl programs for dependencies
 
 =head1 VERSION
 
-This document describes version 0.10 of Module::ScanDeps, released
-November 4, 2002.
+This document describes version 0.12 of Module::ScanDeps, released
+January 19, 2003.
 
 =head1 SYNOPSIS
 
@@ -128,13 +128,35 @@ returns a reference to it.
 This module is oblivious about the B<BSDPAN> hack on FreeBSD -- the
 additional directory is removed from C<@INC> altogether.
 
-No source code are actually compiled by this module, so the heuristic is
-not likely to be 100% accurate.  Patches welcome!
+Also, because this module only searches for modules within C<@INC>,
+it will fail to list lots of dependencies in the case below:
+
+   scan_deps('/someplace/NOT/IN/INC/with/modules/for/FOO.pl');
+
+unless you yourself look at the source, you'll have no idea what got
+left out.  Therefore, please make sure you've added all search paths
+in @INC before calling C<scan_deps>.
+
+Finally, since no source code are actually compiled by this module,
+so the heuristic is not likely to be 100% accurate.  Patches welcome!
 
 =cut
 
 # Pre-loaded module dependencies {{{
 my %Preload = (
+    'Module/Build.pm'    => [qw(
+	Module/Build/Platform/Amiga.pm
+	Module/Build/Platform/Default.pm
+	Module/Build/Platform/EBCDIC.pm
+	Module/Build/Platform/MPEiX.pm
+	Module/Build/Platform/MacOS.pm
+	Module/Build/Platform/RiscOS.pm
+	Module/Build/Platform/Unix.pm
+	Module/Build/Platform/VMS.pm
+	Module/Build/Platform/VOS.pm
+	Module/Build/Platform/Windows.pm
+	Module/Build/Platform/darwin.pm
+    )],
     'ExtUtils/MakeMaker.pm'    => [qw(
 	ExtUtils/MM_Any.pm
 	ExtUtils/MM_BeOS.pm
@@ -494,6 +516,9 @@ __END__
 
 =head1 SEE ALSO
 
+L<scandeps.pl> is a bundled utility that writes PREREQ_PM section
+for a number of files.
+
 An application of B<Module::ScanDeps> is to generate executables from
 scripts that contains necessary modules; this module supports two such
 projects, L<PAR> and L<App::Packer>.  Please see their respective
@@ -511,7 +536,7 @@ by ActiveState Tools Corp L<http://www.activestate.com/>
 
 =head1 COPYRIGHT
 
-Copyright 2002 by Autrijus Tang E<lt>autrijus@autrijus.orgE<gt>.
+Copyright 2002, 2003 by Autrijus Tang E<lt>autrijus@autrijus.orgE<gt>.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

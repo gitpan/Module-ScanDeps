@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 # $File: //member/autrijus/Module-ScanDeps/Makefile.PL $ $Author: autrijus $
-# $Revision: #2 $ $Change: 1830 $ $DateTime: 2002/11/02 15:36:29 $
+# $Revision: #3 $ $Change: 3617 $ $DateTime: 2003/01/18 19:12:20 $
 
 use 5.001;
 use ExtUtils::MakeMaker;
@@ -12,6 +12,7 @@ WriteMakefile(
     VERSION_FROM	=> 'ScanDeps.pm', 
     DISTNAME		=> 'Module-ScanDeps',
     BINARY_LOCATION	=> 'x86/ScanDeps.tar.gz',
+    EXE_FILES		=> [ 'script/scandeps.pl' ],
 
     dist		=> {
         COMPRESS	=> 'gzip -9',

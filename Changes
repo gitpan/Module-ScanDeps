@@ -1,4 +1,32 @@
 ____________________________________________________________________________
+[  3617] By: autrijus                              on 2003/01/18  19:12:20
+        Log: * 0.12.
+             * adds script/scandeps.pl
+             * new year.
+	   ! MANIFEST Makefile.PL README ScanDeps.pm
+	   ! script/scandeps.pl
+____________________________________________________________________________
+[  2970] By: autrijus                              on 2002/12/29  07:00:28
+        Log: * ttt local branch.
+	   ! ScanDeps.pm
+____________________________________________________________________________
+[  2852] By: autrijus                              on 2002/12/23  11:57:41
+        Log: * add CAVEATS about the fact that we don't probe beyond
+             @INC, as requested by crazyinsomniac.
+	   ! ScanDeps.pm
+____________________________________________________________________________
+[  2050] By: autrijus                              on 2002/11/08  14:33:16
+        Log: * M::B heuristics.
+	   ! ScanDeps.pm
+____________________________________________________________________________
+[  1912] By: autrijus                              on 2002/11/04  11:45:04
+        Log: * reflect SEE ALSO in README.
+	   ! README
+____________________________________________________________________________
+[  1911] By: autrijus                              on 2002/11/04  11:44:53
+        Log: * changes and signatures.
+	   ! Changes SIGNATURE
+____________________________________________________________________________
 [  1910] By: autrijus                              on 2002/11/04  11:43:36
         Log: * Version 0.10.
              * Now featuring an object-oriented syntax, conformant
@@ -22,9 +50,11 @@ ____________________________________________________________________________
 ____________________________________________________________________________
 [  1876] By: autrijus                              on 2002/11/03  19:26:55
         Log: * Version 0.03.
-             * New presets for Locale::Maketext::Lexicon, Term::ReadLine,
+             * New presets for Locale::Maketext::Lexicon,
+	       Term::ReadLine,
              Regexp::Common, File::Spec, ExtUtils::MakeMaker.
-             * New heuristics for Module::Name->method, Module::Name::sub
+             * New heuristics for Module::Name->method,
+	       Module::Name::sub
              * Strings in comments were erroneously checked. Fixed.
              * Mention PerlApp as a source of inspiration.
 	   ! ScanDeps.pm
@@ -64,6 +94,7 @@ ____________________________________________________________________________
 	   + Changes SIGNATURE
 ____________________________________________________________________________
 [  1817] By: autrijus                              on 2002/11/02  01:49:56
-        Log: * written-from-scratch version of dependency finding algorithm. 
-	   + MANIFEST Makefile Makefile.PL README ScanDeps.pm
-	   + t/0-signature.t t/1-basic.t
+        Log: * written-from-scratch version of dependency finding
+	       algorithm. 
+	   + MANIFEST Makefile Makefile.PL README
+	   + ScanDeps.pm t/0-signature.t t/1-basic.t
