@@ -1,10 +1,10 @@
-name: Module-ScanDeps
-version: 0.37
-abstract: Recursively scan Perl programs for dependencies
-author: Autrijus Tang <autrijus@autrijus.org>
-license: perl
+# http://module-build.sourceforge.net/META-spec.html
+#XXXXXXX This is a prototype!!!  It will change in the future!!! XXXXX#
+name:         Module-ScanDeps
+version:      0.38
+version_from: lib/Module/ScanDeps.pm
+installdirs:  site
+requires:
+
 distribution_type: module
-no_index:
-  directory:
-    - inc
-generated_by: Module::Install version 0.30
+generated_by: ExtUtils::MakeMaker version 6.21

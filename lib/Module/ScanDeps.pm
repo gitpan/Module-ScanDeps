@@ -1,10 +1,10 @@
 # $File: //member/autrijus/Module-ScanDeps/lib/Module/ScanDeps.pm $ $Author: autrijus $
-# $Revision: #13 $ $Change: 9523 $ $DateTime: 2003/12/31 15:12:11 $ vim: expandtab shiftwidth=4
+# $Revision: #14 $ $Change: 9631 $ $DateTime: 2004/01/08 11:19:45 $ vim: expandtab shiftwidth=4
 
 package Module::ScanDeps;
 use vars qw( $VERSION @EXPORT @EXPORT_OK );
 
-$VERSION   = '0.37';
+$VERSION   = '0.38';
 @EXPORT    = qw( scan_deps scan_deps_runtime );
 @EXPORT_OK = qw( scan_line scan_chunk add_deps scan_deps_runtime );
 
@@ -28,8 +28,8 @@ Module::ScanDeps - Recursively scan Perl code for dependencies
 
 =head1 VERSION
 
-This document describes version 0.37 of Module::ScanDeps, released
-January 1, 2003.
+This document describes version 0.38 of Module::ScanDeps, released
+January 8, 2003.
 
 =head1 SYNOPSIS
 

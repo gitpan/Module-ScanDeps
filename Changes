@@ -1,4 +1,11 @@
 ____________________________________________________________________________
+[  9631] By: autrijus                              on 2004/01/08  11:19:45
+        Log: * This be 0.38.
+             * Switching back to ExtUtils::MakeMaker,
+             hoping to make ActiveState's cpanrun
+             happy.
+	   ! MANIFEST Makefile.PL lib/Module/ScanDeps.pm
+____________________________________________________________________________
 [  9523] By: autrijus                              on 2003/12/31  15:12:11
         Log: * This be 0.37. (sigh)
 	   ! lib/Module/ScanDeps.pm
