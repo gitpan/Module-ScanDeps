@@ -1,4 +1,28 @@
 ____________________________________________________________________________
+[ 10567] By: autrijus                              on 2004/04/30  19:59:29
+        Log: * This be 0.42, for real.
+	   ! lib/Module/ScanDeps.pm
+____________________________________________________________________________
+[ 10566] By: autrijus                              on 2004/04/30  19:57:05
+        Log: * add support for DBIx::SearchBuilder and DBIx::ReportBuilder.
+	   ! lib/Module/ScanDeps.pm
+____________________________________________________________________________
+[ 10565] By: autrijus                              on 2004/04/30  19:54:48
+        Log: * This be 0.42.
+	   ! lib/Module/ScanDeps.pm
+____________________________________________________________________________
+[ 10564] By: autrijus                              on 2004/04/30  19:52:46
+        Log: * oops, typo
+	   ! lib/Module/ScanDeps.pm
+____________________________________________________________________________
+[ 10563] By: autrijus                              on 2004/04/30  19:50:58
+        Log: * add PerlIO.pm to :encoding.
+	   ! lib/Module/ScanDeps.pm
+____________________________________________________________________________
+[ 10509] By: autrijus                              on 2004/04/21  12:30:04
+        Log: * changes and signatures.
+	   ! Changes SIGNATURE
+____________________________________________________________________________
 [ 10503] By: autrijus                              on 2004/04/18  16:01:08
         Log: * This be 0.41.
 	   ! AUTHORS lib/Module/ScanDeps.pm

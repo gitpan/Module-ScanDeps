@@ -1,10 +1,10 @@
 # $File: //member/autrijus/Module-ScanDeps/lib/Module/ScanDeps.pm $ $Author: autrijus $
-# $Revision: #21 $ $Change: 10503 $ $DateTime: 2004/04/18 16:01:08 $ vim: expandtab shiftwidth=4
+# $Revision: #26 $ $Change: 10567 $ $DateTime: 2004/04/30 19:59:29 $ vim: expandtab shiftwidth=4
 
 package Module::ScanDeps;
 use vars qw( $VERSION @EXPORT @EXPORT_OK );
 
-$VERSION   = '0.41';
+$VERSION   = '0.42';
 @EXPORT    = qw( scan_deps scan_deps_runtime );
 @EXPORT_OK = qw( scan_line scan_chunk add_deps scan_deps_runtime );
 
@@ -28,8 +28,8 @@ Module::ScanDeps - Recursively scan Perl code for dependencies
 
 =head1 VERSION
 
-This document describes version 0.41 of Module::ScanDeps, released
-April 19, 2003.
+This document describes version 0.42 of Module::ScanDeps, released
+April 30, 2003.
 
 =head1 SYNOPSIS
 
@@ -179,6 +179,8 @@ my %Preload = (
     'DBI.pm' => sub {
         grep !/\bProxy\b/, _glob_in_inc('DBD', 1);
     },
+    'DBIx/SearchBuilder.pm' => 'sub',
+    'DBIx/ReportBuilder.pm' => 'sub',
     'Device/SerialPort.pm' => [ qw(
         termios.ph asm/termios.ph sys/termiox.ph sys/termios.ph sys/ttycom.ph
     ) ],
@@ -504,8 +506,9 @@ sub scan_chunk {
 
         return "File/Glob.pm" if /<[^>]*[^\$\w>][^>]*>/;
         return "DBD/$1.pm"    if /\b[Dd][Bb][Ii]:(\w+):/;
-        if (/(?::encoding|\b(?:en|de)code)\(\s*['"]?([-\w]+)/) {
-            my $mod = _find_encoding($1);
+        if (/(?:(:encoding)|\b(?:en|de)code)\(\s*['"]?([-\w]+)/) {
+            my $mod = _find_encoding($2);
+            return [ 'PerlIO.pm', $mod ] if $1 and $mod;
             return $mod if $mod;
         }
         return $1 if /(?:^|\s)(?:do|require)\s+[^"]*"(.*?)"/;
