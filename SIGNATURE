@@ -1,0 +1,30 @@
+This file contains message digests of all files listed in MANIFEST,
+signed via the Module::Signature module, version 0.17.
+
+To verify the content in this distribution, first make sure you have
+Module::Signature installed, then type:
+
+    % cpansign -v
+
+It would check each file's integrity, as well as the signature's
+validity.  If "==> Signature verified OK! <==" is not displayed,
+the distribution may already have been compromised, and you should
+not run its Makefile.PL or Build.PL.
+
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
+
+SHA1 e914b3d840ac19df686d00105a31b5bd941e607b Changes
+SHA1 79ac3922abebdb53cf40dde6a203e3949cb3e5ac MANIFEST
+SHA1 0b29f274d15a7dc1dbe04eec51185a9b316d1c8c Makefile.PL
+SHA1 e287d8f8700aa7d972c3e803a0d68fadca24dae5 README
+SHA1 f30a5bd01a2bfe76fad6a7cd24937567394d7048 ScanDeps.pm
+SHA1 0b5f27b06a6ead0ed82717da016586342844c2e8 t/0-signature.t
+SHA1 32423b2b1df0994c9e58688c748936de096b4122 t/1-basic.t
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.2.0 (FreeBSD)
+
+iD8DBQE9wzMTtLPdNzw1AaARAlxEAJ92nf2JoHXuQx2U3P2EBB5KZKPIfQCfRrtQ
+XxmaQ1+hBjaCwAzJnB1xYvA=
+=Nusa
+-----END PGP SIGNATURE-----

@@ -1,0 +1,5 @@
+____________________________________________________________________________
+[  1817] By: autrijus                              on 2002/11/02  01:49:56
+        Log: * written-from-scratch version of dependency finding algorithm. 
+	   + MANIFEST Makefile Makefile.PL README ScanDeps.pm
+	   + t/0-signature.t t/1-basic.t
