@@ -1,4 +1,9 @@
 ____________________________________________________________________________
+[  8194] By: autrijus                              on 2003/09/20  20:33:19
+        Log: * This be 0.30.
+             * "use base" was still incorrectly parsed.
+	   ! lib/Module/ScanDeps.pm
+____________________________________________________________________________
 [  8157] By: autrijus                              on 2003/09/17  09:12:34
         Log: * This be 0.29.
              * Simon Andrews points out that Math::BigInt's heuristics

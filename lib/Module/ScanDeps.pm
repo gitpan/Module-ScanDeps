@@ -1,10 +1,10 @@
 # $File: //member/autrijus/Module-ScanDeps/lib/Module/ScanDeps.pm $ $Author: autrijus $
-# $Revision: #2 $ $Change: 8157 $ $DateTime: 2003/09/17 09:12:34 $
+# $Revision: #3 $ $Change: 8194 $ $DateTime: 2003/09/20 20:33:19 $
 
 package Module::ScanDeps;
 use vars qw/$VERSION @EXPORT @EXPORT_OK/;
 
-$VERSION    = '0.29';
+$VERSION    = '0.30';
 @EXPORT	    = qw(scan_deps);
 @EXPORT_OK  = qw(scan_line scan_chunk add_deps);
 
@@ -21,8 +21,8 @@ Module::ScanDeps - Recursively scan Perl code for dependencies
 
 =head1 VERSION
 
-This document describes version 0.29 of Module::ScanDeps, released
-September 17, 2003.
+This document describes version 0.30 of Module::ScanDeps, released
+September 21, 2003.
 
 =head1 SYNOPSIS
 
@@ -348,8 +348,10 @@ sub scan_chunk {
     my $module = eval {
 	$_ = $chunk;
 
-	return [ 'base.pm', grep { !/^q[qw]?$/ } split(/[^\w:]+/, $1) ]
-	    if /^\s* use \s+ base \s+ (.*)/x;
+	return [ 'base.pm', map { s{::}{/}g; "$_.pm" }
+	    grep { length and !/^q[qw]?$/ } split(/[^\w:]+/, $1) ]
+		if /^\s* use \s+ base \s+ (.*)/x;
+
 	return $1 if /(?:^|\s)(?:use|no|require)\s+([\w:\.\-\\\/\"\']+)/;
 	return $1 if /(?:^|\s)(?:use|no|require)\s+\(\s*([\w:\.\-\\\/\"\']+)\s*\)/;
 
