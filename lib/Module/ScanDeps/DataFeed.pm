@@ -1,5 +1,5 @@
 package Module::ScanDeps::DataFeed;
-$Module::ScanDeps::DataFeed::VERSION = '0.02';
+$Module::ScanDeps::DataFeed::VERSION = '0.03';
 
 =head1 NAME
 
@@ -118,7 +118,7 @@ Please submit bug reports to E<lt>bug-Module-ScanDeps@rt.cpan.orgE<gt>.
 
 =head1 COPYRIGHT
 
-Copyright 2004 by Edward S. Peschko E<lt>esp5@pge.comE<gt>,
+Copyright 2004, 2005 by Edward S. Peschko E<lt>esp5@pge.comE<gt>,
 Autrijus Tang E<lt>autrijus@autrijus.orgE<gt>
 
 This program is free software; you can redistribute it and/or modify it

@@ -1,5 +1,5 @@
 This file contains message digests of all files listed in MANIFEST,
-signed via the Module::Signature module, version 0.41.
+signed via the Module::Signature module, version 0.44.
 
 To verify the content in this distribution, first make sure you have
 Module::Signature installed, then type:
@@ -14,21 +14,20 @@ not run its Makefile.PL or Build.PL.
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA1
 
-SHA1 bee7e5fb0a8fc0a895b4037de108d9867d5a71ad AUTHORS
-SHA1 450b239a56f5a68ffefcc51d74479a383b4033e4 Changes
-SHA1 8f663769a936c9d9051c43849902d063e246461b MANIFEST
-SHA1 59b538925d1cd273c652757d84d49a956ec02e80 META.yml
-SHA1 dfb2773e854f842fa006957d5fb89149625b0361 Makefile.PL
-SHA1 94d1d01a7c83e03a54e6345af96746d5047c652a README
-SHA1 d01d714258cec738b9bcdc020bd73e36702f05a7 lib/Module/ScanDeps.pm
-SHA1 49515ac1a160214608d9020c7d26fdc760943b91 lib/Module/ScanDeps/DataFeed.pm
-SHA1 a47377bc724f9ef56fc64fdf736b76634a88eaed script/scandeps.pl
-SHA1 63c7ea0cfdd7643aa113c260eec9c9bf0a6ee8a0 t/0-signature.t
+SHA1 4e88ec26f70115dea933d556a2cb0f7e59557f8c AUTHORS
+SHA1 524fea0ae703d65ee35d5408a9026d442b76adbb Changes
+SHA1 69b92b30529abc6e23df0ad35fcfa715c4f574d2 MANIFEST
+SHA1 df7c3e6026c131591aebc8cb1d2d1b44d8e037f8 META.yml
+SHA1 1f420d4e0401775fa97a016598d38a5967849053 Makefile.PL
+SHA1 2cd490235823cfe6785f9e7162ecf4c8b9963a52 README
+SHA1 d32ffb8e93df585400b010d3217ec20468118504 lib/Module/ScanDeps.pm
+SHA1 c64bec9b3c093a68aafb94482e9014d546ca1b42 lib/Module/ScanDeps/DataFeed.pm
+SHA1 3edcc07385a5f57acb27359524bd55f6ca154635 script/scandeps.pl
 SHA1 dbe01c33e3e1460525c8e750dc48556d0c6f062b t/1-basic.t
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.2.3 (FreeBSD)
+Version: GnuPG v1.2.6 (FreeBSD)
 
-iD8DBQFBYDb0tLPdNzw1AaARAoHnAKC7P3yQnb1OQH/wHxkCq3acZSs9qQCgn/br
-E3OgxhrRZ9MDPGyDd5bry6w=
-=GRGa
+iD8DBQFB3vcutLPdNzw1AaARAtFWAJ4uQeOAyNWkA+npYOwjQ32IviEG6QCfUujF
+egKwSi2t5ib4Te081/2yS34=
+=XkzF
 -----END PGP SIGNATURE-----

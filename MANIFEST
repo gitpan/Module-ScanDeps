@@ -8,5 +8,4 @@ META.yml
 README
 script/scandeps.pl
 SIGNATURE
-t/0-signature.t
 t/1-basic.t

@@ -1,6 +1,4 @@
 #!/usr/bin/perl
-# $File: //member/autrijus/Module-ScanDeps/Makefile.PL $ $Author: autrijus $
-# $Revision: #7 $ $Change: 9631 $ $DateTime: 2004/01/08 11:19:45 $
 
 use ExtUtils::MakeMaker;
 
@@ -10,7 +8,6 @@ WriteMakefile(
     AUTHOR		=> 'Autrijus Tang <autrijus@autrijus.org>',
     VERSION_FROM	=> 'lib/Module/ScanDeps.pm',
     EXE_FILES		=> [ 'script/scandeps.pl' ],
-    ((ExtUtils::MakeMaker->VERSION >= 6.21) ? (SIGN => 1) : ()),
 );
 
 __END__

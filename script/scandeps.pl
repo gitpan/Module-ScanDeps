@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-$VERSION = '0.05';
+$VERSION = '0.06';
 
 use strict;
 use Config;
@@ -120,7 +120,7 @@ sub _modtree {
     $modtree ||= eval {
         require CPANPLUS::Backend;
         CPANPLUS::Backend->new->module_tree;
-    };
+    } || {};
 }
 
 
@@ -196,7 +196,7 @@ Autrijus Tang E<lt>autrijus@autrijus.orgE<gt>
 
 =head1 COPYRIGHT
 
-Copyright 2003 by Autrijus Tang E<lt>autrijus@autrijus.orgE<gt>.
+Copyright 2003, 2004, 2005 by Autrijus Tang E<lt>autrijus@autrijus.orgE<gt>.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
