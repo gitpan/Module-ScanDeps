@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 # $File: //member/autrijus/Module-ScanDeps/script/scandeps.pl $ $Author: autrijus $
-# $Revision: #6 $ $Change: 4445 $ $DateTime: 2003/02/27 12:09:56 $
+# $Revision: #7 $ $Change: 7254 $ $DateTime: 2003/07/30 06:48:45 $
 
 $VERSION = '0.03';
 
@@ -10,9 +10,7 @@ use Getopt::Std;
 use Module::ScanDeps;
 
 my %opts;
-getopts('BV', \%opts);
-
-die "Usage: $0 [ -B ] [ -V ] file ...\n" unless @ARGV;
+getopts('BVe:', \%opts);
 
 my $modtree = eval {
     require CPANPLUS::Backend;
@@ -22,8 +20,19 @@ my $modtree = eval {
 my (%map, %skip);
 my $core    = $opts{B};
 my $verbose = $opts{V};
-my @files   = @ARGV;
+my $eval    = $opts{e};
 
+if ($eval) {
+    require File::Temp;
+    my ($fh, $filename) = File::Temp::tempfile( CLEANUP => 1 );
+    print $fh $eval, "\n" or die $!;
+    close $fh;
+    push @ARGV, $filename;
+}
+
+die "Usage: $0 [ -B ] [ -V ] [ -e STRING | FILE ... ]\n" unless @ARGV;
+
+my @files = @ARGV;
 while (<>) {
     next unless /^package\s+([\w:]+)/;
     $skip{$1}++;
@@ -112,6 +121,7 @@ scandeps.pl - Scan file prerequisites
 =head1 SYNOPSIS
 
     % scandeps.pl *.pm		# Print PREREQ_PM section for *.pm
+    % scandeps.pl -e 'STRING'	# Scan an one-liner
     % scandeps.pl -B *.pm	# Include core modules
     % scandeps.pl -V *.pm	# Show autoload/shared/data files
 
@@ -136,6 +146,10 @@ before the main output.
 =head1 OPTIONS
 
 =over 4
+
+=item -e STRING
+
+Scan I<STRING> as a string containing perl code.
 
 =item -B
 

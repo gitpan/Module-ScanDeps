@@ -1,5 +1,5 @@
 # $File: //member/autrijus/Module-ScanDeps/AUTHORS $
-# $Revision: #8 $ $Change: 4852 $ $DateTime: 2003/03/22 06:47:56 $
+# $Revision: #9 $ $Change: 7272 $ $DateTime: 2003/07/30 14:32:41 $
 
 Here is a list of people and their CPAN id, extracted from the ChangeLog
 file and the mailing list archives.  These people have either submitted
@@ -14,6 +14,7 @@ Jan Dubois	    (JDB)
 Jerry Veldhuis
 Jess Robinson
 Jesse Vincent	    (JESSE)
+Jouke Visser	    (JOUKE)
 Markus Jansen
 Nik Clayton
 Randal L. Schwartz  (MERLYN)

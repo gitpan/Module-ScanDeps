@@ -8,3 +8,4 @@ ScanDeps.pm
 script/scandeps.pl
 t/0-signature.t
 t/1-basic.t
+META.yml                                Module meta-data (added by MakeMaker)

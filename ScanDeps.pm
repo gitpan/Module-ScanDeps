@@ -1,10 +1,10 @@
 # $File: //member/autrijus/Module-ScanDeps/ScanDeps.pm $ $Author: autrijus $
-# $Revision: #23 $ $Change: 4860 $ $DateTime: 2003/03/22 13:04:15 $
+# $Revision: #28 $ $Change: 7273 $ $DateTime: 2003/07/30 14:48:47 $
 
 package Module::ScanDeps;
 use vars qw/$VERSION @EXPORT @EXPORT_OK/;
 
-$VERSION    = '0.19';
+$VERSION    = '0.20';
 @EXPORT	    = ('scan_deps');
 @EXPORT_OK  = ('scan_line', 'scan_chunk', 'add_deps');
 
@@ -17,18 +17,19 @@ use constant lib_ext => $Config{lib_ext};
 
 =head1 NAME
 
-Module::ScanDeps - Recursively scan Perl programs for dependencies
+Module::ScanDeps - Recursively scan Perl code for dependencies
 
 =head1 VERSION
 
-This document describes version 0.19 of Module::ScanDeps, released
-March 22, 2003.
+This document describes version 0.20 of Module::ScanDeps, released
+July 30, 2003.
 
 =head1 SYNOPSIS
 
 Via the command-line program L<scandeps.pl>:
 
     % scandeps.pl *.pm		# Print PREREQ_PM section for *.pm
+    % scandeps.pl -e "use utf8"	# Read script from command line
     % scandeps.pl -B *.pm	# Include core modules
     % scandeps.pl -V *.pm	# Show autoload/shared/data files
 
@@ -236,8 +237,9 @@ my %Preload = (
 	    if (@files = map "unicore/lib/$_->{name}", _glob_in_inc('unicore/lib')) {
 		push @files, map "unicore/$_.pl", qw(Exact Canonical);
 	    }
-	    elsif (@files = map "unicode/lib/$_->{name}", _glob_in_inc('unicode/lib')) {
-		push @files, map "unicode/$_.pl", qw(Exact Canonical);
+	    elsif (@files = map "unicode/Is/$_->{name}", _glob_in_inc('unicode/Is')) {
+		push @files, map "unicode/In/$_->{name}", _glob_in_inc('unicode/In');
+		push @files, map "unicode/To/$_->{name}", _glob_in_inc('unicode/To');
 	    }
 	    @files;
 	}
@@ -248,6 +250,10 @@ my %Preload = (
     'Device/SerialPort.pm'	    => [qw(
 	termios.ph asm/termios.ph sys/termiox.ph sys/termios.ph sys/ttycom.ph
     )],
+    'SerialJunk.pm'		    => [qw(
+	termios.ph asm/termios.ph sys/termiox.ph sys/termios.ph sys/ttycom.ph
+    )],
+    'AnyDBM_File.pm'		    => [qw( SDBM_File.pm )],
 );
 # }}}
 

@@ -1,0 +1,9 @@
+#XXXXXXX This is a prototype!!!  It will change in the future!!! XXXXX#
+name:         Module-ScanDeps
+version:      0.20
+version_from: ScanDeps.pm
+installdirs:  site
+requires:
+
+distribution_type: module
+generated_by: ExtUtils::MakeMaker version 6.10_04
