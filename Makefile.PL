@@ -1,8 +1,8 @@
 #!/usr/bin/perl
 # $File: //member/autrijus/Module-ScanDeps/Makefile.PL $ $Author: autrijus $
-# $Revision: #1 $ $Change: 1817 $ $DateTime: 2002/11/02 01:49:56 $
+# $Revision: #2 $ $Change: 1830 $ $DateTime: 2002/11/02 15:36:29 $
 
-use 5.006;
+use 5.001;
 use ExtUtils::MakeMaker;
 
 WriteMakefile(

@@ -1,4 +1,30 @@
 ____________________________________________________________________________
+[  1833] By: autrijus                              on 2002/11/02  15:38:42
+        Log: * This be 0.02.
+	   ! ScanDeps.pm
+____________________________________________________________________________
+[  1832] By: autrijus                              on 2002/11/02  15:37:15
+        Log: * now performs testing by looking at the test file itself.
+	   ! t/1-basic.t
+____________________________________________________________________________
+[  1831] By: autrijus                              on 2002/11/02  15:36:50
+        Log: * displays correct message when connection fails.
+	   ! t/0-signature.t
+____________________________________________________________________________
+[  1830] By: autrijus                              on 2002/11/02  15:36:29
+        Log: * backported to 5.001.
+             * was looking in POD sections; fixed.
+             * thorough comments and documentations.
+	   ! Makefile.PL ScanDeps.pm
+____________________________________________________________________________
+[  1829] By: autrijus                              on 2002/11/02  15:35:56
+        Log: * oops, Makefile shouldn't be in RCS.
+	   - Makefile
+____________________________________________________________________________
+[  1818] By: autrijus                              on 2002/11/02  01:50:56
+        Log: * changes and signatures.
+	   + Changes SIGNATURE
+____________________________________________________________________________
 [  1817] By: autrijus                              on 2002/11/02  01:49:56
         Log: * written-from-scratch version of dependency finding algorithm. 
 	   + MANIFEST Makefile Makefile.PL README ScanDeps.pm
