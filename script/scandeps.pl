@@ -1,16 +1,26 @@
 #!/usr/bin/perl
 # $File: //member/autrijus/Module-ScanDeps/script/scandeps.pl $ $Author: autrijus $
-# $Revision: #2 $ $Change: 3617 $ $DateTime: 2003/01/18 19:12:20 $
+# $Revision: #5 $ $Change: 3621 $ $DateTime: 2003/01/18 20:44:04 $
 
+$VERSION = '0.02';
+
+use strict;
 use Config;
 use Module::ScanDeps;
 
+die "Usage: $0 [ -B ] file ...\n" unless @ARGV;
+
+my $modtree = eval {
+    require CPANPLUS::Backend;
+    CPANPLUS::Backend->new->module_tree;
+};
+
 my %map;
-die "Usage: $0 [ -B ] file..." unless @ARGV;
-my $bundle = shift if $ARGV[0] eq '-B';
+my $core = shift if $ARGV[0] eq '-B';
 
 my @files = @ARGV;
 my %skip;
+
 while (<>) {
     next unless /^package\s+([\w:]+)/;
     $skip{$1}++;
@@ -21,41 +31,68 @@ my $map = scan_deps(
     recurse => 1,
 );
 
-print "PREREQ_PM => {\n";
 
 my $len = 0;
 my @todo;
-foreach my $key (sort keys %$map) {
-    my $mod = $map->{$key};
-    next unless $mod->{type} eq 'module';
-    next if $skip{_name($key)};
-    next if !$bundle and ($mod->{file} eq "$Config::Config{privlib}/$key"
-		       or $mod->{file} eq "$Config::Config{archlib}/$key");
+my (%seen, %dist, %core, %bin);
 
-    $len = length(_name($key))
-	if $len < length(_name($key));
+foreach my $key (sort keys %$map) {
+    my $mod  = $map->{$key};
+    my $name = $mod->{name} = _name($key);
+
+    if ($mod->{type} eq 'shared') {
+	$key =~ s!auto/!!;
+	$key =~ s!/[^/]+$!!;
+	$key =~ s!/!::!;
+	$bin{$key}++;
+    }
+
+    next unless $mod->{type} eq 'module';
+
+    next if $skip{$name};
+
+    if ($mod->{file} eq "$Config::Config{privlib}/$key"
+	or $mod->{file} eq "$Config::Config{archlib}/$key") {
+	next unless $core;
+
+	$core{$name}++;
+    }
+    elsif (my $dist = $modtree->{$name}) {
+	$seen{$name} = $dist{$dist->package}++;
+    }
+
+    $len = length($name) if $len < length($name);
+    $mod->{used_by} ||= [];
 
     push @todo, $mod;
 }
 
 $len += 2;
 
+warn "# Legend: [C]ore [X]ternal [S]ubmodule [?]NotOnCPAN\n";
+
 foreach my $mod (sort {
     "@{$a->{used_by}}" cmp "@{$b->{used_by}}" or
     $a->{key} cmp $b->{key}
 } @todo) {
-    printf "\t%-${len}s => '0',", "'"._name($mod->{key})."'";
+    printf "%-${len}s => '0', # ", "'$mod->{name}'";
     my @base = map(_name($_), @{$mod->{used_by}});
-    print " # @base" if @base;
+    print $seen{$mod->{name}}	? 'S' : ' ';
+    print $bin{$mod->{name}}	? 'X' : ' ';
+    print $core{$mod->{name}}	? 'C' : ' ';
+    print $modtree && !$modtree->{$mod->{name}} ? '?' : ' ';
+    print " # ";
+    print "@base" if @base;
     print "\n";
 }
 
-print "}\n";
+warn "No modules found!\n" unless @todo;
 
 sub _name {
     my $str = shift;
     $str =~ s!/!::!g;
     $str =~ s!.pm$!!i;
+    $str =~ s!^auto::(.+)::.*!$1!;
     return $str;
 }
 
@@ -77,6 +114,17 @@ scandeps.pl - Scan file prerequisites
 F<scandeps.pl> is a simple-minded utility that prints out the
 C<PREREQ_PM> section needed by modules.
 
+If you have B<CPANPLUS> installed, modules that are part of an
+earlier module's distribution with be denoted with C<S>; modules
+without a distribution name on CPAN are marked with C<?>.
+
+Also, if the C<-B> option is specified, module belongs to a perl
+distribution on CPAN (and thus uninstallable by C<CPAN.pm> or
+C<CPANPLUS.pm>) are marked with C<C>.
+
+Finally, modules that has loadable shared object files (usually
+needing a compiler to install) are marked with C<X>.
+
 =head1 OPTIONS
 
 =over 4
@@ -92,7 +140,7 @@ C<use Module VERSION> statements.
 
 =head1 SEE ALSO
 
-L<Module::ScanDeps>, L<PAR>
+L<Module::ScanDeps>, L<CPANPLUS::Backend>, L<PAR>
 
 =head1 ACKNOWLEDGMENTS
 

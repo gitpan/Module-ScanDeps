@@ -1,4 +1,25 @@
 ____________________________________________________________________________
+[  3622] By: autrijus                              on 2003/01/18  20:44:42
+        Log: * 0.13, with the more advanced scandeps.pl
+	   ! ScanDeps.pm
+____________________________________________________________________________
+[  3621] By: autrijus                              on 2003/01/18  20:44:04
+        Log: * much more improved scandeps, as suggested by jesse
+	       vincent.
+	   ! script/scandeps.pl
+____________________________________________________________________________
+[  3620] By: autrijus                              on 2003/01/18  19:59:36
+        Log: * add #! for core; explains the symbols.
+	   ! script/scandeps.pl
+____________________________________________________________________________
+[  3619] By: autrijus                              on 2003/01/18  19:35:39
+        Log: * use cpanplus to tell apart redundant modules if possible.
+	   ! script/scandeps.pl
+____________________________________________________________________________
+[  3618] By: autrijus                              on 2003/01/18  19:35:25
+        Log: * changes and signatures.
+	   ! Changes SIGNATURE
+____________________________________________________________________________
 [  3617] By: autrijus                              on 2003/01/18  19:12:20
         Log: * 0.12.
              * adds script/scandeps.pl

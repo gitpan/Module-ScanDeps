@@ -15,18 +15,18 @@ not run its Makefile.PL or Build.PL.
 Hash: SHA1
 
 SHA1 ecb11990611a4450d5a357858bbe6f5e1ebb1330 AUTHORS
-SHA1 4c04524b1d2f9f6445b9f55e322e10db5af35be6 Changes
+SHA1 2e52b6c14e76ceb44cca6a046861a01b078468d0 Changes
 SHA1 052d198612752b5f90f1ac5c4bf05e3ecea3fb42 MANIFEST
 SHA1 44f8f985d762af9defee1588837457ec0a5ef0a7 Makefile.PL
 SHA1 f20efea1ef16863bdbb4142f2a79a1b7acf591b1 README
-SHA1 635a751968d885c6458742867e182ada0c4e139f ScanDeps.pm
-SHA1 c98d5565a62bb2336d46de79e26e2e00bb40dc0c script/scandeps.pl
+SHA1 4c373b3ceb0c26debb299a22e36e265f27b77c5c ScanDeps.pm
+SHA1 1fe50cbc6774dc69fdb71ece8ad769d28286baf2 script/scandeps.pl
 SHA1 c742861151fff929d1a9d0aecf84bb0a6bbc9d61 t/0-signature.t
 SHA1 bcefa09920a182cfce892c2bde06b159655a946c t/1-basic.t
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.2.1 (FreeBSD)
 
-iD8DBQE+KazPtLPdNzw1AaARAq47AJ9HlVoJb+cfe9WBb0P1hx4QQOky7QCfYh+Q
-94bs9FAlAwHYRtneimM4JUg=
-=Tv3h
+iD8DBQE+KcKBtLPdNzw1AaARAg/+AKCE5PN/lAnOVd1gAjKqgnvbpnT0mgCgi/si
+9mE0Eks82T4I70AqDDYnkeM=
+=lftR
 -----END PGP SIGNATURE-----

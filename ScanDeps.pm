@@ -1,10 +1,10 @@
 # $File: //member/autrijus/Module-ScanDeps/ScanDeps.pm $ $Author: autrijus $
-# $Revision: #10 $ $Change: 3617 $ $DateTime: 2003/01/18 19:12:20 $
+# $Revision: #11 $ $Change: 3622 $ $DateTime: 2003/01/18 20:44:42 $
 
 package Module::ScanDeps;
 use vars qw/$VERSION @EXPORT @EXPORT_OK/;
 
-$VERSION    = '0.12';
+$VERSION    = '0.13';
 @EXPORT	    = ('scan_deps');
 @EXPORT_OK  = ('scan_line', 'scan_chunk', 'add_deps');
 
@@ -20,7 +20,7 @@ Module::ScanDeps - Recursively scan Perl programs for dependencies
 
 =head1 VERSION
 
-This document describes version 0.12 of Module::ScanDeps, released
+This document describes version 0.13 of Module::ScanDeps, released
 January 19, 2003.
 
 =head1 SYNOPSIS
