@@ -1,10 +1,10 @@
 # $File: //member/autrijus/Module-ScanDeps/lib/Module/ScanDeps.pm $ $Author: autrijus $
-# $Revision: #30 $ $Change: 10809 $ $DateTime: 2004/06/08 19:00:10 $ vim: expandtab shiftwidth=4
+# $Revision: #31 $ $Change: 10905 $ $DateTime: 2004/06/18 09:52:42 $ vim: expandtab shiftwidth=4
 
 package Module::ScanDeps;
 use vars qw( $VERSION @EXPORT @EXPORT_OK );
 
-$VERSION   = '0.44';
+$VERSION   = '0.45';
 @EXPORT    = qw( scan_deps scan_deps_runtime );
 @EXPORT_OK = qw( scan_line scan_chunk add_deps scan_deps_runtime );
 
@@ -28,8 +28,8 @@ Module::ScanDeps - Recursively scan Perl code for dependencies
 
 =head1 VERSION
 
-This document describes version 0.44 of Module::ScanDeps, released
-June 9, 2003.
+This document describes version 0.45 of Module::ScanDeps, released
+June 29, 2003.
 
 =head1 SYNOPSIS
 
@@ -208,7 +208,6 @@ my %Preload = (
     'Device/SerialPort.pm' => [ qw(
         termios.ph asm/termios.ph sys/termiox.ph sys/termios.ph sys/ttycom.ph
     ) ],
-    #   'Encode.pm'                         => 'sub',
     'ExtUtils/MakeMaker.pm' => sub {
         grep /\bMM_/, _glob_in_inc('ExtUtils', 1);
     },
@@ -243,6 +242,15 @@ my %Preload = (
         _glob_in_inc('PDF/API2/Basic/TTF', 1);
     },
     'PDF/Writer.pm'                 => 'sub',
+    'POE'                           => [ qw(
+        POE/Kernel.pm POE/Session.pm
+    ) ],
+    'POE/Kernel.pm'                    => [
+        map "POE/Resource/$_.pm", qw(
+            Aliases Events Extrefs FileHandles
+            SIDs Sessions Signals Statistics
+        )
+    ],
     'Parse/AFP.pm'                  => 'sub',
     'Parse/Binary.pm'               => 'sub',
     'Regexp/Common.pm'              => 'sub',
@@ -266,10 +274,10 @@ my %Preload = (
     'Term/ReadLine.pm' => 'sub',
     'Tk.pm'            => sub {
         $SeenTk = 1;
-        'Tk/FileSelect.pm';
+        qw( Tk/FileSelect.pm Encode/Unicode.pm );
     },
     'Tk/Balloon.pm'     => [qw( Tk/balArrow.xbm )],
-    'Tk/BrowseEntry.pm' => [qw( Tk/cbxarrow.xbm )],
+    'Tk/BrowseEntry.pm' => [qw( Tk/cbxarrow.xbm Tk/arrowdownwin.xbm )],
     'Tk/ColorEditor.pm' => [qw( Tk/ColorEdit.xpm )],
     'Tk/FBox.pm'        => [qw( Tk/folder.xpm Tk/file.xpm )],
     'Tk/Toplevel.pm'    => [qw( Tk/Wm.pm )],
@@ -516,6 +524,11 @@ sub scan_chunk {
             map { s{::}{/}g; "$_.pm" }
               grep { length and !/^q[qw]?$/ } split(/[^\w:]+/, $1) ]
           if /^\s* use \s+ base \s+ (.*)/x;
+
+        return [ 'POE.pm',
+            map { s{::}{/}g; "POE/$_.pm" }
+              grep { length and !/^q[qw]?$/ } split(/[^\w:]+/, $1) ]
+          if /^\s* use \s+ POE \s+ (.*)/x;
 
         return [ 'encoding.pm',
             map { _find_encoding($_) }

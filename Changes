@@ -1,3 +1,6 @@
+0.45:
+- Tk.pm now pulls in Encode::Unicode by default.
+- Tk::BrowseEntry now loads the missing arrowdownwin.xbm.
 ____________________________________________________________________________
 [ 10809] By: autrijus                              on 2004/06/08  19:00:10
         Log: * This be 0.44.
