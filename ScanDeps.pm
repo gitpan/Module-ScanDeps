@@ -1,10 +1,10 @@
 # $File: //member/autrijus/Module-ScanDeps/ScanDeps.pm $ $Author: autrijus $
-# $Revision: #5 $ $Change: 1876 $ $DateTime: 2002/11/03 19:26:55 $
+# $Revision: #6 $ $Change: 1910 $ $DateTime: 2002/11/04 11:43:36 $
 
 package Module::ScanDeps;
 use vars qw/$VERSION @EXPORT @EXPORT_OK/;
 
-$VERSION    = '0.03';
+$VERSION    = '0.10';
 @EXPORT	    = ('scan_deps');
 @EXPORT_OK  = ('scan_line', 'scan_chunk', 'add_deps');
 
@@ -20,7 +20,7 @@ Module::ScanDeps - Recursively scan Perl programs for dependencies
 
 =head1 VERSION
 
-This document describes version 0.03 of Module::ScanDeps, released
+This document describes version 0.10 of Module::ScanDeps, released
 November 4, 2002.
 
 =head1 SYNOPSIS
@@ -36,16 +36,41 @@ November 4, 2002.
     # shorthand; assume recurse == 1
     my $hash_ref = scan_deps( 'a.pl', 'b.pl' );
 
+    # App::Packer::Frontend compatible interface
+    # see App::Packer::Frontend for the structure returned by get_files
+    my $scan = Module::ScanDeps->new;
+    $scan->set_file( 'a.pl' );
+    $scan->set_options( add_modules => [ 'Test::More' ] );
+    $scan->calculate_info;
+    my $files = $scan->get_files;
+
 =head1 DESCRIPTION
 
 This module scans potential modules used by perl programs, and returns a
 hash reference; its keys are the module names as appears in C<%INC>
-(e.g. C<Test/More.pm>), with the value pointing to the actual file name
-on disk.
+(e.g. C<Test/More.pm>); the values are hash references with this structure:
+
+    {
+	file	=> '/usr/local/lib/perl5/5.8.0/Test/More.pm',
+	key	=> 'Test/More.pm',
+	type	=> 'module',	# or 'autoload', 'data', 'shared'
+	used_by	=> [ 'Test/Simple.pm', ... ],
+    }
 
 One function, C<scan_deps>, is exported by default.  Three other
 functions (C<scan_line>, C<scan_chunk>, C<add_deps>) are exported upon
 request.
+
+Users of B<App::Packer> may also use this module as the dependency-checking
+frontend, by tweaking their F<p2e.pl> like below:
+
+    use Module::ScanDeps;
+    ...
+    my $packer = App::Packer->new( frontend => 'Module::ScanDeps' );
+    ...
+
+Please see L<App::Packer::Frontend> for detailed explanation on
+the structure returned by C<get_files>.
 
 =head2 B<scan_deps>
 
@@ -180,14 +205,15 @@ my %Preload = (
 
 sub scan_deps {
     my %args = (
-	(@_ and $_[0] =~ /^(?:files|recurse|rv|skip)$/)
+	(@_ and $_[0] =~ /^(?:files|keys|recurse|rv|skip)$/)
 	    ? @_ : ( files => [ @_ ], recurse => 1 )
     );
-    my ($files, $recurse, $rv, $skip) = @args{qw/files recurse rv skip/};
+    my ($files, $keys, $recurse, $rv, $skip) = @args{qw/files keys recurse rv skip/};
 
     $rv ||= {}; $skip ||= {};
 
     foreach my $file (@{$files}) {
+	my $key = shift @{$keys};
 	next if $skip->{$file}++;
 
 	local *FH;
@@ -209,8 +235,8 @@ sub scan_deps {
 
 		$_ = 'CGI/Apache.pm' if /^Apache(?:\.pm)$/;
 
-		add_deps( rv => $rv, modules => [ $_ ] );
-		add_deps( rv => $rv, modules => $Preload{$_} )
+		add_deps( used_by => $key, rv => $rv, modules => [ $_ ] );
+		add_deps( used_by => $key, rv => $rv, modules => $Preload{$_} )
 		    if exists $Preload{$_};
 	    }
 	}
@@ -221,8 +247,10 @@ sub scan_deps {
     # Top-level recursion handling {{{
     while ($recurse) {
 	my $count = keys %$rv;
+	my @files = sort grep -T $_->{file}, values %$rv;
 	scan_deps(
-	    files   => [ sort grep -T, values %$rv ],
+	    files   => [ map $_->{file}, @files ],
+	    keys    => [ map $_->{key},  @files ],
 	    rv	    => $rv,
 	    skip    => $skip,
 	    recurse => 0,
@@ -292,18 +320,37 @@ sub scan_chunk {
     return $module;
 }
 
+sub _add_info {
+    my ($rv, $module, $file, $used_by, $type) = @_;
+    return unless defined($module) and defined($file);
+
+    $rv->{$module} ||= {
+	file	=> $file,
+	key	=> $module,
+	type	=> $type,
+    };
+
+    push @{$rv->{$module}{used_by}}, $used_by
+	if defined($used_by) and $used_by ne $module
+	   and !grep { $_ eq $used_by } @{$rv->{$module}{used_by}};
+}
+
 sub add_deps {
     my %args = (
-	(@_ and $_[0] =~ /^(?:modules|rv)$/)
+	(@_ and $_[0] =~ /^(?:modules|rv|used_by)$/)
 	    ? @_ : ( rv => ( ref($_[0]) ? shift(@_) : undef ), modules => [ @_ ] )
     );
+
     my $rv = $args{rv} || {};
+    my $used_by = $args{used_by};
 
     foreach my $module (@{$args{modules}}) {
 	next if exists $rv->{$module};
 
 	my $file = _find_in_inc($module) or next;
-	$rv->{$module} = $file;
+	my $type = 'module';
+	$type = 'data' unless $file =~ /\.pm$/i;
+	_add_info($rv, $module, $file, $used_by, $type);
 
 	if ($module =~ /(.*?([^\/]*))\.pm$/i) {
 	    my ($path, $basename) = ($1, $2);
@@ -313,7 +360,7 @@ sub add_deps {
 		my $dl_name = "auto/$path/$basename" . dl_ext();
 		my $dl_file = _find_in_inc($dl_name) ||
 			      _find_in_inc($basename . dl_ext());
-		$rv->{$dl_name} = $dl_file if defined $dl_file;
+		_add_info($rv, $dl_name, $dl_file, $module, 'shared');
 	    }
             # }}}
             # Autosplit files {{{
@@ -322,8 +369,9 @@ sub add_deps {
 
 	    local *DIR;
 	    opendir(DIR, $autosplit_dir) or next;
-	    $rv->{"auto/$path/$_"} = "$autosplit_dir/$_"
-		foreach grep /\.(?:ix|al)$/i, readdir(DIR);
+	    _add_info(
+		$rv, "auto/$path/$_", "$autosplit_dir/$_", $module, 'autoload'
+	    ) foreach grep /\.(?:ix|al)$/i, readdir(DIR);
 	    closedir DIR;
             # }}}
         }
@@ -344,9 +392,112 @@ sub _find_in_inc {
     return;
 }
 
+# App::Packer compatibility mode
+
+sub new {
+    my ($class, $self) = @_;
+    return bless($self ||= {}, $class);
+}
+
+sub set_file {
+    my $self = shift;
+    foreach my $script ( @_ ) {
+	my $basename = $script;
+	$basename =~ s/.*\///;
+	$self->{main} = {
+	    key	    => $basename,
+	    file    => $script,
+	};
+    }
+}
+
+sub set_options {
+    my $self = shift;
+    my %args = @_;
+    foreach my $module (@{$args{add_modules}}) {
+	$module =~ s/::/\//g;
+	$module .= '.pm' unless $module =~ /\.pm$/i;
+	my $file = _find_in_inc($module) or next;
+	$self->{files}{$module} = $file;
+    }
+}
+
+sub calculate_info {
+    my $self = shift;
+    my $rv = scan_deps(
+	keys	=> [
+	    $self->{main}{key},
+	    sort keys %{$self->{files}},
+	],
+	files	=> [
+	    $self->{main}{file},
+	    map { $self->{files}{$_} } sort keys %{$self->{files}},
+	],
+	recurse	=> 1,
+    );
+
+    my $info = {
+	main => {
+	    file	=> $self->{main}{file},
+	    store_as	=> $self->{main}{key},
+	},
+    };
+
+    my %cache = ( $self->{main}{key} => $info->{main} );
+    foreach my $key (keys %{$self->{files}}) {
+	my $file = $self->{files}{$key};
+
+	$cache{$key} = $info->{modules}{$key} = {
+	    file	=> $file,
+	    store_as    => $key,
+	    used_by	=> [ $self->{main}{key} ],
+	}
+    }
+
+    foreach my $key (keys %{$rv}) {
+	my $val = $rv->{$key};
+	if ($cache{$val->{key}}) {
+	    push @{$info->{$val->{type}}->{$val->{key}}->{used_by}}, @{$val->{used_by}};
+	}
+	else {
+	    $cache{$val->{key}} = $info->{$val->{type}}->{$val->{key}} = {
+		file	    => $val->{file},
+		store_as    => $val->{key},
+		used_by	    => $val->{used_by},
+	    };
+	}
+    }
+
+    foreach my $type (keys %{$info}) {
+	next if $type eq 'main';
+	my @val;
+	foreach my $val ( values %{$info->{$type}} ) {
+	    @{$val->{used_by}} = map $cache{$_} || "!!$_!!", @{$val->{used_by}};
+	    push @val, $val;
+	}
+	delete $info->{$type};
+	$type = 'modules' if $type eq 'module';
+	$info->{$type} = \@val;
+    }
+
+    $self->{info} = $info;
+}
+
+sub get_files {
+    my $self = shift;
+    return $self->{info};
+}
+
 1;
 
 __END__
+
+=head1 SEE ALSO
+
+An application of B<Module::ScanDeps> is to generate executables from
+scripts that contains necessary modules; this module supports two such
+projects, L<PAR> and L<App::Packer>.  Please see their respective
+documentations on CPAN for further information.
 
 =head1 AUTHORS
 

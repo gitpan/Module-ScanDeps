@@ -1,4 +1,15 @@
 ____________________________________________________________________________
+[  1910] By: autrijus                              on 2002/11/04  11:43:36
+        Log: * Version 0.10.
+             * Now featuring an object-oriented syntax, conformant
+             with App::Packer::Frontend.
+             * added corresponding documentation and tests.
+	   ! ScanDeps.pm t/1-basic.t
+____________________________________________________________________________
+[  1883] By: autrijus                              on 2002/11/03  20:16:19
+        Log: * changes and signatures.
+	   ! Changes SIGNATURE
+____________________________________________________________________________
 [  1880] By: autrijus                              on 2002/11/03  19:33:21
         Log: * 0.03, this time for sure.
              * add AUTHORS.
