@@ -1,4 +1,10 @@
 ____________________________________________________________________________
+[  7410] By: autrijus                              on 2003/08/10  05:36:57
+        Log: * This be 0.24.
+             * Add support for SOAP::Lite, XMLRPC::Lite and
+	       Win32::SystemInfo.
+	   ! ScanDeps.pm
+____________________________________________________________________________
 [  7405] By: autrijus                              on 2003/08/08  10:15:49
         Log: * This be 0.23.
              * @File::Spec::ISA was crippled during scanning, thanks

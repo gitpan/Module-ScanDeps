@@ -1,10 +1,10 @@
 # $File: //member/autrijus/Module-ScanDeps/ScanDeps.pm $ $Author: autrijus $
-# $Revision: #34 $ $Change: 7405 $ $DateTime: 2003/08/08 10:15:49 $
+# $Revision: #35 $ $Change: 7410 $ $DateTime: 2003/08/10 05:36:57 $
 
 package Module::ScanDeps;
 use vars qw/$VERSION @EXPORT @EXPORT_OK/;
 
-$VERSION    = '0.23';
+$VERSION    = '0.24';
 @EXPORT	    = ('scan_deps');
 @EXPORT_OK  = ('scan_line', 'scan_chunk', 'add_deps');
 
@@ -21,8 +21,8 @@ Module::ScanDeps - Recursively scan Perl code for dependencies
 
 =head1 VERSION
 
-This document describes version 0.23 of Module::ScanDeps, released
-August 8, 2003.
+This document describes version 0.24 of Module::ScanDeps, released
+August 10, 2003.
 
 =head1 SYNOPSIS
 
@@ -186,6 +186,10 @@ my %Preload = (
     'Net/FTP.pm'		    => 'sub',
     'Net/SSH/Perl'		    => 'sub',
     'Regexp/Common.pm'		    => 'sub',
+    'SOAP/Lite.pm'		    => sub {(
+	($] >= 5.008 ? ('utf8.pm') : ()),
+	_glob_in_inc('SOAP/Transport', 1),
+    )},
     'SQL/Parser.pm'		    => sub {
 	_glob_in_inc('SQL/Dialects', 1);
     },
@@ -205,8 +209,12 @@ my %Preload = (
     },
     'Win32/EventLog.pm'		    => [qw( Win32/IPC.pm )],
     'Win32/TieRegistry.pm'	    => [qw( Win32API/Registry.pm )],
+    'Win32/SystemInfo.pm'	    => [qw( Win32/cpuspd.dll )],
     'XML/Parser/Expat.pm'	    => sub {
 	($] >= 5.008) ? ('utf8.pm') : ();
+    },
+    'XMLRPC/Lite.pm'		    => sub {
+	_glob_in_inc('XMLRPC/Transport', 1),
     },
     'diagnostics.pm'		    => sub {
 	_find_in_inc('Pod/perldiag.pod') ? 'Pod/perldiag.pl' : 'pod/perldiag.pod'
@@ -448,7 +456,7 @@ sub _glob_in_inc {
     return @files;
 }
 
-# App::Packer compatibility mode
+# App::Packer compatibility functions
 
 sub new {
     my ($class, $self) = @_;
