@@ -1,3 +1,15 @@
+----------------------------------------------------------------------
+r11726:  autrijus | 2004-08-30T22:08:47.831283Z
+
+* This be 0.47, first version under svk management.
+* Support for Mail::Audit plugins; prompted by Andrew Lee.
+* Support for modules that use Module::Plugin; prompted by Brian Cassidy.
+* scandeps.pl now reports module versions, courtesy of Dan Friedman.
+* Delayed loading of CPANPLUS on scandeps.pl.
+
+----------------------------------------------------------------------
+r11725:  autrijus | 2004-08-30T21:40:40.251511Z
+
 ____________________________________________________________________________
 [ 10971] By: autrijus                              on 2004/07/02  10:26:02
         Log: * This be 0.46.
@@ -450,3 +462,4 @@ ____________________________________________________________________________
 	       algorithm. 
 	   + MANIFEST Makefile Makefile.PL README
 	   + ScanDeps.pm t/0-signature.t t/1-basic.t
+----------------------------------------------------------------------

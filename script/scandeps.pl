@@ -1,6 +1,6 @@
 #!/usr/bin/perl
-# $File: //member/autrijus/Module-ScanDeps/script/scandeps.pl $ $Author: autrijus $
-# $Revision: #9 $ $Change: 9514 $ $DateTime: 2003/12/31 12:13:05 $ vim: expandtab shiftwidth=4
+# $File: /member/local/autrijus/Module-ScanDeps/script/scandeps.pl $ $Author: autrijus $
+# $Revision: #3 $ $Change: 11727 $ $DateTime: 2004-08-30T22:10:50.485506Z $ vim: expandtab shiftwidth=4
 
 $VERSION = '0.05';
 
@@ -8,14 +8,11 @@ use strict;
 use Config;
 use Getopt::Std;
 use Module::ScanDeps;
+use ExtUtils::MakeMaker;
+use subs qw( _name _modtree );
 
 my %opts;
 getopts('BVxce:', \%opts);
-
-my $modtree = eval {
-    require CPANPLUS::Backend;
-    CPANPLUS::Backend->new->module_tree;
-};
 
 my (%map, %skip);
 my $core    = $opts{B};
@@ -73,7 +70,7 @@ foreach my $key (sort keys %$map) {
 
 	$core{$name}++;
     }
-    elsif (my $dist = $modtree->{$name}) {
+    elsif (my $dist = _modtree->{$name}) {
 	$seen{$name} = $dist{$dist->package}++;
     }
 
@@ -85,21 +82,29 @@ foreach my $key (sort keys %$map) {
 
 $len += 2;
 
-warn "# Legend: [C]ore [X]ternal [S]ubmodule [?]NotOnCPAN\n";
+warn "# Legend: [C]ore [X]ternal [S]ubmodule [?]NotOnCPAN\n" if $verbose;
 
 foreach my $mod (sort {
     "@{$a->{used_by}}" cmp "@{$b->{used_by}}" or
     $a->{key} cmp $b->{key}
 } @todo) {
-    printf "%-${len}s => '0', # ", "'$mod->{name}'";
-    my @base = map(_name($_), @{$mod->{used_by}});
-    print $seen{$mod->{name}}	? 'S' : ' ';
-    print $bin{$mod->{name}}	? 'X' : ' ';
-    print $core{$mod->{name}}	? 'C' : ' ';
-    print $modtree && !$modtree->{$mod->{name}} ? '?' : ' ';
-    print " # ";
-    print "@base" if @base;
+
+    my $version = MM->parse_version($mod->{file});
+
+    if (!$verbose) {
+        printf "%-${len}s => '$version',", "'$mod->{name}'" if $version;
+    } else {
+        printf "%-${len}s => '0', # ", "'$mod->{name}'";
+        my @base = map(_name($_), @{$mod->{used_by}});
+        print $seen{$mod->{name}}	? 'S' : ' ';
+        print $bin{$mod->{name}}	? 'X' : ' ';
+        print $core{$mod->{name}}	? 'C' : ' ';
+        print _modtree && !_modtree->{$mod->{name}} ? '?' : ' ';
+        print " # ";
+        print "@base" if @base;
+    }
     print "\n";
+
 }
 
 warn "No modules found!\n" unless @todo;
@@ -111,6 +116,15 @@ sub _name {
     $str =~ s!^auto::(.+)::.*!$1!;
     return $str;
 }
+
+my $modtree;
+sub _modtree {
+    $modtree ||= eval {
+        require CPANPLUS::Backend;
+        CPANPLUS::Backend->new->module_tree;
+    };
+}
+
 
 1;
 
@@ -167,12 +181,8 @@ Include core modules in the output and the recursive search list.
 
 =item -V
 
-Verbose mode: Output all files found during the process.
-
-=head1 CAVEATS
-
-All version numbers are set to C<0> in the output, despite explicit
-C<use Module VERSION> statements.
+Verbose mode: Output all files found during the process; 
+show dependencies between modules and availability.
 
 =head1 SEE ALSO
 

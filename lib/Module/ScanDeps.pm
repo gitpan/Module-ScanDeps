@@ -1,10 +1,10 @@
-# $File: //member/autrijus/Module-ScanDeps/lib/Module/ScanDeps.pm $ $Author: autrijus $
-# $Revision: #32 $ $Change: 10971 $ $DateTime: 2004/07/02 10:26:02 $ vim: expandtab shiftwidth=4
+# $File: /member/local/autrijus/Module-ScanDeps/lib/Module/ScanDeps.pm $ $Author: autrijus $
+# $Revision: #3 $ $Change: 11727 $ $DateTime: 2004-08-30T22:10:50.485506Z $ vim: expandtab shiftwidth=4
 
 package Module::ScanDeps;
-use vars qw( $VERSION @EXPORT @EXPORT_OK );
+use vars qw( $VERSION @EXPORT @EXPORT_OK $CurrentPackage );
 
-$VERSION   = '0.46';
+$VERSION   = '0.47';
 @EXPORT    = qw( scan_deps scan_deps_runtime );
 @EXPORT_OK = qw( scan_line scan_chunk add_deps scan_deps_runtime );
 
@@ -28,8 +28,8 @@ Module::ScanDeps - Recursively scan Perl code for dependencies
 
 =head1 VERSION
 
-This document describes version 0.46 of Module::ScanDeps, released
-July 2, 2003.
+This document describes version 0.47 of Module::ScanDeps, released
+Auguest 31, 2003.
 
 =head1 SYNOPSIS
 
@@ -240,9 +240,13 @@ my %Preload = (
     ) ],
     'Locale/Maketext/Lexicon.pm'    => 'sub',
     'Locale/Maketext/GutsLoader.pm' => [qw( Locale/Maketext/Guts.pm )],
+    'Mail/Audit.pm'                => 'sub',
     'Math/BigInt.pm'                => 'sub',
     'Math/BigFloat.pm'              => 'sub',
     'Module/Build.pm'               => 'sub',
+    'Module/Pluggable.pm'           => sub {
+        _glob_in_inc("$CurrentPackage/Plugin", 1);
+    },
     'MIME/Decoder.pm'               => 'sub',
     'Net/DNS/RR.pm'                 => 'sub',
     'Net/FTP.pm'                    => 'sub',
@@ -502,6 +506,11 @@ sub scan_line {
     $line =~ s/[\\\/]+/\//g;
 
     foreach (split(/;/, $line)) {
+        if (/^\s*package\s+(\w+);/) {
+            $CurrentPackage = $1;
+            $CurrentPackage =~ s{::}{/}g;
+            return;
+        }
         return if /^\s*(use|require)\s+[\d\._]+/;
 
         if (my ($libs) = /\b(?:use\s+lib\s+|(?:unshift|push)\W+\@INC\W+)(.+)/)
