@@ -1,5 +1,5 @@
 # $File: //member/autrijus/Module-ScanDeps/lib/Module/ScanDeps/DataFeed.pm $ $Author: autrijus $
-# $Revision: #2 $ $Change: 9510 $ $DateTime: 2003/12/31 10:42:43 $ vim: expandtab shiftwidth=4
+# $Revision: #3 $ $Change: 9522 $ $DateTime: 2003/12/31 15:02:22 $ vim: expandtab shiftwidth=4
 
 package Module::ScanDeps::DataFeed;
 $Module::ScanDeps::DataFeed::VERSION = '0.01';
@@ -36,12 +36,19 @@ END {
     my @inc = @INC;
 
     require Cwd;
+    require File::Basename;
     require DynaLoader;
 
     open(FH, "> $_filename") or die "Couldn't open $_filename\n";
     print FH '%inchash = (' . "\n\t";
     print FH join(
-        ',' => map("\n\t'$_' => '" . Cwd::abs_path($inc{$_}) . "'", keys(%inc))
+        ',' => map {
+            sprintf(
+                "\n\t'$_' => '%s/%s'",
+                Cwd::abs_path(File::Basename::dirname($inc{$_})),
+                File::Basename::basename($inc{$_}),
+            ),
+        } keys(%inc)
     );
     print FH "\n);\n";
 

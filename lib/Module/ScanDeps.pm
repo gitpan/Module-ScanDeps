@@ -1,10 +1,10 @@
 # $File: //member/autrijus/Module-ScanDeps/lib/Module/ScanDeps.pm $ $Author: autrijus $
-# $Revision: #10 $ $Change: 9510 $ $DateTime: 2003/12/31 10:42:43 $ vim: expandtab shiftwidth=4
+# $Revision: #13 $ $Change: 9523 $ $DateTime: 2003/12/31 15:12:11 $ vim: expandtab shiftwidth=4
 
 package Module::ScanDeps;
 use vars qw( $VERSION @EXPORT @EXPORT_OK );
 
-$VERSION   = '0.35';
+$VERSION   = '0.37';
 @EXPORT    = qw( scan_deps scan_deps_runtime );
 @EXPORT_OK = qw( scan_line scan_chunk add_deps scan_deps_runtime );
 
@@ -19,6 +19,7 @@ use constant lib_ext => $Config{lib_ext};
 use Cwd ();
 use File::Path ();
 use File::Temp ();
+use File::Basename ();
 use FileHandle;
 
 =head1 NAME
@@ -27,7 +28,7 @@ Module::ScanDeps - Recursively scan Perl code for dependencies
 
 =head1 VERSION
 
-This document describes version 0.35 of Module::ScanDeps, released
+This document describes version 0.37 of Module::ScanDeps, released
 January 1, 2003.
 
 =head1 SYNOPSIS
@@ -742,7 +743,7 @@ sub _compile {
 
     my $line = do { local $/; <$fhin> };
     $line =~ s/use Module::ScanDeps::DataFeed.*?\n//sg;
-    $line =~ s/^(.*?)((?:[\r\n]+__[A-Z]__[\r\n]+)|$)/
+    $line =~ s/^(.*?)((?:[\r\n]+__(?:DATA|END)__[\r\n]+)|$)/
 use Module::ScanDeps::DataFeed qw($fname.out);
 sub {
 $1
@@ -764,7 +765,7 @@ sub _execute {
 
     $DB::single = $DB::single = 1;
 
-    my $fname = Cwd::abs_path(File::Temp::mktemp("$file.XXXXXX"));
+    my $fname = _abs_path(File::Temp::mktemp("$file.XXXXXX"));
     my $fhin  = FileHandle->new($file) or die "Couldn't open $file";
     my $fhout = FileHandle->new("> $fname") or die "Couldn't open $fname";
 
@@ -886,9 +887,16 @@ sub _merge_rv {
 
 sub _not_dup {
     my ($key, $rv1, $rv2) = @_;
-    (Cwd::abs_path($rv1->{$key}{file}) ne Cwd::abs_path($rv2->{$key}{file}));
+    (_abs_path($rv1->{$key}{file}) ne _abs_path($rv2->{$key}{file}));
 }
 
+sub _abs_path {
+    return join(
+        '/',
+        Cwd::abs_path(File::Basename::dirname($_[0])),
+        File::Basename::basename($_[0]),
+    );
+}
 
 1;
 

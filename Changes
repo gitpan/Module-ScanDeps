@@ -1,4 +1,24 @@
 ____________________________________________________________________________
+[  9523] By: autrijus                              on 2003/12/31  15:12:11
+        Log: * This be 0.37. (sigh)
+	   ! lib/Module/ScanDeps.pm
+____________________________________________________________________________
+[  9522] By: autrijus                              on 2003/12/31  15:02:22
+        Log: * Win32 does not take Cwd::abs_path()
+             for filenames.
+             * Detection for __END__ blocks was wrong
+             in _compile().
+	   ! lib/Module/ScanDeps.pm
+	   ! lib/Module/ScanDeps/DataFeed.pm
+____________________________________________________________________________
+[  9516] By: autrijus                              on 2003/12/31  12:25:14
+        Log: * This be 0.36.  Sorry, .35 was a mistake.
+	   ! lib/Module/ScanDeps.pm
+____________________________________________________________________________
+[  9514] By: autrijus                              on 2003/12/31  12:13:05
+        Log: * sorry, "scandeps.pl -r" should be "-x".
+	   ! script/scandeps.pl
+____________________________________________________________________________
 [  9510] By: autrijus                              on 2003/12/31  10:42:43
         Log: * This be 0.35, the "runtime scanning" edition.
              * New "-c" and "-r" flags to scandeps.pl for additional

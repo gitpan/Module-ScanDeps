@@ -1,8 +1,8 @@
 #!/usr/bin/perl
 # $File: //member/autrijus/Module-ScanDeps/script/scandeps.pl $ $Author: autrijus $
-# $Revision: #8 $ $Change: 9510 $ $DateTime: 2003/12/31 10:42:43 $ vim: expandtab shiftwidth=4
+# $Revision: #9 $ $Change: 9514 $ $DateTime: 2003/12/31 12:13:05 $ vim: expandtab shiftwidth=4
 
-$VERSION = '0.04';
+$VERSION = '0.05';
 
 use strict;
 use Config;
@@ -10,7 +10,7 @@ use Getopt::Std;
 use Module::ScanDeps;
 
 my %opts;
-getopts('BVrce:', \%opts);
+getopts('BVxce:', \%opts);
 
 my $modtree = eval {
     require CPANPLUS::Backend;
@@ -30,7 +30,7 @@ if ($eval) {
     push @ARGV, $filename;
 }
 
-die "Usage: $0 [ -B ] [ -V ] [ -r | -c ] [ -e STRING | FILE ... ]\n" unless @ARGV;
+die "Usage: $0 [ -B ] [ -V ] [ -x | -c ] [ -e STRING | FILE ... ]\n" unless @ARGV;
 
 my @files = @ARGV;
 while (<>) {
@@ -41,7 +41,7 @@ while (<>) {
 my $map = scan_deps(
     files   => \@files,
     recurse => 1,
-    $opts{r} ? ( execute => 1 ) :
+    $opts{x} ? ( execute => 1 ) :
     $opts{c} ? ( compile => 1 ) : (),
 );
 
@@ -157,7 +157,7 @@ Scan I<STRING> as a string containing perl code.
 
 Compiles the code and inspects its C<%INC>, in addition to static scanning.
 
-=item -r
+=item -x
 
 Executes the code and inspects its C<%INC>, in addition to static scanning.
 
