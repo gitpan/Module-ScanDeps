@@ -1,10 +1,10 @@
 # $File: //member/autrijus/Module-ScanDeps/ScanDeps.pm $ $Author: autrijus $
-# $Revision: #28 $ $Change: 7273 $ $DateTime: 2003/07/30 14:48:47 $
+# $Revision: #30 $ $Change: 7275 $ $DateTime: 2003/07/30 15:09:51 $
 
 package Module::ScanDeps;
 use vars qw/$VERSION @EXPORT @EXPORT_OK/;
 
-$VERSION    = '0.20';
+$VERSION    = '0.21';
 @EXPORT	    = ('scan_deps');
 @EXPORT_OK  = ('scan_line', 'scan_chunk', 'add_deps');
 
@@ -21,7 +21,7 @@ Module::ScanDeps - Recursively scan Perl code for dependencies
 
 =head1 VERSION
 
-This document describes version 0.20 of Module::ScanDeps, released
+This document describes version 0.21 of Module::ScanDeps, released
 July 30, 2003.
 
 =head1 SYNOPSIS
@@ -417,6 +417,7 @@ sub add_deps {
 	    my ($path, $basename) = ($1, $2);
 
 	    foreach (_glob_in_inc("auto/$path")) {
+		next if $_->{file} =~ m{\bauto/$path/.*/}; # weed out subdirs
 		next if $_->{name} =~ m/(?:^|\/)\.(?:exists|packlist)$/;
 		my $ext = lc($1) if $_->{name} =~ /(\.[^.]+)$/;
 		next if $ext eq lc(lib_ext());

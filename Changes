@@ -1,4 +1,38 @@
 ____________________________________________________________________________
+[  7275] By: autrijus                              on 2003/07/30  15:09:51
+        Log: * This be 0.21.
+	   ! ScanDeps.pm
+____________________________________________________________________________
+[  7274] By: autrijus                              on 2003/07/30  15:08:05
+        Log: * Jouke reports that Win32.pm pulls all Win32::* DLLs.
+	   ! ScanDeps.pm
+____________________________________________________________________________
+[  7273] By: autrijus                              on 2003/07/30  14:48:47
+        Log: * oops.
+	   ! ScanDeps.pm
+____________________________________________________________________________
+[  7272] By: autrijus                              on 2003/07/30  14:32:41
+        Log: * This be 0.20.
+             * utf8 detection on 5.6.0 was broken.
+	   ! AUTHORS SIGNATURE ScanDeps.pm
+____________________________________________________________________________
+[  7254] By: autrijus                              on 2003/07/30  06:48:45
+        Log: * scandeps.pl now take -e to scan a perl expression
+	   ! script/scandeps.pl
+____________________________________________________________________________
+[  5897] By: autrijus                              on 2003/05/16  16:27:40
+        Log: * anydbm implies SDBM.
+	   ! ScanDeps.pm
+____________________________________________________________________________
+[  4889] By: autrijus                              on 2003/03/23  07:21:01
+        Log: * Bruce Winter says that this fix for SerialJunks is needed
+             on his Red Hat Linux oh well.
+	   ! ScanDeps.pm
+____________________________________________________________________________
+[  4864] By: autrijus                              on 2003/03/22  13:13:38
+        Log: * changes and signatures.
+	   ! Changes SIGNATURE
+____________________________________________________________________________
 [  4860] By: autrijus                              on 2003/03/22  13:04:15
         Log: * This be 0.19.
 	   ! ScanDeps.pm
@@ -90,10 +124,6 @@ ____________________________________________________________________________
              * new year.
 	   ! MANIFEST Makefile.PL README ScanDeps.pm
 	   ! script/scandeps.pl
-____________________________________________________________________________
-[  2970] By: autrijus                              on 2002/12/29  07:00:28
-        Log: * ttt local branch.
-	   ! ScanDeps.pm
 ____________________________________________________________________________
 [  2852] By: autrijus                              on 2002/12/23  11:57:41
         Log: * add CAVEATS about the fact that we don't probe beyond
