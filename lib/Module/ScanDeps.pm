@@ -1,10 +1,7 @@
-# $File: /member/local/autrijus/Module-ScanDeps/lib/Module/ScanDeps.pm $ $Author: autrijus $
-# $Revision: #3 $ $Change: 11727 $ $DateTime: 2004-08-30T22:10:50.485506Z $ vim: expandtab shiftwidth=4
-
 package Module::ScanDeps;
 use vars qw( $VERSION @EXPORT @EXPORT_OK $CurrentPackage );
 
-$VERSION   = '0.48';
+$VERSION   = '0.49';
 @EXPORT    = qw( scan_deps scan_deps_runtime );
 @EXPORT_OK = qw( scan_line scan_chunk add_deps scan_deps_runtime );
 
@@ -33,8 +30,8 @@ Module::ScanDeps - Recursively scan Perl code for dependencies
 
 =head1 VERSION
 
-This document describes version 0.48 of Module::ScanDeps, released
-September 7, 2003.
+This document describes version 0.49 of Module::ScanDeps, released
+September 27, 2003.
 
 =head1 SYNOPSIS
 
@@ -549,17 +546,23 @@ sub scan_chunk {
         return [ 'base.pm',
             map { s{::}{/}g; "$_.pm" }
               grep { length and !/^q[qw]?$/ } split(/[^\w:]+/, $1) ]
-          if /^\s* use \s+ base \s+ (.*)/x;
+          if /^\s* use \s+ base \s+ (.*)/sx;
+
+        return [ 'Class/Autouse.pm',
+            map { s{::}{/}g; "$_.pm" }
+              grep { length and !/^:|^q[qw]?$/ } split(/[^\w:]+/, $1) ]
+          if /^\s* use \s+ Class::Autouse \s+ (.*)/sx
+              or /^\s* Class::Autouse \s* -> \s* autouse \s* (.*)/sx;
 
         return [ 'POE.pm',
             map { s{::}{/}g; "POE/$_.pm" }
               grep { length and !/^q[qw]?$/ } split(/[^\w:]+/, $1) ]
-          if /^\s* use \s+ POE \s+ (.*)/x;
+          if /^\s* use \s+ POE \s+ (.*)/sx;
 
         return [ 'encoding.pm',
             map { _find_encoding($_) }
               grep { length and !/^q[qw]?$/ } split(/[^\w:]+/, $1) ]
-          if /^\s* use \s+ encoding \s+ (.*)/x;
+          if /^\s* use \s+ encoding \s+ (.*)/sx;
 
         return $1 if /(?:^|\s)(?:use|no|require)\s+([\w:\.\-\\\/\"\']+)/;
         return $1
@@ -707,7 +710,7 @@ sub _glob_in_inc {
             sub {
                 my $name = $File::Find::name;
                 $name =~ s!^\Q$dir\E/!!;
-                next if $pm_only and lc($name) !~ /\.p[mh]$/i;
+                return if $pm_only and lc($name) !~ /\.p[mh]$/i;
                 push @files, $pm_only
                   ? "$subdir/$name"
                   : {             file => $File::Find::name,

@@ -1,6 +1,4 @@
 #!/usr/bin/perl
-# $File: //member/autrijus/Module-ScanDeps/t/1-basic.t $ $Author: autrijus $
-# $Revision: #4 $ $Change: 1910 $ $DateTime: 2002/11/04 11:43:36 $
 
 use Test;
 BEGIN { plan tests => 20 }

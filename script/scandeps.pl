@@ -1,6 +1,4 @@
 #!/usr/bin/perl
-# $File: /member/local/autrijus/Module-ScanDeps/script/scandeps.pl $ $Author: autrijus $
-# $Revision: #3 $ $Change: 11727 $ $DateTime: 2004-08-30T22:10:50.485506Z $ vim: expandtab shiftwidth=4
 
 $VERSION = '0.05';
 

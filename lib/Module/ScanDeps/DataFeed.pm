@@ -1,6 +1,3 @@
-# $File: //member/autrijus/Module-ScanDeps/lib/Module/ScanDeps/DataFeed.pm $ $Author: autrijus $
-# $Revision: #4 $ $Change: 9766 $ $DateTime: 2004/01/25 16:11:51 $ vim: expandtab shiftwidth=4
-
 package Module::ScanDeps::DataFeed;
 $Module::ScanDeps::DataFeed::VERSION = '0.02';
 

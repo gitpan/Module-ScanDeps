@@ -1,6 +1,4 @@
 #!/usr/bin/perl
-# $File: //member/autrijus/Module-ScanDeps/t/0-signature.t $ $Author: autrijus $
-# $Revision: #5 $ $Change: 10971 $ $DateTime: 2004/07/02 10:26:02 $
 
 use strict;
 print "1..1\n";
