@@ -1,10 +1,10 @@
 # $File: //member/autrijus/Module-ScanDeps/lib/Module/ScanDeps.pm $ $Author: autrijus $
-# $Revision: #28 $ $Change: 10728 $ $DateTime: 2004/06/02 18:01:28 $ vim: expandtab shiftwidth=4
+# $Revision: #30 $ $Change: 10809 $ $DateTime: 2004/06/08 19:00:10 $ vim: expandtab shiftwidth=4
 
 package Module::ScanDeps;
 use vars qw( $VERSION @EXPORT @EXPORT_OK );
 
-$VERSION   = '0.43';
+$VERSION   = '0.44';
 @EXPORT    = qw( scan_deps scan_deps_runtime );
 @EXPORT_OK = qw( scan_line scan_chunk add_deps scan_deps_runtime );
 
@@ -28,8 +28,8 @@ Module::ScanDeps - Recursively scan Perl code for dependencies
 
 =head1 VERSION
 
-This document describes version 0.43 of Module::ScanDeps, released
-June 3, 2003.
+This document describes version 0.44 of Module::ScanDeps, released
+June 9, 2003.
 
 =head1 SYNOPSIS
 
@@ -242,6 +242,7 @@ my %Preload = (
     'PDF/API2/Basic/TTF/Font.pm'    => sub {
         _glob_in_inc('PDF/API2/Basic/TTF', 1);
     },
+    'PDF/Writer.pm'                 => 'sub',
     'Parse/AFP.pm'                  => 'sub',
     'Parse/Binary.pm'               => 'sub',
     'Regexp/Common.pm'              => 'sub',
@@ -390,7 +391,7 @@ sub scan_deps_static {
 
                 my $preload = $Preload{$pm} or next;
                 if ($preload eq 'sub') {
-                    $pm =~ s/\.pm$//i;
+                    $pm =~ s/\.p[mh]$//i;
                     $preload = [ _glob_in_inc($pm, 1) ];
                 }
                 elsif (UNIVERSAL::isa($preload, 'CODE')) {
@@ -663,7 +664,7 @@ sub _glob_in_inc {
             sub {
                 my $name = $File::Find::name;
                 $name =~ s!^\Q$dir\E/!!;
-                next if $pm_only and lc($name) !~ /\.pm$/;
+                next if $pm_only and lc($name) !~ /\.p[mh]$/i;
                 push @files, $pm_only
                   ? "$subdir/$name"
                   : {             file => $File::Find::name,
@@ -833,10 +834,12 @@ sub _make_rv {
     my @newinc = map(quotemeta($_), @$inc_array);
     my $inc = join('|', sort { length($b) <=> length($a) } @newinc);
 
+    require File::Spec;
+
     my $key;
     foreach $key (keys(%$inchash)) {
         my $newkey = $key;
-        $newkey =~ s"^(?:(?:$inc)/?)""sg if ($newkey =~ m"^/");
+        $newkey =~ s"^(?:(?:$inc)/?)""sg if File::Spec->file_name_is_absolute($newkey);
 
         $rv->{$newkey} = {
             'used_by' => [],
@@ -881,9 +884,9 @@ sub _gettype {
     my $name = shift;
     my $dlext = quotemeta(dl_ext());
 
-    return 'autoload' if $name =~ /(?:\.ix|\.al|\.bs)$/;
-    return 'module'   if $name =~ /\.pm$/;
-    return 'shared'   if $name =~ /\.$dlext$/;
+    return 'autoload' if $name =~ /(?:\.ix|\.al|\.bs)$/i;
+    return 'module'   if $name =~ /\.p[mh]$/i;
+    return 'shared'   if $name =~ /\.$dlext$/i;
     return 'data';
 }
 

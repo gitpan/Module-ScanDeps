@@ -1,4 +1,16 @@
 ____________________________________________________________________________
+[ 10809] By: autrijus                              on 2004/06/08  19:00:10
+        Log: * This be 0.44.
+             * Consistently recognize .ph files and upper-cased .p[mh]
+	       files.
+	   ! lib/Module/ScanDeps.pm
+____________________________________________________________________________
+[ 10794] By: autrijus                              on 2004/06/08  13:13:48
+        Log: * Support for PDF::Writer.
+             * Patfch from Roderich Shupps to fix absolute filename
+             detection on non-Unix systems.
+	   ! lib/Module/ScanDeps.pm
+____________________________________________________________________________
 [ 10728] By: autrijus                              on 2004/06/02  18:01:28
         Log: * This be 0.43.
              * Add preliminary support for BioPerl, as suggested by
