@@ -1,4 +1,27 @@
 ____________________________________________________________________________
+[  7398] By: autrijus                              on 2003/08/07  18:32:55
+        Log: * This be 0.22, for real.
+	   ! ScanDeps.pm
+____________________________________________________________________________
+[  7397] By: autrijus                              on 2003/08/07  18:32:07
+        Log: * This be 0.22.
+             * huge patch to include almost all heuristics deducible
+             from PerlApp: Authen::SASL, Crypt::Random, DBI, File::Spec,
+             HTTP::Message, Math::BigInt, MIME::Decoder, Net::DNS::RR,
+             Net::FTP, Net::SSH::Perl, SQL::Parser, Template,
+	     Term::ReadLine,
+             URI, XML::Parser::Expat, diagnostics.
+	   ! ScanDeps.pm
+____________________________________________________________________________
+[  7357] By: autrijus                              on 2003/08/06  08:56:58
+        Log: * now accepts uppercased "DBI:" in DSN strings.
+             * fixed a typo on Tk::FBox's xpm file.
+	   ! ScanDeps.pm
+____________________________________________________________________________
+[  7276] By: autrijus                              on 2003/07/30  15:13:07
+        Log: * changes and signatures.
+	   ! Changes MANIFEST SIGNATURE
+____________________________________________________________________________
 [  7275] By: autrijus                              on 2003/07/30  15:09:51
         Log: * This be 0.21.
 	   ! ScanDeps.pm

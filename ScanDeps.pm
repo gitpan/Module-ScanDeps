@@ -1,10 +1,10 @@
 # $File: //member/autrijus/Module-ScanDeps/ScanDeps.pm $ $Author: autrijus $
-# $Revision: #30 $ $Change: 7275 $ $DateTime: 2003/07/30 15:09:51 $
+# $Revision: #33 $ $Change: 7398 $ $DateTime: 2003/08/07 18:32:55 $
 
 package Module::ScanDeps;
 use vars qw/$VERSION @EXPORT @EXPORT_OK/;
 
-$VERSION    = '0.21';
+$VERSION    = '0.22';
 @EXPORT	    = ('scan_deps');
 @EXPORT_OK  = ('scan_line', 'scan_chunk', 'add_deps');
 
@@ -21,8 +21,8 @@ Module::ScanDeps - Recursively scan Perl code for dependencies
 
 =head1 VERSION
 
-This document describes version 0.21 of Module::ScanDeps, released
-July 30, 2003.
+This document describes version 0.22 of Module::ScanDeps, released
+August 8, 2003.
 
 =head1 SYNOPSIS
 
@@ -145,92 +145,71 @@ so the heuristic is not likely to be 100% accurate.  Patches welcome!
 
 # Pre-loaded module dependencies {{{
 my %Preload = (
-    'Module/Build.pm'    => [qw(
-	Module/Build/Platform/Amiga.pm
-	Module/Build/Platform/Default.pm
-	Module/Build/Platform/EBCDIC.pm
-	Module/Build/Platform/MPEiX.pm
-	Module/Build/Platform/MacOS.pm
-	Module/Build/Platform/RiscOS.pm
-	Module/Build/Platform/Unix.pm
-	Module/Build/Platform/VMS.pm
-	Module/Build/Platform/VOS.pm
-	Module/Build/Platform/Windows.pm
-	Module/Build/Platform/darwin.pm
+    'AnyDBM_File.pm'		    => [qw( SDBM_File.pm )],
+    'Authen/SASL.pm'		    => 'sub',
+    'Crypt/Random.pm'		    => sub {
+	_glob_in_inc('Crypt/Random/Provider', 1);
+    },
+    'Crypt/Random/Generator.pm'	    => sub {
+	_glob_in_inc('Crypt/Random/Provider', 1);
+    },
+    'DBI.pm'			    => sub {
+	grep !/\bProxy\b/, _glob_in_inc('DBD', 1);
+    },
+    'Device/SerialPort.pm'	    => [qw(
+	termios.ph asm/termios.ph sys/termiox.ph sys/termios.ph sys/ttycom.ph
     )],
-    'ExtUtils/MakeMaker.pm'    => [qw(
-	ExtUtils/MM_Any.pm
-	ExtUtils/MM_BeOS.pm
-	ExtUtils/MM_Cygwin.pm
-	ExtUtils/MM_DOS.pm
-	ExtUtils/MM_MacOS.pm
-	ExtUtils/MM_NW5.pm
-	ExtUtils/MM_OS2.pm
-	ExtUtils/MM_UWIN.pm
-	ExtUtils/MM_Unix.pm
-	ExtUtils/MM_VMS.pm
-	ExtUtils/MM_Win32.pm
-	ExtUtils/MM_Win95.pm
-    )],
+    'ExtUtils/MakeMaker.pm'	    => sub {
+	grep /\bMM_/, _glob_in_inc('ExtUtils', 1);
+    },
     'File/Basename.pm'		    => [qw( re.pm )],
-    'File/Spec.pm'		    => [qw(
-	File/Spec/Cygwin.pm
-	File/Spec/Epoc.pm
-	File/Spec/Functions.pm
-	File/Spec/Mac.pm
-	File/Spec/NW5.pm
-	File/Spec/OS2.pm
-	File/Spec/Unix.pm
-	File/Spec/VMS.pm
-	File/Spec/Win32.pm
+    'File/Spec.pm'		    => sub {
+	require File::Spec; map { s!::!/!g; "$_.pm" } @File::Spec::ISA;
+    },
+    'HTTP/Message.pm'		    => [qw(
+	URI/URL.pm	    URI.pm
     )],
-    'IO.pm'                  => [qw(
-	IO/Handle.pm
-	IO/Seekable.pm
-	IO/File.pm
-	IO/Pipe.pm
-	IO/Socket.pm
-	IO/Dir.pm
+    'IO.pm'			    => [qw(
+	IO/Handle.pm	    IO/Seekable.pm	IO/File.pm
+	IO/Pipe.pm	    IO/Socket.pm	IO/Dir.pm
     )],
     'IO/Socket.pm'		    => [qw( IO/Socket/UNIX.pm )],
-    'Locale/Maketext/Lexicon.pm'    => [qw(
-	Locale/Maketext/Lexicon/Auto.pm
-	Locale/Maketext/Lexicon/Gettext.pm
-	Locale/Maketext/Lexicon/Msgcat.pm
-	Locale/Maketext/Lexicon/Tie.pm
-    )],
     'LWP/UserAgent.pm'		    => [qw(
-	URI/URL.pm
-	URI/http.pm
-	LWP/Protocol/http.pm
+	URI/URL.pm	    URI/http.pm		LWP/Protocol/http.pm
     )],
-    'Net/FTP.pm'		    => [qw( Net/FTP/I.pm )],
-    'Regexp/Common.pm'		    => [qw(
-	Regexp/Common/URI.pm
-	Regexp/Common/balanced.pm
-	Regexp/Common/comment.pm
-	Regexp/Common/delimited.pm
-	Regexp/Common/list.pm
-	Regexp/Common/net.pm
-	Regexp/Common/number.pm
-	Regexp/Common/profanity.pm
-	Regexp/Common/whitespace.pm
+    'Locale/Maketext/Lexicon.pm'    => 'sub',
+    'Math/BigInt.pm'		    => [qw( Math::BigInt::Calc )],
+    'Module/Build.pm'		    => 'sub',
+    'MIME/Decoder.pm'		    => 'sub',
+    'Net/DNS/RR.pm'		    => 'sub',
+    'Net/FTP.pm'		    => 'sub',
+    'Net/SSH/Perl'		    => 'sub',
+    'Regexp/Common.pm'		    => 'sub',
+    'SQL/Parser.pm'		    => sub {
+	_glob_in_inc('SQL/Dialects', 1);
+    },
+    'SerialJunk.pm'		    => [qw(
+	termios.ph asm/termios.ph sys/termiox.ph sys/termios.ph sys/ttycom.ph
     )],
-    'Term/ReadLine.pm'		    => [qw(
-	Term/ReadLine/readline.pm
-	Term/ReadLine/Perl.pm
-	Term/ReadLine/Gnu.pm
-	Term/ReadLine/Gnu/XS.pm
-	Term/ReadLine/Gnu/euc-jp.pm
-    )],
+    'Template.pm'		    => 'sub',
+    'Term/ReadLine.pm'		    => 'sub',
     'Tk.pm'			    => [qw( Tk/FileSelect.pm )],
     'Tk/Balloon.pm'		    => [qw( Tk/balArrow.xbm )],
     'Tk/BrowseEntry.pm'		    => [qw( Tk/cbxarrow.xbm )],
     'Tk/ColorEditor.pm'		    => [qw( Tk/ColorEdit.xpm )],
-    'Tk/FBox.pm'		    => [qw( Tk/folder.xpm Tk/file.xmp )],
+    'Tk/FBox.pm'		    => [qw( Tk/folder.xpm Tk/file.xpm )],
     'Tk/Toplevel.pm'		    => [qw( Tk/Wm.pm )],
+    'URI.pm'			    => sub {
+	grep !/.\b[_A-Z]/, _glob_in_inc('URI', 1);
+    },
     'Win32/EventLog.pm'		    => [qw( Win32/IPC.pm )],
     'Win32/TieRegistry.pm'	    => [qw( Win32API/Registry.pm )],
+    'XML/Parser/Expat.pm'	    => sub {
+	($] >= 5.008) ? ('utf8.pm') : ();
+    },
+    'diagnostics.pm'		    => sub {
+	_find_in_inc('Pod/perldiag.pod') ? 'Pod/perldiag.pl' : 'pod/perldiag.pod'
+    },
     'utf8.pm'			    => [
 	'utf8_heavy.pl', do {
 	    my @files;
@@ -247,13 +226,6 @@ my %Preload = (
     'charnames.pm'		    => [
 	_find_in_inc('unicore/Name.pl') ? 'unicore/Name.pl' : 'unicode/Name.pl'
     ],
-    'Device/SerialPort.pm'	    => [qw(
-	termios.ph asm/termios.ph sys/termiox.ph sys/termios.ph sys/ttycom.ph
-    )],
-    'SerialJunk.pm'		    => [qw(
-	termios.ph asm/termios.ph sys/termiox.ph sys/termios.ph sys/ttycom.ph
-    )],
-    'AnyDBM_File.pm'		    => [qw( SDBM_File.pm )],
 );
 # }}}
 
@@ -277,7 +249,7 @@ sub scan_deps {
 	LINE: while (<FH>) {
 	    chomp;
 	    my $line = $_;
-	    foreach ( scan_line($_) ) {
+	    foreach my $pm ( scan_line($_) ) {
 		last LINE if /^__END__$/;
 
 		if (/^__POD__$/) {
@@ -285,11 +257,18 @@ sub scan_deps {
 		    next LINE;
 		}
 
-		$_ = 'CGI/Apache.pm' if /^Apache(?:\.pm)$/;
+		$pm = 'CGI/Apache.pm' if /^Apache(?:\.pm)$/;
 
-		add_deps( used_by => $key, rv => $rv, modules => [ $_ ] );
-		add_deps( used_by => $key, rv => $rv, modules => $Preload{$_} )
-		    if exists $Preload{$_};
+		add_deps( used_by => $key, rv => $rv, modules => [ $pm ] );
+		my $preload = $Preload{$pm} or next;
+		if ($preload eq 'sub') {
+		    $pm =~ s/\.pm$//i;
+		    $preload = [_glob_in_inc($pm, 1)];
+		}
+		elsif (UNIVERSAL::isa($preload, 'CODE')) {
+		    $preload = [ $preload->($pm) ];
+		}
+		add_deps( used_by => $key, rv => $rv, modules => $preload );
 	    }
 	}
 	close FH;
@@ -359,7 +338,7 @@ sub scan_chunk {
 	}
 
 	return "File::Glob" if /<[^>]*[^\$\w>][^>]*>/;
-	return "DBD::$1" if /\bdbi:(\w+):/;
+	return "DBD::$1" if /\b[Dd][Bb][Ii]:(\w+):/;
 	return $1 if /(?:^|\s)(?:do|require)\s+[^"]*"(.*?)"/;
 	return $1 if /(?:^|\s)(?:do|require)\s+[^']*'(.*?)'/;
 	return $1 if /[^\$]\b([\w:]+)->\w/ and $1 ne 'Tk';
@@ -447,6 +426,7 @@ sub _find_in_inc {
 
 sub _glob_in_inc {
     my $subdir = shift;
+    my $pm_only = shift;
     my @files;
 
     require File::Find;
@@ -456,7 +436,8 @@ sub _glob_in_inc {
 	File::Find::find(sub {
 	    my $name = $File::Find::name;
 	    $name =~ s!^\Q$dir\E/!!;
-	    push @files, {
+	    next if $pm_only and lc($name) !~ /\.pm$/;
+	    push @files, $pm_only ? "$subdir/$name" : {
 		file => $File::Find::name,
 		name => $name,
 	    } if -f;
@@ -583,11 +564,19 @@ documentations on CPAN for further information.
 
 Autrijus Tang E<lt>autrijus@autrijus.orgE<gt>
 
-Part of heuristics are taken from B<Perl2Exe>
-by IndigoStar, Inc L<http://www.indigostar.com/>
+Part of heuristics were deduced from:
 
-Part of heuristics are deduced from B<PerlApp>
-by ActiveState Tools Corp L<http://www.activestate.com/>
+=over 4
+
+=item *
+
+B<PerlApp> by ActiveState Tools Corp L<http://www.activestate.com/>
+
+=item *
+
+B<Perl2Exe> by IndigoStar, Inc L<http://www.indigostar.com/>
+
+=back
 
 =head1 COPYRIGHT
 

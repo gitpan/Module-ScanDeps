@@ -1,6 +1,6 @@
 #XXXXXXX This is a prototype!!!  It will change in the future!!! XXXXX#
 name:         Module-ScanDeps
-version:      0.21
+version:      0.22
 version_from: ScanDeps.pm
 installdirs:  site
 requires:
