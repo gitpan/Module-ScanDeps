@@ -1,4 +1,33 @@
 ____________________________________________________________________________
+[  3656] By: autrijus                              on 2003/01/19  15:21:20
+        Log: * This be 0.14, the '5.6.1 works' edition.
+	   ! ScanDeps.pm
+____________________________________________________________________________
+[  3655] By: autrijus                              on 2003/01/19  15:12:58
+        Log: * s/UNIVERSA/UNIVERSAL/;
+	   ! ScanDeps.pm
+____________________________________________________________________________
+[  3654] By: autrijus                              on 2003/01/19  15:10:04
+        Log: * test explicitly for a hashref for safety.
+	   ! ScanDeps.pm
+____________________________________________________________________________
+[  3653] By: autrijus                              on 2003/01/19  15:08:03
+        Log: * try to fix D.H.'s bug report about broken 5.6 and
+             pseudohashfications.
+	   ! AUTHORS ScanDeps.pm
+____________________________________________________________________________
+[  3643] By: autrijus                              on 2003/01/19  14:12:59
+        Log: * add lathos and obra to authors.
+	   ! AUTHORS
+____________________________________________________________________________
+[  3624] By: autrijus                              on 2003/01/18  20:57:45
+        Log: * mention scandeps.pl earlier in pod.
+	   ! ScanDeps.pm
+____________________________________________________________________________
+[  3623] By: autrijus                              on 2003/01/18  20:45:31
+        Log: * changes and signatures.
+	   ! Changes SIGNATURE
+____________________________________________________________________________
 [  3622] By: autrijus                              on 2003/01/18  20:44:42
         Log: * 0.13, with the more advanced scandeps.pl
 	   ! ScanDeps.pm

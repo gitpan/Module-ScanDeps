@@ -1,10 +1,10 @@
 # $File: //member/autrijus/Module-ScanDeps/ScanDeps.pm $ $Author: autrijus $
-# $Revision: #11 $ $Change: 3622 $ $DateTime: 2003/01/18 20:44:42 $
+# $Revision: #16 $ $Change: 3656 $ $DateTime: 2003/01/19 15:21:20 $
 
 package Module::ScanDeps;
 use vars qw/$VERSION @EXPORT @EXPORT_OK/;
 
-$VERSION    = '0.13';
+$VERSION    = '0.14';
 @EXPORT	    = ('scan_deps');
 @EXPORT_OK  = ('scan_line', 'scan_chunk', 'add_deps');
 
@@ -20,10 +20,16 @@ Module::ScanDeps - Recursively scan Perl programs for dependencies
 
 =head1 VERSION
 
-This document describes version 0.13 of Module::ScanDeps, released
+This document describes version 0.14 of Module::ScanDeps, released
 January 19, 2003.
 
 =head1 SYNOPSIS
+
+Via the command-line program L<scandeps.pl>:
+
+    % scandeps.pl *.pm
+
+Used in a program;
 
     use Module::ScanDeps;
 
@@ -490,19 +496,22 @@ sub calculate_info {
 	}
     }
 
+    $self->{info} = { main => $info->{main} };
+
     foreach my $type (keys %{$info}) {
 	next if $type eq 'main';
-	my @val;
-	foreach my $val ( values %{$info->{$type}} ) {
-	    @{$val->{used_by}} = map $cache{$_} || "!!$_!!", @{$val->{used_by}};
-	    push @val, $val;
-	}
-	delete $info->{$type};
-	$type = 'modules' if $type eq 'module';
-	$info->{$type} = \@val;
-    }
 
-    $self->{info} = $info;
+	my @val;
+	if (UNIVERSAL::isa($info->{$type}, 'HASH')) {
+	    foreach my $val ( values %{$info->{$type}} ) {
+		@{$val->{used_by}} = map $cache{$_} || "!!$_!!", @{$val->{used_by}};
+		push @val, $val;
+	    }
+	}
+
+	$type = 'modules' if $type eq 'module';
+	$self->{info}{$type} = \@val;
+    }
 }
 
 sub get_files {
