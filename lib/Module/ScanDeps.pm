@@ -1,10 +1,10 @@
 # $File: //member/autrijus/Module-ScanDeps/lib/Module/ScanDeps.pm $ $Author: autrijus $
-# $Revision: #31 $ $Change: 10905 $ $DateTime: 2004/06/18 09:52:42 $ vim: expandtab shiftwidth=4
+# $Revision: #32 $ $Change: 10971 $ $DateTime: 2004/07/02 10:26:02 $ vim: expandtab shiftwidth=4
 
 package Module::ScanDeps;
 use vars qw( $VERSION @EXPORT @EXPORT_OK );
 
-$VERSION   = '0.45';
+$VERSION   = '0.46';
 @EXPORT    = qw( scan_deps scan_deps_runtime );
 @EXPORT_OK = qw( scan_line scan_chunk add_deps scan_deps_runtime );
 
@@ -28,8 +28,8 @@ Module::ScanDeps - Recursively scan Perl code for dependencies
 
 =head1 VERSION
 
-This document describes version 0.45 of Module::ScanDeps, released
-June 29, 2003.
+This document describes version 0.46 of Module::ScanDeps, released
+July 2, 2003.
 
 =head1 SYNOPSIS
 
@@ -156,11 +156,21 @@ returns a reference to it.
 
 =head1 CAVEATS
 
-This module is oblivious about the B<BSDPAN> hack on FreeBSD -- the
+This module intentially ignores the B<BSDPAN> hack on FreeBSD -- the
 additional directory is removed from C<@INC> altogether.
 
-Finally, since no source code are actually compiled by this module,
-so the heuristic is not likely to be 100% accurate.  Patches welcome!
+The static-scanning heuristic is not likely to be 100% accurate, especially
+on modules that dynamically load other modules.
+
+Chunks that span multiple lines are not handled correctly.  For example,
+this one works:
+
+    use base 'Foo::Bar';
+
+But this one does not:
+
+    use base
+        'Foo::Bar';
 
 =cut
 
@@ -974,7 +984,7 @@ documentations on CPAN for further information.
 
 Autrijus Tang E<lt>autrijus@autrijus.orgE<gt>
 
-Part of heuristics were deduced from:
+Parts of heuristics were deduced from:
 
 =over 4
 
@@ -988,7 +998,7 @@ B<Perl2Exe> by IndigoStar, Inc L<http://www.indigostar.com/>
 
 =back
 
-The B<scan_deps_runtime> feature is contributed by Edward S. Peschko.
+The B<scan_deps_runtime> function is contributed by Edward S. Peschko.
 
 L<http://par.perl.org/> is the official website for this module.  You
 can write to the mailing list at E<lt>par@perl.orgE<gt>, or send an empty

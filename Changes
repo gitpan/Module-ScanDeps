@@ -1,6 +1,13 @@
-0.45:
-- Tk.pm now pulls in Encode::Unicode by default.
-- Tk::BrowseEntry now loads the missing arrowdownwin.xbm.
+____________________________________________________________________________
+[ 10971] By: autrijus                              on 2004/07/02  10:26:02
+        Log: * This be 0.46.
+             * Doc fixes; update signature test; add Alan to authors.
+	   ! AUTHORS lib/Module/ScanDeps.pm t/0-signature.t
+____________________________________________________________________________
+[ 10905] By: autrijus                              on 2004/06/18  09:52:42
+        Log: * add POE heuristics from:
+             http://search.cpan.org/dist/POE/lib/POE/Preprocessor.pm
+	   ! lib/Module/ScanDeps.pm
 ____________________________________________________________________________
 [ 10809] By: autrijus                              on 2004/06/08  19:00:10
         Log: * This be 0.44.
