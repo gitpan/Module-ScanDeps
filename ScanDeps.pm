@@ -1,10 +1,10 @@
 # $File: //member/autrijus/Module-ScanDeps/ScanDeps.pm $ $Author: autrijus $
-# $Revision: #19 $ $Change: 4191 $ $DateTime: 2003/02/12 01:39:44 $
+# $Revision: #21 $ $Change: 4826 $ $DateTime: 2003/03/20 11:49:40 $
 
 package Module::ScanDeps;
 use vars qw/$VERSION @EXPORT @EXPORT_OK/;
 
-$VERSION    = '0.17';
+$VERSION    = '0.18';
 @EXPORT	    = ('scan_deps');
 @EXPORT_OK  = ('scan_line', 'scan_chunk', 'add_deps');
 
@@ -21,8 +21,8 @@ Module::ScanDeps - Recursively scan Perl programs for dependencies
 
 =head1 VERSION
 
-This document describes version 0.17 of Module::ScanDeps, released
-February 25, 2003.
+This document describes version 0.18 of Module::ScanDeps, released
+March 20, 2003.
 
 =head1 SYNOPSIS
 
@@ -230,6 +230,24 @@ my %Preload = (
     'Tk/Toplevel.pm'		    => [qw( Tk/Wm.pm )],
     'Win32/EventLog.pm'		    => [qw( Win32/IPC.pm )],
     'Win32/TieRegistry.pm'	    => [qw( Win32API/Registry.pm )],
+    'utf8.pm'			    => [
+	'utf8_heavy.pl', do {
+	    my @files;
+	    if (@files = map "unicore/lib/$_->{name}", _glob_in_inc('unicore/lib')) {
+		push @files, map "unicore/$_.pl", qw(Exact Canonical);
+	    }
+	    elsif (@files = map "unicode/lib/$_->{name}", _glob_in_inc('unicode/lib')) {
+		push @files, map "unicode/$_.pl", qw(Exact Canonical);
+	    }
+	    @files;
+	}
+    ],
+    'charnames.pm'		    => [
+	_find_in_inc('unicore/Name.pl') ? 'unicore/Name.pl' : 'unicode/Name.pl'
+    ],
+    'Device/SerialPort.pm'	    => [qw(
+	termios.ph asm/termios.ph sys/termiox.ph sys/termios.ph sys/ttycom.ph
+    )],
 );
 # }}}
 
@@ -260,8 +278,6 @@ sub scan_deps {
 		    while (<FH>) { last if (/^=cut/) }
 		    next LINE;
 		}
-
-		next if /\.ph$/i;
 
 		$_ = 'CGI/Apache.pm' if /^Apache(?:\.pm)$/;
 
@@ -305,7 +321,7 @@ sub scan_line {
     foreach (split(/;/, $line)) {
 	return if /^\s*(use|require)\s+[\d\._]+/;
 
-	if (my($libs) = /\s*(?:use\s+lib\s+|(?:unshift|push)\W+\@INC\W+)(.+)/) {
+	if (my($libs) = /\b(?:use\s+lib\s+|(?:unshift|push)\W+\@INC\W+)(.+)/) {
 	    my $archname = defined($Config{'archname'}) ? $Config{'archname'} : '';
 	    my $ver = defined($Config{'version'}) ? $Config{'version'} : '';
 	    foreach (grep(/\w/, split(/["';() ]/, $libs))) {
@@ -329,30 +345,31 @@ sub scan_chunk {
     # Module name extraction heuristics {{{
     my $module = eval {
 	$_ = $chunk;
-	return $1 if /\b(?:use|no|require)\s+([\w:\.\-\\\/\"\']*)/;
-	return $1 if /\b(?:use|no|require)\s+\(\s*([\w:\.\-\\\/\"\']*)\s*\)/;
+	return $1 if /(?:^|\s)(?:use|no|require)\s+([\w:\.\-\\\/\"\']+)/;
+	return $1 if /(?:^|\s)(?:use|no|require)\s+\(\s*([\w:\.\-\\\/\"\']+)\s*\)/;
 
-	if (s/\beval\s+\"([^\"]+)\"/$1/ or s/\beval\s*\(\s*\"([^\"]+)\"\s*\)/$1/) {
-	    return $1 if /\b(?:use|no|require)\s+([\w:\.\-\\\/\"\']*)/;
+	if (s/(?:^|\s)eval\s+\"([^\"]+)\"/$1/ or s/(?:^|\s)eval\s*\(\s*\"([^\"]+)\"\s*\)/$1/) {
+	    return $1 if /(?:^|\s)(?:use|no|require)\s+([\w:\.\-\\\/\"\']*)/;
 	}
 
 	return "File::Glob" if /<[^>]*[^\$\w>][^>]*>/;
 	return "DBD::$1" if /\bdbi:(\w+):/;
-	return $1 if /\b(?:do|require)\s+[^"]*"(.*?)"/;
-	return $1 if /\b(?:do|require)\s+[^']*'(.*?)'/;
+	return $1 if /(?:^|\s)(?:do|require)\s+[^"]*"(.*?)"/;
+	return $1 if /(?:^|\s)(?:do|require)\s+[^']*'(.*?)'/;
 	return $1 if /[^\$]\b([\w:]+)->\w/ and $1 ne 'Tk';
 	return $1 if /([\w:]+)::\w/ and $1 ne 'Tk';
 	return;
     };
     # }}}
 
+    $module =~ s/^['"]//;
     return unless defined($module) and $module =~ /^\w/;
 
     $module =~ s/\W+$//;
     $module =~ s/::/\//g;
     return if $module =~ /^(?:[\d\._]+|'.*[^']|".*[^"])$/;
 
-    $module .= ".pm" unless $module =~ /\.pm/i;
+    $module .= ".pm" unless $module =~ /\.p[mh]$/i;
     return $module;
 }
 
@@ -385,10 +402,10 @@ sub add_deps {
 
 	my $file = _find_in_inc($module) or next;
 	my $type = 'module';
-	$type = 'data' unless $file =~ /\.pm$/i;
+	$type = 'data' unless $file =~ /\.p[mh]$/i;
 	_add_info($rv, $module, $file, $used_by, $type);
 
-	if ($module =~ /(.*?([^\/]*))\.pm$/i) {
+	if ($module =~ /(.*?([^\/]*))\.p[mh]$/i) {
 	    my ($path, $basename) = ($1, $2);
 
 	    foreach (_glob_in_inc("auto/$path")) {
@@ -464,7 +481,7 @@ sub set_options {
     my %args = @_;
     foreach my $module (@{$args{add_modules}}) {
 	$module =~ s/::/\//g;
-	$module .= '.pm' unless $module =~ /\.pm$/i;
+	$module .= '.pm' unless $module =~ /\.p[mh]$/i;
 	my $file = _find_in_inc($module) or next;
 	$self->{files}{$module} = $file;
     }
@@ -545,7 +562,7 @@ __END__
 
 =head1 SEE ALSO
 
-L<scandeps.pl> is a bundled utility that writes PREREQ_PM section
+L<scandeps.pl> is a bundled utility that writes C<PREREQ_PM> section
 for a number of files.
 
 An application of B<Module::ScanDeps> is to generate executables from

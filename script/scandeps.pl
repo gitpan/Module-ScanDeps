@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 # $File: //member/autrijus/Module-ScanDeps/script/scandeps.pl $ $Author: autrijus $
-# $Revision: #5 $ $Change: 3621 $ $DateTime: 2003/01/18 20:44:04 $
+# $Revision: #6 $ $Change: 4445 $ $DateTime: 2003/02/27 12:09:56 $
 
 $VERSION = '0.03';
 

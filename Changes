@@ -1,4 +1,31 @@
 ____________________________________________________________________________
+[  4826] By: autrijus                              on 2003/03/20  11:49:40
+        Log: * This be 0.18.
+             * added logic for "utf8" and "charnames" needed by Germain
+	       Garand.
+             * added logic for "Devel::SerialPort" needed by Bruce
+	       Winter.
+             * POSIX.pm no longer pulls in utf8.pm anymore.
+             * .ph files are now fully supported.
+	   ! AUTHORS ScanDeps.pm
+____________________________________________________________________________
+[  4191] By: autrijus                              on 2003/02/12  01:39:44
+        Log: * take unshift/push @INC into account, too.
+             * add Nik to authors.
+	   ! AUTHORS ScanDeps.pm
+____________________________________________________________________________
+[  4190] By: autrijus                              on 2003/02/12  01:35:49
+        Log: * Nik Clayton's patch to properly handle 'use lib'.
+	   ! ScanDeps.pm
+____________________________________________________________________________
+[  4113] By: autrijus                              on 2003/02/06  23:31:56
+        Log: * IO.pm dependencies, courtesy of Jerry Veldhuis.
+	   ! AUTHORS ScanDeps.pm
+____________________________________________________________________________
+[  3657] By: autrijus                              on 2003/01/19  15:25:04
+        Log: * changes and signatures.
+	   ! Changes SIGNATURE
+____________________________________________________________________________
 [  3656] By: autrijus                              on 2003/01/19  15:21:20
         Log: * This be 0.14, the '5.6.1 works' edition.
 	   ! ScanDeps.pm
