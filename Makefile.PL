@@ -10,6 +10,7 @@ WriteMakefile(
     AUTHOR		=> 'Autrijus Tang <autrijus@autrijus.org>',
     VERSION_FROM	=> 'lib/Module/ScanDeps.pm',
     EXE_FILES		=> [ 'script/scandeps.pl' ],
+    ((ExtUtils::MakeMaker->VERSION >= 6.21) ? (SIGN => 1) : ()),
 );
 
 __END__

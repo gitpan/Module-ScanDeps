@@ -1,7 +1,7 @@
 package Module::ScanDeps;
 use vars qw( $VERSION @EXPORT @EXPORT_OK $CurrentPackage );
 
-$VERSION   = '0.49';
+$VERSION   = '0.50';
 @EXPORT    = qw( scan_deps scan_deps_runtime );
 @EXPORT_OK = qw( scan_line scan_chunk add_deps scan_deps_runtime );
 
@@ -30,8 +30,8 @@ Module::ScanDeps - Recursively scan Perl code for dependencies
 
 =head1 VERSION
 
-This document describes version 0.49 of Module::ScanDeps, released
-September 27, 2003.
+This document describes version 0.50 of Module::ScanDeps, released
+October 4, 2003.
 
 =head1 SYNOPSIS
 
@@ -239,7 +239,7 @@ my %Preload = (
     'LWP/UserAgent.pm' => [ qw(
         URI/URL.pm          URI/http.pm         LWP/Protocol/http.pm
         LWP/Protocol/https.pm
-    ) ],
+    ), _glob_in_inc("LWP/Authen", 1) ],
     'Locale/Maketext/Lexicon.pm'    => 'sub',
     'Locale/Maketext/GutsLoader.pm' => [qw( Locale/Maketext/Guts.pm )],
     'Mail/Audit.pm'                => 'sub',
