@@ -1,10 +1,10 @@
 # $File: //member/autrijus/Module-ScanDeps/lib/Module/ScanDeps.pm $ $Author: autrijus $
-# $Revision: #3 $ $Change: 8194 $ $DateTime: 2003/09/20 20:33:19 $
+# $Revision: #5 $ $Change: 8459 $ $DateTime: 2003/10/17 22:34:31 $
 
 package Module::ScanDeps;
 use vars qw/$VERSION @EXPORT @EXPORT_OK/;
 
-$VERSION    = '0.30';
+$VERSION    = '0.31';
 @EXPORT	    = qw(scan_deps);
 @EXPORT_OK  = qw(scan_line scan_chunk add_deps);
 
@@ -21,8 +21,8 @@ Module::ScanDeps - Recursively scan Perl code for dependencies
 
 =head1 VERSION
 
-This document describes version 0.30 of Module::ScanDeps, released
-September 21, 2003.
+This document describes version 0.31 of Module::ScanDeps, released
+October 18, 2003.
 
 =head1 SYNOPSIS
 
@@ -181,6 +181,7 @@ my %Preload = (
     'IO/Socket.pm'		    => [qw( IO/Socket/UNIX.pm )],
     'LWP/UserAgent.pm'		    => [qw(
 	URI/URL.pm	    URI/http.pm		LWP/Protocol/http.pm
+	LWP/Protocol/https.pm
     )],
     'Locale/Maketext/Lexicon.pm'    => 'sub',
     'Math/BigInt.pm'		    => 'sub',

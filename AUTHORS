@@ -1,5 +1,5 @@
 # $File: //member/autrijus/Module-ScanDeps/AUTHORS $
-# $Revision: #12 $ $Change: 8157 $ $DateTime: 2003/09/17 09:12:34 $
+# $Revision: #13 $ $Change: 8454 $ $DateTime: 2003/10/17 10:58:24 $
 
 Here is a list of people and their CPAN id, extracted from the ChangeLog
 file and the mailing list archives.  These people have either submitted
@@ -13,6 +13,7 @@ Indy Singh
 Jan Dubois	    (JDB)
 Jerry Veldhuis
 Jess Robinson
+Jesse Schoch
 Jesse Vincent	    (JESSE)
 Jouke Visser	    (JOUKE)
 Matt Sergeant	    (MSERGEANT)
