@@ -1,6 +1,6 @@
 #!/usr/bin/perl
-# $File: //member/autrijus/Convert-CharMap/t/0-signature.t $ $Author: autrijus $
-# $Revision: #1 $ $Change: 3878 $ $DateTime: 2003/01/26 16:01:56 $
+# $File: //member/autrijus/Module-ScanDeps/t/0-signature.t $ $Author: autrijus $
+# $Revision: #4 $ $Change: 10728 $ $DateTime: 2004/06/02 18:01:28 $
 
 use strict;
 print "1..1\n";

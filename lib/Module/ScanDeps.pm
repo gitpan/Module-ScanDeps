@@ -1,10 +1,10 @@
 # $File: //member/autrijus/Module-ScanDeps/lib/Module/ScanDeps.pm $ $Author: autrijus $
-# $Revision: #26 $ $Change: 10567 $ $DateTime: 2004/04/30 19:59:29 $ vim: expandtab shiftwidth=4
+# $Revision: #28 $ $Change: 10728 $ $DateTime: 2004/06/02 18:01:28 $ vim: expandtab shiftwidth=4
 
 package Module::ScanDeps;
 use vars qw( $VERSION @EXPORT @EXPORT_OK );
 
-$VERSION   = '0.42';
+$VERSION   = '0.43';
 @EXPORT    = qw( scan_deps scan_deps_runtime );
 @EXPORT_OK = qw( scan_line scan_chunk add_deps scan_deps_runtime );
 
@@ -28,8 +28,8 @@ Module::ScanDeps - Recursively scan Perl code for dependencies
 
 =head1 VERSION
 
-This document describes version 0.42 of Module::ScanDeps, released
-April 30, 2003.
+This document describes version 0.43 of Module::ScanDeps, released
+June 3, 2003.
 
 =head1 SYNOPSIS
 
@@ -170,6 +170,29 @@ my $SeenTk;
 my %Preload = (
     'AnyDBM_File.pm'  => [qw( SDBM_File.pm )],
     'Authen/SASL.pm'  => 'sub',
+    'Bio/AlignIO.pm'  => 'sub',
+    'Bio/Assembly/IO.pm'  => 'sub',
+    'Bio/Biblio/IO.pm'  => 'sub',
+    'Bio/ClusterIO.pm'  => 'sub',
+    'Bio/CodonUsage/IO.pm'  => 'sub',
+    'Bio/DB/Biblio.pm'  => 'sub',
+    'Bio/DB/Flat.pm'  => 'sub',
+    'Bio/DB/GFF.pm'  => 'sub',
+    'Bio/DB/Taxonomy.pm'  => 'sub',
+    'Bio/Graphics/Glyph.pm'  => 'sub',
+    'Bio/MapIO.pm'  => 'sub',
+    'Bio/Matrix/IO.pm'  => 'sub',
+    'Bio/Matrix/PSM/IO.pm'  => 'sub',
+    'Bio/OntologyIO.pm'  => 'sub',
+    'Bio/PopGen/IO.pm'  => 'sub',
+    'Bio/Restriction/IO.pm'  => 'sub',
+    'Bio/Root/IO.pm'  => 'sub',
+    'Bio/SearchIO.pm'  => 'sub',
+    'Bio/SeqIO.pm'  => 'sub',
+    'Bio/Structure/IO.pm'  => 'sub',
+    'Bio/TreeIO.pm'  => 'sub',
+    'Bio/LiveSeq/IO.pm'  => 'sub',
+    'Bio/Variation/IO.pm'  => 'sub',
     'Crypt/Random.pm' => sub {
         _glob_in_inc('Crypt/Random/Provider', 1);
     },
@@ -181,10 +204,10 @@ my %Preload = (
     },
     'DBIx/SearchBuilder.pm' => 'sub',
     'DBIx/ReportBuilder.pm' => 'sub',
+    'Device/ParallelPort.pm' => 'sub',
     'Device/SerialPort.pm' => [ qw(
         termios.ph asm/termios.ph sys/termiox.ph sys/termios.ph sys/ttycom.ph
     ) ],
-
     #   'Encode.pm'                         => 'sub',
     'ExtUtils/MakeMaker.pm' => sub {
         grep /\bMM_/, _glob_in_inc('ExtUtils', 1);
@@ -214,7 +237,11 @@ my %Preload = (
     'MIME/Decoder.pm'               => 'sub',
     'Net/DNS/RR.pm'                 => 'sub',
     'Net/FTP.pm'                    => 'sub',
-    'Net/SSH/Perl'                  => 'sub',
+    'Net/SSH/Perl.pm'               => 'sub',
+    'PDF/API2/Resource/Font.pm'     => 'sub',
+    'PDF/API2/Basic/TTF/Font.pm'    => sub {
+        _glob_in_inc('PDF/API2/Basic/TTF', 1);
+    },
     'Parse/AFP.pm'                  => 'sub',
     'Parse/Binary.pm'               => 'sub',
     'Regexp/Common.pm'              => 'sub',
