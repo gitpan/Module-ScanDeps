@@ -4,7 +4,7 @@
 package Module::ScanDeps;
 use vars qw( $VERSION @EXPORT @EXPORT_OK $CurrentPackage );
 
-$VERSION   = '0.47';
+$VERSION   = '0.48';
 @EXPORT    = qw( scan_deps scan_deps_runtime );
 @EXPORT_OK = qw( scan_line scan_chunk add_deps scan_deps_runtime );
 
@@ -15,6 +15,11 @@ use Exporter;
 use base 'Exporter';
 use constant dl_ext  => ".$Config{dlext}";
 use constant lib_ext => $Config{lib_ext};
+use constant is_insensitive_fs => (
+    -s $0 
+        and (-s lc($0) || -1) == (-s uc($0) || -1)
+        and (-s lc($0) || -1) == -s $0
+);
 
 use Cwd ();
 use File::Path ();
@@ -28,8 +33,8 @@ Module::ScanDeps - Recursively scan Perl code for dependencies
 
 =head1 VERSION
 
-This document describes version 0.47 of Module::ScanDeps, released
-Auguest 31, 2003.
+This document describes version 0.48 of Module::ScanDeps, released
+September 7, 2003.
 
 =head1 SYNOPSIS
 
@@ -94,7 +99,7 @@ the structure returned by C<get_files>.
     $rv_ref = scan_deps(
         files   => \@files,     recurse => $recurse,
         rv      => \%rv,        skip    => \%skip,
-        compile => $compile,    execute => $execute,   
+        compile => $compile,    execute => $execute,
     );
     $rv_ref = scan_deps(@files); # shorthand, with recurse => 1
 
@@ -384,6 +389,8 @@ sub scan_deps_static {
     foreach my $file (@{$files}) {
         my $key = shift @{$keys};
         next if $skip->{$file}++;
+        next if is_insensitive_fs()
+          and $file ne lc($file) and $skip->{lc($file)}++;
 
         local *FH;
         open FH, $file or die "Cannot open $file: $!";
@@ -646,6 +653,8 @@ sub add_deps {
 
         my $file = _find_in_inc($module) or next;
         next if $skip->{$file};
+        next if is_insensitive_fs() and $skip->{lc($file)};
+
         my $type = 'module';
         $type = 'data' unless $file =~ /\.p[mh]$/i;
         _add_info($rv, $module, $file, $used_by, $type);
@@ -654,6 +663,8 @@ sub add_deps {
             my ($path, $basename) = ($1, $2);
 
             foreach (_glob_in_inc("auto/$path")) {
+                next if $skip->{$_->{file}};
+                next if is_insensitive_fs() and $skip->{lc($_->{file})};
                 next if $_->{file} =~ m{\bauto/$path/.*/};  # weed out subdirs
                 next if $_->{name} =~ m/(?:^|\/)\.(?:exists|packlist)$/;
                 my $ext = lc($1) if $_->{name} =~ /(\.[^.]+)$/;
