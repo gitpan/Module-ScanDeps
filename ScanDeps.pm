@@ -1,10 +1,10 @@
 # $File: //member/autrijus/Module-ScanDeps/ScanDeps.pm $ $Author: autrijus $
-# $Revision: #37 $ $Change: 7419 $ $DateTime: 2003/08/10 15:43:12 $
+# $Revision: #43 $ $Change: 7559 $ $DateTime: 2003/08/16 04:37:06 $
 
 package Module::ScanDeps;
 use vars qw/$VERSION @EXPORT @EXPORT_OK/;
 
-$VERSION    = '0.25';
+$VERSION    = '0.27';
 @EXPORT	    = qw(scan_deps);
 @EXPORT_OK  = qw(scan_line scan_chunk add_deps);
 
@@ -21,8 +21,8 @@ Module::ScanDeps - Recursively scan Perl code for dependencies
 
 =head1 VERSION
 
-This document describes version 0.25 of Module::ScanDeps, released
-August 10, 2003.
+This document describes version 0.27 of Module::ScanDeps, released
+August 16, 2003.
 
 =head1 SYNOPSIS
 
@@ -118,9 +118,11 @@ until C<=cut>, before calling C<scan_line> again.
 =head2 B<scan_chunk>
 
     $module = scan_chunk($chunk);
+    @modules = scan_chunk($chunk);
 
-Apply various heuristics to C<$chunk> to find and return the module name
-it contains, or C<undef> if nothing were found.
+Apply various heuristics to C<$chunk> to find and return the module
+name(s) it contains.  In scalar context, returns only the first module
+or C<undef>.
 
 =head2 B<add_deps>
 
@@ -142,6 +144,8 @@ Finally, since no source code are actually compiled by this module,
 so the heuristic is not likely to be 100% accurate.  Patches welcome!
 
 =cut
+
+my $SeenTk;
 
 # Pre-loaded module dependencies {{{
 my %Preload = (
@@ -198,7 +202,10 @@ my %Preload = (
     )],
     'Template.pm'		    => 'sub',
     'Term/ReadLine.pm'		    => 'sub',
-    'Tk.pm'			    => [qw( Tk/FileSelect.pm )],
+    'Tk.pm'			    => sub {
+	$SeenTk = 1;
+	'Tk/FileSelect.pm';
+    },
     'Tk/Balloon.pm'		    => [qw( Tk/balArrow.xbm )],
     'Tk/BrowseEntry.pm'		    => [qw( Tk/cbxarrow.xbm )],
     'Tk/ColorEditor.pm'		    => [qw( Tk/ColorEdit.xpm )],
@@ -254,6 +261,7 @@ sub scan_deps {
 	local *FH;
 	open FH, $file or die "Cannot open $file: $!";
 
+	$SeenTk = 0;
         # Line-by-line scanning {{{
 	LINE: while (<FH>) {
 	    chomp;
@@ -268,7 +276,7 @@ sub scan_deps {
 
 		$pm = 'CGI/Apache.pm' if /^Apache(?:\.pm)$/;
 
-		add_deps( used_by => $key, rv => $rv, modules => [ $pm ] );
+		add_deps( used_by => $key, rv => $rv, modules => [ $pm ], skip => $skip );
 		my $preload = $Preload{$pm} or next;
 		if ($preload eq 'sub') {
 		    $pm =~ s/\.pm$//i;
@@ -277,7 +285,7 @@ sub scan_deps {
 		elsif (UNIVERSAL::isa($preload, 'CODE')) {
 		    $preload = [ $preload->($pm) ];
 		}
-		add_deps( used_by => $key, rv => $rv, modules => $preload );
+		add_deps( used_by => $key, rv => $rv, modules => $preload, skip => $skip );
 	    }
 	}
 	close FH;
@@ -326,8 +334,7 @@ sub scan_line {
 	    next;
 	}
 
-	my $module = scan_chunk($_) or next;
-	$found{$module}++;
+	$found{$_}++ for scan_chunk($_);
     }
 
     return sort keys %found;
@@ -339,6 +346,9 @@ sub scan_chunk {
     # Module name extraction heuristics {{{
     my $module = eval {
 	$_ = $chunk;
+
+	return [ 'base.pm', grep { !/^q[qw]?$/ } split(/[^\w:]+/, $1) ]
+	    if /^\s* use \s+ base \s+ (.*)/x;
 	return $1 if /(?:^|\s)(?:use|no|require)\s+([\w:\.\-\\\/\"\']+)/;
 	return $1 if /(?:^|\s)(?:use|no|require)\s+\(\s*([\w:\.\-\\\/\"\']+)\s*\)/;
 
@@ -346,17 +356,30 @@ sub scan_chunk {
 	    return $1 if /(?:^|\s)(?:use|no|require)\s+([\w:\.\-\\\/\"\']*)/;
 	}
 
-	return "File::Glob" if /<[^>]*[^\$\w>][^>]*>/;
-	return "DBD::$1" if /\b[Dd][Bb][Ii]:(\w+):/;
+	return "File/Glob.pm" if /<[^>]*[^\$\w>][^>]*>/;
+	return "DBD/$1.pm" if /\b[Dd][Bb][Ii]:(\w+):/;
 	return $1 if /(?:^|\s)(?:do|require)\s+[^"]*"(.*?)"/;
 	return $1 if /(?:^|\s)(?:do|require)\s+[^']*'(.*?)'/;
 	return $1 if /[^\$]\b([\w:]+)->\w/ and $1 ne 'Tk';
 	return $1 if /([\w:]+)::\w/ and $1 ne 'Tk' and $1 ne 'PAR';
+
+	if ($SeenTk) {
+	    my @modules;
+	    while (/->\s*([A-Z]\w+)/g) {
+		push @modules, "Tk/$1.pm";
+	    }
+	    while (/->\s*Scrolled\W+([A-Z]\w+)/g) {
+		push @modules, "Tk/$1.pm";
+		push @modules, "Tk/Scrollbar.pm";
+	    }
+	    return \@modules;
+	}
 	return;
     };
     # }}}
 
     return unless defined($module);
+    return wantarray ? @$module : $module->[0] if ref($module);
 
     $module =~ s/^['"]//;
     return unless $module =~ /^\w/;
@@ -365,7 +388,7 @@ sub scan_chunk {
     $module =~ s/::/\//g;
     return if $module =~ /^(?:[\d\._]+|'.*[^']|".*[^"])$/;
 
-    $module .= ".pm" unless $module =~ /\.p[mh]$/i;
+    $module .= ".pm" unless $module =~ /\./;
     return $module;
 }
 
@@ -391,12 +414,14 @@ sub add_deps {
     );
 
     my $rv = $args{rv} || {};
+    my $skip = $args{skip} || {};
     my $used_by = $args{used_by};
 
     foreach my $module (@{$args{modules}}) {
 	next if exists $rv->{$module};
 
 	my $file = _find_in_inc($module) or next;
+	next if $skip->{$file};
 	my $type = 'module';
 	$type = 'data' unless $file =~ /\.p[mh]$/i;
 	_add_info($rv, $module, $file, $used_by, $type);
@@ -586,6 +611,12 @@ B<PerlApp> by ActiveState Tools Corp L<http://www.activestate.com/>
 B<Perl2Exe> by IndigoStar, Inc L<http://www.indigostar.com/>
 
 =back
+
+L<http://par.perl.org/> is the official website for this module.  You
+can write to the mailing list at E<lt>par@perl.orgE<gt>, or send an empty
+mail to E<lt>par-subscribe@perl.orgE<gt> to participate in the discussion.
+
+Please submit bug reports to E<lt>bug-Module-ScanDeps@rt.cpan.orgE<gt>.
 
 =head1 COPYRIGHT
 

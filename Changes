@@ -1,4 +1,38 @@
 ____________________________________________________________________________
+[  7559] By: autrijus                              on 2003/08/16  04:37:06
+        Log: * This be 0.27 for real.
+             * "use base" was improperly detected.
+	   ! ScanDeps.pm
+____________________________________________________________________________
+[  7556] By: autrijus                              on 2003/08/16  04:31:52
+        Log: * This be 0.27.
+	   ! ScanDeps.pm
+____________________________________________________________________________
+[  7545] By: autrijus                              on 2003/08/14  17:30:08
+        Log: * more patch from Roderich Schupp: handles "use base"
+             and fixed Tk::Scrolled.
+	   ! ScanDeps.pm
+____________________________________________________________________________
+[  7524] By: autrijus                              on 2003/08/14  08:40:33
+        Log: * add $SeenTk to control Tk-specific heuristics.
+             * add_deps now takes (skip => \%skip) properly.
+             * scan_chunk() can now return more than one files in list
+	       context.
+             * bump version.
+	   ! ScanDeps.pm
+____________________________________________________________________________
+[  7434] By: autrijus                              on 2003/08/11  06:29:05
+        Log: * This be 0.26.
+             * add link to http://par.perl.org/ and the mailing list.
+	   ! ScanDeps.pm
+____________________________________________________________________________
+[  7422] By: autrijus                              on 2003/08/10  16:24:23
+        Log: * don't append ".pm" to require '' lines if it already has
+	       an extension.
+             (this is required for Win32API::Registry to work with .pc
+	     files.)
+	   ! ScanDeps.pm
+____________________________________________________________________________
 [  7419] By: autrijus                              on 2003/08/10  15:43:12
         Log: * This be 0.25.
              * tidy up the source a little.
@@ -21,10 +55,6 @@ ____________________________________________________________________________
              to Roderich Schupp for pointing out.
 	   ! AUTHORS ScanDeps.pm
 ____________________________________________________________________________
-[  7399] By: autrijus                              on 2003/08/07  18:39:32
-        Log: * changes and signatures.
-	   ! Changes MANIFEST SIGNATURE
-____________________________________________________________________________
 [  7398] By: autrijus                              on 2003/08/07  18:32:55
         Log: * This be 0.22, for real.
 	   ! ScanDeps.pm
@@ -44,10 +74,6 @@ ____________________________________________________________________________
              * fixed a typo on Tk::FBox's xpm file.
 	   ! ScanDeps.pm
 ____________________________________________________________________________
-[  7276] By: autrijus                              on 2003/07/30  15:13:07
-        Log: * changes and signatures.
-	   ! Changes MANIFEST SIGNATURE
-____________________________________________________________________________
 [  7275] By: autrijus                              on 2003/07/30  15:09:51
         Log: * This be 0.21.
 	   ! ScanDeps.pm
@@ -59,11 +85,6 @@ ____________________________________________________________________________
 [  7273] By: autrijus                              on 2003/07/30  14:48:47
         Log: * oops.
 	   ! ScanDeps.pm
-____________________________________________________________________________
-[  7272] By: autrijus                              on 2003/07/30  14:32:41
-        Log: * This be 0.20.
-             * utf8 detection on 5.6.0 was broken.
-	   ! AUTHORS SIGNATURE ScanDeps.pm
 ____________________________________________________________________________
 [  7254] By: autrijus                              on 2003/07/30  06:48:45
         Log: * scandeps.pl now take -e to scan a perl expression
@@ -77,10 +98,6 @@ ____________________________________________________________________________
         Log: * Bruce Winter says that this fix for SerialJunks is needed
              on his Red Hat Linux oh well.
 	   ! ScanDeps.pm
-____________________________________________________________________________
-[  4864] By: autrijus                              on 2003/03/22  13:13:38
-        Log: * changes and signatures.
-	   ! Changes SIGNATURE
 ____________________________________________________________________________
 [  4860] By: autrijus                              on 2003/03/22  13:04:15
         Log: * This be 0.19.
@@ -113,10 +130,6 @@ ____________________________________________________________________________
         Log: * IO.pm dependencies, courtesy of Jerry Veldhuis.
 	   ! AUTHORS ScanDeps.pm
 ____________________________________________________________________________
-[  3657] By: autrijus                              on 2003/01/19  15:25:04
-        Log: * changes and signatures.
-	   ! Changes SIGNATURE
-____________________________________________________________________________
 [  3656] By: autrijus                              on 2003/01/19  15:21:20
         Log: * This be 0.14, the '5.6.1 works' edition.
 	   ! ScanDeps.pm
@@ -142,10 +155,6 @@ ____________________________________________________________________________
         Log: * mention scandeps.pl earlier in pod.
 	   ! ScanDeps.pm
 ____________________________________________________________________________
-[  3623] By: autrijus                              on 2003/01/18  20:45:31
-        Log: * changes and signatures.
-	   ! Changes SIGNATURE
-____________________________________________________________________________
 [  3622] By: autrijus                              on 2003/01/18  20:44:42
         Log: * 0.13, with the more advanced scandeps.pl
 	   ! ScanDeps.pm
@@ -162,10 +171,6 @@ ____________________________________________________________________________
 [  3619] By: autrijus                              on 2003/01/18  19:35:39
         Log: * use cpanplus to tell apart redundant modules if possible.
 	   ! script/scandeps.pl
-____________________________________________________________________________
-[  3618] By: autrijus                              on 2003/01/18  19:35:25
-        Log: * changes and signatures.
-	   ! Changes SIGNATURE
 ____________________________________________________________________________
 [  3617] By: autrijus                              on 2003/01/18  19:12:20
         Log: * 0.12.
@@ -187,20 +192,12 @@ ____________________________________________________________________________
         Log: * reflect SEE ALSO in README.
 	   ! README
 ____________________________________________________________________________
-[  1911] By: autrijus                              on 2002/11/04  11:44:53
-        Log: * changes and signatures.
-	   ! Changes SIGNATURE
-____________________________________________________________________________
 [  1910] By: autrijus                              on 2002/11/04  11:43:36
         Log: * Version 0.10.
              * Now featuring an object-oriented syntax, conformant
              with App::Packer::Frontend.
              * added corresponding documentation and tests.
 	   ! ScanDeps.pm t/1-basic.t
-____________________________________________________________________________
-[  1883] By: autrijus                              on 2002/11/03  20:16:19
-        Log: * changes and signatures.
-	   ! Changes SIGNATURE
 ____________________________________________________________________________
 [  1880] By: autrijus                              on 2002/11/03  19:33:21
         Log: * 0.03, this time for sure.
@@ -227,10 +224,6 @@ ____________________________________________________________________________
         Log: * Regexp::Common.
 	   ! ScanDeps.pm
 ____________________________________________________________________________
-[  1837] By: autrijus                              on 2002/11/02  15:43:11
-        Log: * changes and signatures.
-	   ! Changes SIGNATURE
-____________________________________________________________________________
 [  1833] By: autrijus                              on 2002/11/02  15:38:42
         Log: * This be 0.02.
 	   ! ScanDeps.pm
@@ -252,10 +245,6 @@ ____________________________________________________________________________
 [  1829] By: autrijus                              on 2002/11/02  15:35:56
         Log: * oops, Makefile shouldn't be in RCS.
 	   - Makefile
-____________________________________________________________________________
-[  1818] By: autrijus                              on 2002/11/02  01:50:56
-        Log: * changes and signatures.
-	   + Changes SIGNATURE
 ____________________________________________________________________________
 [  1817] By: autrijus                              on 2002/11/02  01:49:56
         Log: * written-from-scratch version of dependency finding
