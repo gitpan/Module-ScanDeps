@@ -1,5 +1,5 @@
 # $File: //member/autrijus/Module-ScanDeps/AUTHORS $
-# $Revision: #14 $ $Change: 8708 $ $DateTime: 2003/11/06 14:16:34 $
+# $Revision: #15 $ $Change: 9509 $ $DateTime: 2003/12/31 09:13:49 $
 
 Here is a list of people and their CPAN id, extracted from the ChangeLog
 file and the mailing list archives.  These people have either submitted
@@ -8,6 +8,7 @@ the appropriate patches.  Corrections, additions, deletions welcome:
 
 Bruce Winter
 D. H.		    (PODMASTER)
+Edward S. Peschko
 Germain Garand      (GGARAND)
 Indy Singh
 Jan Dubois	    (JDB)

@@ -1,5 +1,5 @@
 name: Module-ScanDeps
-version: 0.34
+version: 0.35
 abstract: Recursively scan Perl programs for dependencies
 author: Autrijus Tang <autrijus@autrijus.org>
 license: perl

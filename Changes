@@ -1,4 +1,22 @@
 ____________________________________________________________________________
+[  9510] By: autrijus                              on 2003/12/31  10:42:43
+        Log: * This be 0.35, the "runtime scanning" edition.
+             * New "-c" and "-r" flags to scandeps.pl for additional
+	       compile-
+             and runtime-checking of dependencies.
+             * New "compile" and "execute" flags to scan_deps() for
+	       runtime
+             scanning, using scan_deps_runtime().
+	   ! lib/Module/ScanDeps.pm
+	   ! lib/Module/ScanDeps/DataFeed.pm
+	   ! script/scandeps.pl
+____________________________________________________________________________
+[  9509] By: autrijus                              on 2003/12/31  09:13:49
+        Log: * integrated Edward S. Peschko's massive runtime detection
+             patch, as scan_deps_runtime().
+	   + lib/Module/ScanDeps/DataFeed.pm
+	   ! AUTHORS MANIFEST lib/Module/ScanDeps.pm
+____________________________________________________________________________
 [  9488] By: autrijus                              on 2003/12/30  02:26:54
         Log: * This be 0.34.
 	   ! lib/Module/ScanDeps.pm

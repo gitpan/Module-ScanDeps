@@ -1,8 +1,8 @@
 #!/usr/bin/perl
 # $File: //member/autrijus/Module-ScanDeps/script/scandeps.pl $ $Author: autrijus $
-# $Revision: #7 $ $Change: 7254 $ $DateTime: 2003/07/30 06:48:45 $
+# $Revision: #8 $ $Change: 9510 $ $DateTime: 2003/12/31 10:42:43 $ vim: expandtab shiftwidth=4
 
-$VERSION = '0.03';
+$VERSION = '0.04';
 
 use strict;
 use Config;
@@ -10,7 +10,7 @@ use Getopt::Std;
 use Module::ScanDeps;
 
 my %opts;
-getopts('BVe:', \%opts);
+getopts('BVrce:', \%opts);
 
 my $modtree = eval {
     require CPANPLUS::Backend;
@@ -24,13 +24,13 @@ my $eval    = $opts{e};
 
 if ($eval) {
     require File::Temp;
-    my ($fh, $filename) = File::Temp::tempfile( CLEANUP => 1 );
+    my ($fh, $filename) = File::Temp::tempfile( UNLINK => 1 );
     print $fh $eval, "\n" or die $!;
     close $fh;
     push @ARGV, $filename;
 }
 
-die "Usage: $0 [ -B ] [ -V ] [ -e STRING | FILE ... ]\n" unless @ARGV;
+die "Usage: $0 [ -B ] [ -V ] [ -r | -c ] [ -e STRING | FILE ... ]\n" unless @ARGV;
 
 my @files = @ARGV;
 while (<>) {
@@ -41,6 +41,8 @@ while (<>) {
 my $map = scan_deps(
     files   => \@files,
     recurse => 1,
+    $opts{r} ? ( execute => 1 ) :
+    $opts{c} ? ( compile => 1 ) : (),
 );
 
 
@@ -150,6 +152,14 @@ before the main output.
 =item -e STRING
 
 Scan I<STRING> as a string containing perl code.
+
+=item -c
+
+Compiles the code and inspects its C<%INC>, in addition to static scanning.
+
+=item -r
+
+Executes the code and inspects its C<%INC>, in addition to static scanning.
 
 =item -B
 
