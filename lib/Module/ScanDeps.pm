@@ -1,10 +1,10 @@
 # $File: //member/autrijus/Module-ScanDeps/lib/Module/ScanDeps.pm $ $Author: autrijus $
-# $Revision: #17 $ $Change: 10181 $ $DateTime: 2004/02/23 21:11:48 $ vim: expandtab shiftwidth=4
+# $Revision: #21 $ $Change: 10503 $ $DateTime: 2004/04/18 16:01:08 $ vim: expandtab shiftwidth=4
 
 package Module::ScanDeps;
 use vars qw( $VERSION @EXPORT @EXPORT_OK );
 
-$VERSION   = '0.40';
+$VERSION   = '0.41';
 @EXPORT    = qw( scan_deps scan_deps_runtime );
 @EXPORT_OK = qw( scan_line scan_chunk add_deps scan_deps_runtime );
 
@@ -28,8 +28,8 @@ Module::ScanDeps - Recursively scan Perl code for dependencies
 
 =head1 VERSION
 
-This document describes version 0.40 of Module::ScanDeps, released
-February 24, 2003.
+This document describes version 0.41 of Module::ScanDeps, released
+April 19, 2003.
 
 =head1 SYNOPSIS
 
@@ -213,12 +213,21 @@ my %Preload = (
     'Net/DNS/RR.pm'                 => 'sub',
     'Net/FTP.pm'                    => 'sub',
     'Net/SSH/Perl'                  => 'sub',
+    'Parse/AFP.pm'                  => 'sub',
+    'Parse/Binary.pm'               => 'sub',
     'Regexp/Common.pm'              => 'sub',
     'SOAP/Lite.pm'                  => sub {
         (($] >= 5.008 ? ('utf8.pm') : ()), _glob_in_inc('SOAP/Transport', 1));
     },
     'SQL/Parser.pm' => sub {
         _glob_in_inc('SQL/Dialects', 1);
+    },
+    'SVN/Core.pm' => sub {
+        _glob_in_inc('SVN', 1),
+        map "auto/SVN/$_->{name}", _glob_in_inc('auto/SVN'),
+    },
+    'SVK/Command.pm' => sub {
+        _glob_in_inc('SVK', 1);
     },
     'SerialJunk.pm' => [ qw(
         termios.ph asm/termios.ph sys/termiox.ph sys/termios.ph sys/ttycom.ph
@@ -238,6 +247,7 @@ my %Preload = (
         grep !/.\b[_A-Z]/, _glob_in_inc('URI', 1);
     },
     'Win32/EventLog.pm'    => [qw( Win32/IPC.pm )],
+    'Win32/Exe.pm'         => 'sub',
     'Win32/TieRegistry.pm' => [qw( Win32API/Registry.pm )],
     'Win32/SystemInfo.pm'  => [qw( Win32/cpuspd.dll )],
     'XML/Parser.pm'        => sub {

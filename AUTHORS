@@ -1,5 +1,5 @@
 # $File: //member/autrijus/Module-ScanDeps/AUTHORS $
-# $Revision: #17 $ $Change: 10181 $ $DateTime: 2004/02/23 21:11:48 $
+# $Revision: #18 $ $Change: 10503 $ $DateTime: 2004/04/18 16:01:08 $
 
 Here is a list of people and their CPAN id, extracted from the ChangeLog
 file and the mailing list archives.  These people have either submitted
@@ -24,6 +24,7 @@ Markus Jansen
 Matt Sergeant	    (MSERGEANT)
 Nik Clayton	    (NIKC)
 Randal L. Schwartz  (MERLYN)
+Robert Spier	    (RSPIER)
 Roderich Schupp	    (RSCHUPP)
 Simon Andrews
 Simon Cozens	    (SIMON)
