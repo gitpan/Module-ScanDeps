@@ -1,16 +1,15 @@
 #!/usr/bin/perl
 # $File: //member/autrijus/Module-ScanDeps/Makefile.PL $ $Author: autrijus $
-# $Revision: #5 $ $Change: 8459 $ $DateTime: 2003/10/17 22:34:31 $
+# $Revision: #6 $ $Change: 9371 $ $DateTime: 2003/12/21 01:14:18 $
 
-use 5.001;
 use inc::Module::Install;
 
-WriteMakefile(
-    AUTHOR		=> 'Autrijus Tang (autrijus@autrijus.org)',
-    ABSTRACT		=> 'Recursively scan Perl programs for dependencies',
-    NAME		=> 'Module::ScanDeps',
-    VERSION_FROM	=> 'lib/Module/ScanDeps.pm', 
-    DISTNAME		=> 'Module-ScanDeps',
-    EXE_FILES		=> [ 'script/scandeps.pl' ],
-    SIGN		=> 1,
-);
+name		('Module-ScanDeps');
+author		('Autrijus Tang <autrijus@autrijus.org>');
+abstract	('Recursively scan Perl programs for dependencies');
+version_from	('lib/Module/ScanDeps.pm');
+install_script	('script/scandeps.pl');
+license		('perl');
+sign		(1);
+
+&WriteAll;

@@ -1,4 +1,13 @@
 ____________________________________________________________________________
+[  9371] By: autrijus                              on 2003/12/21  01:14:18
+        Log: * This be 0.33.
+             * Upgrades to Module::Install 0.30 framework.
+	   ! MANIFEST Makefile.PL lib/Module/ScanDeps.pm
+____________________________________________________________________________
+[  8708] By: autrijus                              on 2003/11/06  14:16:34
+        Log: * Nik's got a CPAN ID.
+	   ! AUTHORS
+____________________________________________________________________________
 [  8568] By: autrijus                              on 2003/10/26  10:50:46
         Log: * This be 0.32.
              * Support for Locale::Maketext::Guts, reported by Jouke

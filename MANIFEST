@@ -2,13 +2,17 @@ AUTHORS
 Changes
 inc/Module/Install.pm
 inc/Module/Install/Base.pm
+inc/Module/Install/Can.pm
+inc/Module/Install/Fetch.pm
 inc/Module/Install/Makefile.pm
-inc/Module/Install/MakeMaker.pm
 inc/Module/Install/Metadata.pm
+inc/Module/Install/Scripts.pm
+inc/Module/Install/Win32.pm
+inc/Module/Install/WriteAll.pm
 lib/Module/ScanDeps.pm
 Makefile.PL
 MANIFEST			This list of files
-META.yml			Module meta-data (added by MakeMaker)
+META.yml
 README
 script/scandeps.pl
 SIGNATURE
