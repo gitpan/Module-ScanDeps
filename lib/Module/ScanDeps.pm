@@ -1,10 +1,10 @@
 # $File: //member/autrijus/Module-ScanDeps/lib/Module/ScanDeps.pm $ $Author: autrijus $
-# $Revision: #1 $ $Change: 7579 $ $DateTime: 2003/08/17 18:55:41 $
+# $Revision: #2 $ $Change: 8157 $ $DateTime: 2003/09/17 09:12:34 $
 
 package Module::ScanDeps;
 use vars qw/$VERSION @EXPORT @EXPORT_OK/;
 
-$VERSION    = '0.28';
+$VERSION    = '0.29';
 @EXPORT	    = qw(scan_deps);
 @EXPORT_OK  = qw(scan_line scan_chunk add_deps);
 
@@ -21,8 +21,8 @@ Module::ScanDeps - Recursively scan Perl code for dependencies
 
 =head1 VERSION
 
-This document describes version 0.28 of Module::ScanDeps, released
-August 17, 2003.
+This document describes version 0.29 of Module::ScanDeps, released
+September 17, 2003.
 
 =head1 SYNOPSIS
 
@@ -183,7 +183,8 @@ my %Preload = (
 	URI/URL.pm	    URI/http.pm		LWP/Protocol/http.pm
     )],
     'Locale/Maketext/Lexicon.pm'    => 'sub',
-    'Math/BigInt.pm'		    => [qw( Math::BigInt::Calc )],
+    'Math/BigInt.pm'		    => 'sub',
+    'Math/BigFloat.pm'		    => 'sub',
     'Module/Build.pm'		    => 'sub',
     'MIME/Decoder.pm'		    => 'sub',
     'Net/DNS/RR.pm'		    => 'sub',
@@ -533,7 +534,7 @@ sub calculate_info {
     };
 
     my %cache = ( $self->{main}{key} => $info->{main} );
-    foreach my $key (keys %{$self->{files}}) {
+    foreach my $key (sort keys %{$self->{files}}) {
 	my $file = $self->{files}{$key};
 
 	$cache{$key} = $info->{modules}{$key} = {
@@ -543,7 +544,7 @@ sub calculate_info {
 	}
     }
 
-    foreach my $key (keys %{$rv}) {
+    foreach my $key (sort keys %{$rv}) {
 	my $val = $rv->{$key};
 	if ($cache{$val->{key}}) {
 	    push @{$info->{$val->{type}}->{$val->{key}}->{used_by}}, @{$val->{used_by}};
@@ -559,12 +560,12 @@ sub calculate_info {
 
     $self->{info} = { main => $info->{main} };
 
-    foreach my $type (keys %{$info}) {
+    foreach my $type (sort keys %{$info}) {
 	next if $type eq 'main';
 
 	my @val;
 	if (UNIVERSAL::isa($info->{$type}, 'HASH')) {
-	    foreach my $val ( values %{$info->{$type}} ) {
+	    foreach my $val ( sort values %{$info->{$type}} ) {
 		@{$val->{used_by}} = map $cache{$_} || "!!$_!!", @{$val->{used_by}};
 		push @val, $val;
 	    }

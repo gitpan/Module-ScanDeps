@@ -1,4 +1,13 @@
 ____________________________________________________________________________
+[  8157] By: autrijus                              on 2003/09/17  09:12:34
+        Log: * This be 0.29.
+             * Simon Andrews points out that Math::BigInt's heuristics
+             is badly coded.  Fixed, and added heuristics for
+	     Math::BigFloat.
+             * More defense against hash randomisation by sorting all
+             keys() and values().
+	   ! AUTHORS lib/Module/ScanDeps.pm
+____________________________________________________________________________
 [  7579] By: autrijus                              on 2003/08/17  18:55:41
         Log: * This be 0.28.
              * Move ScanDeps.pm to lib/Module/.
