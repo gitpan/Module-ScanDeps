@@ -1,4 +1,11 @@
 ____________________________________________________________________________
+[  9766] By: autrijus                              on 2004/01/25  16:11:51
+        Log: * This be 0.39.
+             * Merged Edward's patch to make DataFeed.pm work with
+             pre-5.8.3 perl versions.
+	   ! lib/Module/ScanDeps.pm
+	   ! lib/Module/ScanDeps/DataFeed.pm
+____________________________________________________________________________
 [  9631] By: autrijus                              on 2004/01/08  11:19:45
         Log: * This be 0.38.
              * Switching back to ExtUtils::MakeMaker,

@@ -1,8 +1,8 @@
 # $File: //member/autrijus/Module-ScanDeps/lib/Module/ScanDeps/DataFeed.pm $ $Author: autrijus $
-# $Revision: #3 $ $Change: 9522 $ $DateTime: 2003/12/31 15:02:22 $ vim: expandtab shiftwidth=4
+# $Revision: #4 $ $Change: 9766 $ $DateTime: 2004/01/25 16:11:51 $ vim: expandtab shiftwidth=4
 
 package Module::ScanDeps::DataFeed;
-$Module::ScanDeps::DataFeed::VERSION = '0.01';
+$Module::ScanDeps::DataFeed::VERSION = '0.02';
 
 =head1 NAME
 
@@ -26,7 +26,8 @@ sub import {
 
     my $fname = __PACKAGE__;
     $fname =~ s{::}{/}g;
-    delete $INC{"$fname.pm"} unless $Module::ScanDeps::DataFeed::Loaded++;
+    delete $INC{"$fname.pm"} unless $Module::ScanDeps::DataFeed::Loaded;
+    $Module::ScanDeps::DataFeed::Loaded++;
 }
 
 END {
@@ -34,6 +35,7 @@ END {
 
     my %inc = %INC;
     my @inc = @INC;
+    my @dl_so = _dl_shared_objects();
 
     require Cwd;
     require File::Basename;
@@ -56,16 +58,48 @@ END {
     print FH join(',', map("\n\t'$_'", @inc));
     print FH "\n);\n";
 
-    my @dl_bs = @DynaLoader::dl_shared_objects;
+    my @dl_bs = @dl_so;
     s/(\.so|\.dll)$/\.bs/ for @dl_bs;
-    @dl_bs = grep(-e $_, @dl_bs);
 
     print FH '@dl_shared_objects = (' . "\n\t";
     print FH join(
-        ',',=> map("\n\t'$_'", @DynaLoader::dl_shared_objects, @dl_bs)
+        ',' => map("\n\t'$_'", grep -e, @dl_so, @dl_bs)
     );
     print FH "\n);\n";
     close FH;
+}
+
+sub _dl_shared_objects {
+    if (@DynaLoader::dl_shared_objects) {
+        return @DynaLoader::dl_shared_objects;
+    }
+    elsif (@DynaLoader::dl_modules) {
+        return map { _dl_mod2filename($_) } @DynaLoader::dl_modules;
+    }
+
+    return;
+}
+
+sub _dl_mod2filename {
+    my $mod = shift;
+
+    return if $mod eq 'B';
+    return unless defined &{"$mod\::bootstrap"};
+
+    eval { require B; require Config; 1 } or return;
+    my $dl_ext = $Config::Config{dlext} if %Config::Config;
+
+    # Copied from XSLoader
+    my @modparts = split(/::/, $mod);
+    my $modfname = $modparts[-1];
+    my $modpname = join('/', @modparts);
+
+    foreach my $dir (@INC) {
+        $file = "$dir/auto/$modpname/$modfname.$dl_ext";
+        return $file if -r $file;
+    }
+
+    return;
 }
 
 1;

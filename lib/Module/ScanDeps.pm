@@ -1,10 +1,10 @@
 # $File: //member/autrijus/Module-ScanDeps/lib/Module/ScanDeps.pm $ $Author: autrijus $
-# $Revision: #14 $ $Change: 9631 $ $DateTime: 2004/01/08 11:19:45 $ vim: expandtab shiftwidth=4
+# $Revision: #15 $ $Change: 9766 $ $DateTime: 2004/01/25 16:11:51 $ vim: expandtab shiftwidth=4
 
 package Module::ScanDeps;
 use vars qw( $VERSION @EXPORT @EXPORT_OK );
 
-$VERSION   = '0.38';
+$VERSION   = '0.39';
 @EXPORT    = qw( scan_deps scan_deps_runtime );
 @EXPORT_OK = qw( scan_line scan_chunk add_deps scan_deps_runtime );
 
@@ -28,8 +28,8 @@ Module::ScanDeps - Recursively scan Perl code for dependencies
 
 =head1 VERSION
 
-This document describes version 0.38 of Module::ScanDeps, released
-January 8, 2003.
+This document describes version 0.39 of Module::ScanDeps, released
+January 25, 2003.
 
 =head1 SYNOPSIS
 
@@ -908,8 +908,8 @@ L<scandeps.pl> is a bundled utility that writes C<PREREQ_PM> section
 for a number of files.
 
 An application of B<Module::ScanDeps> is to generate executables from
-scripts that contains necessary modules; this module supports two such
-projects, L<PAR> and L<App::Packer>.  Please see their respective
+scripts that contains prerequisite modules; this module supports two
+such projects, L<PAR> and L<App::Packer>.  Please see their respective
 documentations on CPAN for further information.
 
 =head1 AUTHORS
