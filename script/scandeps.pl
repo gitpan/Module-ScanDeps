@@ -2,24 +2,27 @@
 # $File: //member/autrijus/Module-ScanDeps/script/scandeps.pl $ $Author: autrijus $
 # $Revision: #5 $ $Change: 3621 $ $DateTime: 2003/01/18 20:44:04 $
 
-$VERSION = '0.02';
+$VERSION = '0.03';
 
 use strict;
 use Config;
+use Getopt::Std;
 use Module::ScanDeps;
 
-die "Usage: $0 [ -B ] file ...\n" unless @ARGV;
+my %opts;
+getopts('BV', \%opts);
+
+die "Usage: $0 [ -B ] [ -V ] file ...\n" unless @ARGV;
 
 my $modtree = eval {
     require CPANPLUS::Backend;
     CPANPLUS::Backend->new->module_tree;
 };
 
-my %map;
-my $core = shift if $ARGV[0] eq '-B';
-
-my @files = @ARGV;
-my %skip;
+my (%map, %skip);
+my $core    = $opts{B};
+my $verbose = $opts{V};
+my @files   = @ARGV;
 
 while (<>) {
     next unless /^package\s+([\w:]+)/;
@@ -39,6 +42,8 @@ my (%seen, %dist, %core, %bin);
 foreach my $key (sort keys %$map) {
     my $mod  = $map->{$key};
     my $name = $mod->{name} = _name($key);
+
+    print "# $key [$mod->{type}]\n" if $verbose;
 
     if ($mod->{type} eq 'shared') {
 	$key =~ s!auto/!!;
@@ -108,6 +113,7 @@ scandeps.pl - Scan file prerequisites
 
     % scandeps.pl *.pm		# Print PREREQ_PM section for *.pm
     % scandeps.pl -B *.pm	# Include core modules
+    % scandeps.pl -V *.pm	# Show autoload/shared/data files
 
 =head1 DESCRIPTION
 
@@ -123,7 +129,9 @@ distribution on CPAN (and thus uninstallable by C<CPAN.pm> or
 C<CPANPLUS.pm>) are marked with C<C>.
 
 Finally, modules that has loadable shared object files (usually
-needing a compiler to install) are marked with C<X>.
+needing a compiler to install) are marked with C<X>; with the
+C<-V> flag, those files (and all other files found) will be listed
+before the main output.
 
 =head1 OPTIONS
 
@@ -133,9 +141,13 @@ needing a compiler to install) are marked with C<X>.
 
 Include core modules in the output and the recursive search list.
 
+=item -V
+
+Verbose mode: Output all files found during the process.
+
 =head1 CAVEATS
 
-All version numbers are set to C<0>, despite explicit
+All version numbers are set to C<0> in the output, despite explicit
 C<use Module VERSION> statements.
 
 =head1 SEE ALSO

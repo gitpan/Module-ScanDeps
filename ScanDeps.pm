@@ -1,18 +1,19 @@
 # $File: //member/autrijus/Module-ScanDeps/ScanDeps.pm $ $Author: autrijus $
-# $Revision: #16 $ $Change: 3656 $ $DateTime: 2003/01/19 15:21:20 $
+# $Revision: #19 $ $Change: 4191 $ $DateTime: 2003/02/12 01:39:44 $
 
 package Module::ScanDeps;
 use vars qw/$VERSION @EXPORT @EXPORT_OK/;
 
-$VERSION    = '0.14';
+$VERSION    = '0.17';
 @EXPORT	    = ('scan_deps');
 @EXPORT_OK  = ('scan_line', 'scan_chunk', 'add_deps');
 
 use strict;
 use Exporter;
 use base 'Exporter';
-use Config ();
-use constant dl_ext => ".$Config::Config{dlext}";
+use Config;
+use constant dl_ext => ".$Config{dlext}";
+use constant lib_ext => $Config{lib_ext};
 
 =head1 NAME
 
@@ -20,14 +21,16 @@ Module::ScanDeps - Recursively scan Perl programs for dependencies
 
 =head1 VERSION
 
-This document describes version 0.14 of Module::ScanDeps, released
-January 19, 2003.
+This document describes version 0.17 of Module::ScanDeps, released
+February 25, 2003.
 
 =head1 SYNOPSIS
 
 Via the command-line program L<scandeps.pl>:
 
-    % scandeps.pl *.pm
+    % scandeps.pl *.pm		# Print PREREQ_PM section for *.pm
+    % scandeps.pl -B *.pm	# Include core modules
+    % scandeps.pl -V *.pm	# Show autoload/shared/data files
 
 Used in a program;
 
@@ -134,15 +137,6 @@ returns a reference to it.
 This module is oblivious about the B<BSDPAN> hack on FreeBSD -- the
 additional directory is removed from C<@INC> altogether.
 
-Also, because this module only searches for modules within C<@INC>,
-it will fail to list lots of dependencies in the case below:
-
-   scan_deps('/someplace/NOT/IN/INC/with/modules/for/FOO.pl');
-
-unless you yourself look at the source, you'll have no idea what got
-left out.  Therefore, please make sure you've added all search paths
-in @INC before calling C<scan_deps>.
-
 Finally, since no source code are actually compiled by this module,
 so the heuristic is not likely to be 100% accurate.  Patches welcome!
 
@@ -188,6 +182,14 @@ my %Preload = (
 	File/Spec/Unix.pm
 	File/Spec/VMS.pm
 	File/Spec/Win32.pm
+    )],
+    'IO.pm'                  => [qw(
+	IO/Handle.pm
+	IO/Seekable.pm
+	IO/File.pm
+	IO/Pipe.pm
+	IO/Socket.pm
+	IO/Dir.pm
     )],
     'IO/Socket.pm'		    => [qw( IO/Socket/UNIX.pm )],
     'Locale/Maketext/Lexicon.pm'    => [qw(
@@ -303,8 +305,14 @@ sub scan_line {
     foreach (split(/;/, $line)) {
 	return if /^\s*(use|require)\s+[\d\._]+/;
 
-	if (my $libs = /\s*use\s+lib\s+(.+)/) {
-	    push @INC, (grep /\w/, split(/["';]/, $libs));
+	if (my($libs) = /\s*(?:use\s+lib\s+|(?:unshift|push)\W+\@INC\W+)(.+)/) {
+	    my $archname = defined($Config{'archname'}) ? $Config{'archname'} : '';
+	    my $ver = defined($Config{'version'}) ? $Config{'version'} : '';
+	    foreach (grep(/\w/, split(/["';() ]/, $libs))) {
+		unshift(@INC, "$_/$ver")		if -d "$_/$ver";
+		unshift(@INC, "$_/$archname")		if -d "$_/$archname";
+		unshift(@INC, "$_/$ver/$archname")	if -d "$_/$ver/$archname";
+	    }
 	    next;
 	}
 
@@ -383,25 +391,16 @@ sub add_deps {
 	if ($module =~ /(.*?([^\/]*))\.pm$/i) {
 	    my ($path, $basename) = ($1, $2);
 
-            # Shared objects {{{
-	    if (defined $basename) {
-		my $dl_name = "auto/$path/$basename" . dl_ext();
-		my $dl_file = _find_in_inc($dl_name) ||
-			      _find_in_inc($basename . dl_ext());
-		_add_info($rv, $dl_name, $dl_file, $module, 'shared');
-	    }
-            # }}}
-            # Autosplit files {{{
-	    my $autosplit_dir = _find_in_inc("auto/$path/autosplit.ix") or next;
-	    $autosplit_dir =~ s/\/autosplit\.ix$//;
+	    foreach (_glob_in_inc("auto/$path")) {
+		next if $_->{name} =~ m/(?:^|\/)\.(?:exists|packlist)$/;
+		my $ext = lc($1) if $_->{name} =~ /(\.[^.]+)$/;
+		next if $ext eq lc(lib_ext());
+		my $type = 'shared' if $ext eq lc(dl_ext());
+		$type = 'autoload'  if $ext eq '.ix' or $ext eq '.al';
+		$type ||= 'data';
 
-	    local *DIR;
-	    opendir(DIR, $autosplit_dir) or next;
-	    _add_info(
-		$rv, "auto/$path/$_", "$autosplit_dir/$_", $module, 'autoload'
-	    ) foreach grep /\.(?:ix|al)$/i, readdir(DIR);
-	    closedir DIR;
-            # }}}
+		_add_info($rv, "auto/$path/$_->{name}", $_->{file}, $module, $type);
+	    }
         }
     }
 
@@ -418,6 +417,27 @@ sub _find_in_inc {
 	return "$dir/$file" if -f "$dir/$file";
     }
     return;
+}
+
+sub _glob_in_inc {
+    my $subdir = shift;
+    my @files;
+
+    require File::Find;
+
+    foreach my $dir (map "$_/$subdir", grep !/\bBSDPAN\b/, @INC) {
+	next unless -d $dir;
+	File::Find::find(sub {
+	    my $name = $File::Find::name;
+	    $name =~ s!^\Q$dir\E/!!;
+	    push @files, {
+		file => $File::Find::name,
+		name => $name,
+	    } if -f;
+	}, $dir);
+    }
+
+    return @files;
 }
 
 # App::Packer compatibility mode

@@ -1,5 +1,5 @@
 # $File: //member/autrijus/Module-ScanDeps/AUTHORS $
-# $Revision: #3 $ $Change: 3653 $ $DateTime: 2003/01/19 15:08:03 $
+# $Revision: #5 $ $Change: 4191 $ $DateTime: 2003/02/12 01:39:44 $
 
 Here is a list of people and their CPAN id, extracted from the ChangeLog
 file and the mailing list archives.  These people have either submitted
@@ -9,6 +9,9 @@ the appropriate patches.  Corrections, additions, deletions welcome:
 D. H.		    (PODMASTER)
 Indy Singh
 Jan Dubois	    (JDB)
+Jerry Veldhuis
 Jesse Vincent	    (JESSE)
+Markus Jansen
+Nik Clayton
 Randal L. Schwartz  (MERLYN)
 Simon Cozens	    (SIMON)
