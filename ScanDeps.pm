@@ -1,10 +1,10 @@
 # $File: //member/autrijus/Module-ScanDeps/ScanDeps.pm $ $Author: autrijus $
-# $Revision: #3 $ $Change: 1833 $ $DateTime: 2002/11/02 15:38:42 $
+# $Revision: #5 $ $Change: 1876 $ $DateTime: 2002/11/03 19:26:55 $
 
 package Module::ScanDeps;
 use vars qw/$VERSION @EXPORT @EXPORT_OK/;
 
-$VERSION    = '0.02';
+$VERSION    = '0.03';
 @EXPORT	    = ('scan_deps');
 @EXPORT_OK  = ('scan_line', 'scan_chunk', 'add_deps');
 
@@ -20,8 +20,8 @@ Module::ScanDeps - Recursively scan Perl programs for dependencies
 
 =head1 VERSION
 
-This document describes version 0.02 of Module::ScanDeps, released
-November 2, 2002.
+This document describes version 0.03 of Module::ScanDeps, released
+November 4, 2002.
 
 =head1 SYNOPSIS
 
@@ -110,31 +110,71 @@ not likely to be 100% accurate.  Patches welcome!
 
 # Pre-loaded module dependencies {{{
 my %Preload = (
-    'File/Basename.pm'	    => [qw( re.pm )],
-    'File/Spec.pm'	    => [ ($^O eq 'MSWin32') ? qw(
-	File/Spec/Win32.pm
-    ) : qw(
-	File/Spec/Unix.pm
+    'ExtUtils/MakeMaker.pm'    => [qw(
+	ExtUtils/MM_Any.pm
+	ExtUtils/MM_BeOS.pm
+	ExtUtils/MM_Cygwin.pm
+	ExtUtils/MM_DOS.pm
+	ExtUtils/MM_MacOS.pm
+	ExtUtils/MM_NW5.pm
+	ExtUtils/MM_OS2.pm
+	ExtUtils/MM_UWIN.pm
+	ExtUtils/MM_Unix.pm
+	ExtUtils/MM_VMS.pm
+	ExtUtils/MM_Win32.pm
+	ExtUtils/MM_Win95.pm
     )],
-    'IO/Socket.pm'	    => [qw( IO/Socket/UNIX.pm )],
-    'LWP/UserAgent.pm'	    => [qw(
+    'File/Basename.pm'		    => [qw( re.pm )],
+    'File/Spec.pm'		    => [qw(
+	File/Spec/Cygwin.pm
+	File/Spec/Epoc.pm
+	File/Spec/Functions.pm
+	File/Spec/Mac.pm
+	File/Spec/NW5.pm
+	File/Spec/OS2.pm
+	File/Spec/Unix.pm
+	File/Spec/VMS.pm
+	File/Spec/Win32.pm
+    )],
+    'IO/Socket.pm'		    => [qw( IO/Socket/UNIX.pm )],
+    'Locale/Maketext/Lexicon.pm'    => [qw(
+	Locale/Maketext/Lexicon/Auto.pm
+	Locale/Maketext/Lexicon/Gettext.pm
+	Locale/Maketext/Lexicon/Msgcat.pm
+	Locale/Maketext/Lexicon/Tie.pm
+    )],
+    'LWP/UserAgent.pm'		    => [qw(
 	URI/URL.pm
 	URI/http.pm
 	LWP/Protocol/http.pm
     )],
-    'Net/FTP.pm'	    => [qw( Net/FTP/I.pm )],
-    'Term/ReadLine.pm'	    => [qw(
+    'Net/FTP.pm'		    => [qw( Net/FTP/I.pm )],
+    'Regexp/Common.pm'		    => [qw(
+	Regexp/Common/URI.pm
+	Regexp/Common/balanced.pm
+	Regexp/Common/comment.pm
+	Regexp/Common/delimited.pm
+	Regexp/Common/list.pm
+	Regexp/Common/net.pm
+	Regexp/Common/number.pm
+	Regexp/Common/profanity.pm
+	Regexp/Common/whitespace.pm
+    )],
+    'Term/ReadLine.pm'		    => [qw(
 	Term/ReadLine/readline.pm
 	Term/ReadLine/Perl.pm
+	Term/ReadLine/Gnu.pm
+	Term/ReadLine/Gnu/XS.pm
+	Term/ReadLine/Gnu/euc-jp.pm
     )],
-    'Tk.pm'		    => [qw( Tk/FileSelect.pm )],
-    'Tk/Balloon.pm'	    => [qw( Tk/balArrow.xbm )],
-    'Tk/BrowseEntry.pm'	    => [qw( Tk/cbxarrow.xbm )],
-    'Tk/ColorEditor.pm'	    => [qw( Tk/ColorEdit.xpm )],
-    'Tk/FBox.pm'	    => [qw( Tk/folder.xpm Tk/file.xmp )],
-    'Tk/Toplevel.pm'	    => [qw( Tk/Wm.pm )],
-    'Win32/EventLog.pm'	    => [qw( Win32/IPC.pm )],
-    'Win32/TieRegistry.pm'  => [qw( Win32API/Registry.pm )],
+    'Tk.pm'			    => [qw( Tk/FileSelect.pm )],
+    'Tk/Balloon.pm'		    => [qw( Tk/balArrow.xbm )],
+    'Tk/BrowseEntry.pm'		    => [qw( Tk/cbxarrow.xbm )],
+    'Tk/ColorEditor.pm'		    => [qw( Tk/ColorEdit.xpm )],
+    'Tk/FBox.pm'		    => [qw( Tk/folder.xpm Tk/file.xmp )],
+    'Tk/Toplevel.pm'		    => [qw( Tk/Wm.pm )],
+    'Win32/EventLog.pm'		    => [qw( Win32/IPC.pm )],
+    'Win32/TieRegistry.pm'	    => [qw( Win32API/Registry.pm )],
 );
 # }}}
 
@@ -156,6 +196,7 @@ sub scan_deps {
         # Line-by-line scanning {{{
 	LINE: while (<FH>) {
 	    chomp;
+	    my $line = $_;
 	    foreach ( scan_line($_) ) {
 		last LINE if /^__END__$/;
 
@@ -200,7 +241,8 @@ sub scan_line {
     return '__END__' if $line =~ /^__(?:END|DATA)__$/;
     return '__POD__' if $line =~ /^=\w/;
 
-    s/\s*#.*$//; s/[\\\/]+/\//g;
+    $line =~ s/\s*#.*$//;
+    $line =~ s/[\\\/]+/\//g;
 
     foreach (split(/;/, $line)) {
 	return if /^\s*(use|require)\s+[\d\._]+/;
@@ -223,16 +265,19 @@ sub scan_chunk {
     # Module name extraction heuristics {{{
     my $module = eval {
 	$_ = $chunk;
-	return $1 if /\b(?:use|require)\s+([\w:\.\-\\\/\"\']*)/;
-	return $1 if /\b(?:use|require)\s+\(\s*([\w:\.\-\\\/\"\']*)\s*\)/;
+	return $1 if /\b(?:use|no|require)\s+([\w:\.\-\\\/\"\']*)/;
+	return $1 if /\b(?:use|no|require)\s+\(\s*([\w:\.\-\\\/\"\']*)\s*\)/;
 
 	if (s/\beval\s+\"([^\"]+)\"/$1/ or s/\beval\s*\(\s*\"([^\"]+)\"\s*\)/$1/) {
-	    return $1 if /\b(?:use|require)\s+([\w:\.\-\\\/\"\']*)/;
+	    return $1 if /\b(?:use|no|require)\s+([\w:\.\-\\\/\"\']*)/;
 	}
 
-	return if /^[\d\._]+$/ or /^'.*[^']$/ or /^".*[^"]$/;
+	return "File::Glob" if /<[^>]*[^\$\w>][^>]*>/;
+	return "DBD::$1" if /\bdbi:(\w+):/;
 	return $1 if /\b(?:do|require)\s+[^"]*"(.*?)"/;
 	return $1 if /\b(?:do|require)\s+[^']*'(.*?)'/;
+	return $1 if /[^\$]\b([\w:]+)->\w/ and $1 ne 'Tk';
+	return $1 if /([\w:]+)::\w/ and $1 ne 'Tk';
 	return;
     };
     # }}}
@@ -241,6 +286,8 @@ sub scan_chunk {
 
     $module =~ s/\W+$//;
     $module =~ s/::/\//g;
+    return if $module =~ /^(?:[\d\._]+|'.*[^']|".*[^"])$/;
+
     $module .= ".pm" unless $module =~ /\.pm/i;
     return $module;
 }
@@ -305,8 +352,11 @@ __END__
 
 Autrijus Tang E<lt>autrijus@autrijus.orgE<gt>
 
-Part of heuristics are taken from F<perl2exe-scan.pl>
-by Indy Singh E<lt>indy@indigostar.comE<gt>
+Part of heuristics are taken from B<Perl2Exe>
+by IndigoStar, Inc L<http://www.indigostar.com/>
+
+Part of heuristics are deduced from B<PerlApp>
+by ActiveState Tools Corp L<http://www.activestate.com/>
 
 =head1 COPYRIGHT
 

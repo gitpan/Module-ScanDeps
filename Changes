@@ -1,4 +1,31 @@
 ____________________________________________________________________________
+[  1880] By: autrijus                              on 2002/11/03  19:33:21
+        Log: * 0.03, this time for sure.
+             * add AUTHORS.
+	   + AUTHORS
+	   ! MANIFEST
+____________________________________________________________________________
+[  1879] By: autrijus                              on 2002/11/03  19:33:01
+        Log: * last minute fix from merlyn's bug report.
+	   ! t/1-basic.t
+____________________________________________________________________________
+[  1876] By: autrijus                              on 2002/11/03  19:26:55
+        Log: * Version 0.03.
+             * New presets for Locale::Maketext::Lexicon, Term::ReadLine,
+             Regexp::Common, File::Spec, ExtUtils::MakeMaker.
+             * New heuristics for Module::Name->method, Module::Name::sub
+             * Strings in comments were erroneously checked. Fixed.
+             * Mention PerlApp as a source of inspiration.
+	   ! ScanDeps.pm
+____________________________________________________________________________
+[  1844] By: autrijus                              on 2002/11/02  21:02:49
+        Log: * Regexp::Common.
+	   ! ScanDeps.pm
+____________________________________________________________________________
+[  1837] By: autrijus                              on 2002/11/02  15:43:11
+        Log: * changes and signatures.
+	   ! Changes SIGNATURE
+____________________________________________________________________________
 [  1833] By: autrijus                              on 2002/11/02  15:38:42
         Log: * This be 0.02.
 	   ! ScanDeps.pm
