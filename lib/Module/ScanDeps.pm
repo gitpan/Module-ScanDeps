@@ -1,10 +1,10 @@
-# $File: //member/autrijus/Module-ScanDeps/ScanDeps.pm $ $Author: autrijus $
-# $Revision: #43 $ $Change: 7559 $ $DateTime: 2003/08/16 04:37:06 $
+# $File: //member/autrijus/Module-ScanDeps/lib/Module/ScanDeps.pm $ $Author: autrijus $
+# $Revision: #1 $ $Change: 7579 $ $DateTime: 2003/08/17 18:55:41 $
 
 package Module::ScanDeps;
 use vars qw/$VERSION @EXPORT @EXPORT_OK/;
 
-$VERSION    = '0.27';
+$VERSION    = '0.28';
 @EXPORT	    = qw(scan_deps);
 @EXPORT_OK  = qw(scan_line scan_chunk add_deps);
 
@@ -21,8 +21,8 @@ Module::ScanDeps - Recursively scan Perl code for dependencies
 
 =head1 VERSION
 
-This document describes version 0.27 of Module::ScanDeps, released
-August 16, 2003.
+This document describes version 0.28 of Module::ScanDeps, released
+August 17, 2003.
 
 =head1 SYNOPSIS
 
@@ -361,7 +361,7 @@ sub scan_chunk {
 	return $1 if /(?:^|\s)(?:do|require)\s+[^"]*"(.*?)"/;
 	return $1 if /(?:^|\s)(?:do|require)\s+[^']*'(.*?)'/;
 	return $1 if /[^\$]\b([\w:]+)->\w/ and $1 ne 'Tk';
-	return $1 if /([\w:]+)::\w/ and $1 ne 'Tk' and $1 ne 'PAR';
+	return $1 if /\b(\w[\w:]*)::\w+\(/;
 
 	if ($SeenTk) {
 	    my @modules;

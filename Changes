@@ -1,4 +1,16 @@
 ____________________________________________________________________________
+[  7579] By: autrijus                              on 2003/08/17  18:55:41
+        Log: * This be 0.28.
+             * Move ScanDeps.pm to lib/Module/.
+	  +> lib/Module/ScanDeps.pm
+	   - ScanDeps.pm
+	   ! MANIFEST Makefile.PL
+____________________________________________________________________________
+[  7578] By: autrijus                              on 2003/08/17  18:53:27
+        Log: * Suggestion from Matt Sergeant to recognize A::B from
+             A::B::C only on functions like A::B::C().
+	   ! AUTHORS ScanDeps.pm
+____________________________________________________________________________
 [  7559] By: autrijus                              on 2003/08/16  04:37:06
         Log: * This be 0.27 for real.
              * "use base" was improperly detected.
