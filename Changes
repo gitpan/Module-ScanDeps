@@ -1,4 +1,12 @@
 ____________________________________________________________________________
+[  4860] By: autrijus                              on 2003/03/22  13:04:15
+        Log: * This be 0.19.
+	   ! ScanDeps.pm
+____________________________________________________________________________
+[  4852] By: autrijus                              on 2003/03/22  06:47:56
+        Log: * Jess Robinson reported that the fix was not -w safe.
+	   ! AUTHORS ScanDeps.pm
+____________________________________________________________________________
 [  4826] By: autrijus                              on 2003/03/20  11:49:40
         Log: * This be 0.18.
              * added logic for "utf8" and "charnames" needed by Germain

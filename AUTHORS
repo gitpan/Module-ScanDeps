@@ -1,5 +1,5 @@
 # $File: //member/autrijus/Module-ScanDeps/AUTHORS $
-# $Revision: #7 $ $Change: 4826 $ $DateTime: 2003/03/20 11:49:40 $
+# $Revision: #8 $ $Change: 4852 $ $DateTime: 2003/03/22 06:47:56 $
 
 Here is a list of people and their CPAN id, extracted from the ChangeLog
 file and the mailing list archives.  These people have either submitted
@@ -12,6 +12,7 @@ Germain Garand      (GGARAND)
 Indy Singh
 Jan Dubois	    (JDB)
 Jerry Veldhuis
+Jess Robinson
 Jesse Vincent	    (JESSE)
 Markus Jansen
 Nik Clayton
