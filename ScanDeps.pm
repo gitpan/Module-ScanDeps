@@ -1,10 +1,10 @@
 # $File: //member/autrijus/Module-ScanDeps/ScanDeps.pm $ $Author: autrijus $
-# $Revision: #33 $ $Change: 7398 $ $DateTime: 2003/08/07 18:32:55 $
+# $Revision: #34 $ $Change: 7405 $ $DateTime: 2003/08/08 10:15:49 $
 
 package Module::ScanDeps;
 use vars qw/$VERSION @EXPORT @EXPORT_OK/;
 
-$VERSION    = '0.22';
+$VERSION    = '0.23';
 @EXPORT	    = ('scan_deps');
 @EXPORT_OK  = ('scan_line', 'scan_chunk', 'add_deps');
 
@@ -21,7 +21,7 @@ Module::ScanDeps - Recursively scan Perl code for dependencies
 
 =head1 VERSION
 
-This document describes version 0.22 of Module::ScanDeps, released
+This document describes version 0.23 of Module::ScanDeps, released
 August 8, 2003.
 
 =head1 SYNOPSIS
@@ -164,7 +164,8 @@ my %Preload = (
     },
     'File/Basename.pm'		    => [qw( re.pm )],
     'File/Spec.pm'		    => sub {
-	require File::Spec; map { s!::!/!g; "$_.pm" } @File::Spec::ISA;
+	require File::Spec;
+	map { my $name = $_; $name =~ s!::!/!g; "$name.pm" } @File::Spec::ISA;
     },
     'HTTP/Message.pm'		    => [qw(
 	URI/URL.pm	    URI.pm

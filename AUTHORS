@@ -1,5 +1,5 @@
 # $File: //member/autrijus/Module-ScanDeps/AUTHORS $
-# $Revision: #9 $ $Change: 7272 $ $DateTime: 2003/07/30 14:32:41 $
+# $Revision: #10 $ $Change: 7405 $ $DateTime: 2003/08/08 10:15:49 $
 
 Here is a list of people and their CPAN id, extracted from the ChangeLog
 file and the mailing list archives.  These people have either submitted
@@ -18,4 +18,5 @@ Jouke Visser	    (JOUKE)
 Markus Jansen
 Nik Clayton
 Randal L. Schwartz  (MERLYN)
+Roderich Schupp	    (RSCHUPP)
 Simon Cozens	    (SIMON)
