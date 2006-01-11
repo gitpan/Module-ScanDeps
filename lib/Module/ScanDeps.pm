@@ -4,7 +4,7 @@ use 5.004;
 use strict;
 use vars qw( $VERSION @EXPORT @EXPORT_OK $CurrentPackage );
 
-$VERSION   = '0.53';
+$VERSION   = '0.54';
 @EXPORT    = qw( scan_deps scan_deps_runtime );
 @EXPORT_OK = qw( scan_line scan_chunk add_deps scan_deps_runtime );
 
@@ -31,8 +31,8 @@ Module::ScanDeps - Recursively scan Perl code for dependencies
 
 =head1 VERSION
 
-This document describes version 0.53 of Module::ScanDeps, released
-January 10, 2005.
+This document describes version 0.54 of Module::ScanDeps, released
+January 11, 2005.
 
 =head1 SYNOPSIS
 
@@ -835,9 +835,8 @@ sub get_files {
 sub _compile {
     my ($perl, $file, $inchash, $dl_shared_objects, $incarray) = @_;
 
-    my $fname = File::Temp::mktemp("$file.XXXXXX");
+    my ($fhout, $fname) = File::Temp::tempfile("XXXXXX");
     my $fhin  = FileHandle->new($file) or die "Couldn't open $file\n";
-    my $fhout = FileHandle->new("> $fname") or die "Couldn't open $fname\n";
 
     my $line = do { local $/; <$fhin> };
     $line =~ s/use Module::ScanDeps::DataFeed.*?\n//sg;
@@ -862,10 +861,9 @@ sub _execute {
     my ($perl, $file, $inchash, $dl_shared_objects, $incarray, $firstflag) = @_;
 
     $DB::single = $DB::single = 1;
-
-    my $fname = _abs_path(File::Temp::mktemp("$file.XXXXXX"));
+    my ($fhout, $fname) = File::Temp::tempfile("XXXXXX");
+    $fname = _abs_path($fname);
     my $fhin  = FileHandle->new($file) or die "Couldn't open $file";
-    my $fhout = FileHandle->new("> $fname") or die "Couldn't open $fname";
 
     my $line = do { local $/; <$fhin> };
     $line =~ s/use Module::ScanDeps::DataFeed.*?\n//sg;

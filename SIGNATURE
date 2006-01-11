@@ -14,29 +14,29 @@ not run its Makefile.PL or Build.PL.
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA1
 
-SHA1 cfa5d3d831b9efcb4cb320ebceeb2ede92c2709a AUTHORS
-SHA1 06918b7e478c17d761716610f7466a0d3f66493f Changes
+SHA1 6c4f619c9f4f9759f702a9ce2e2a9b45394c117e AUTHORS
+SHA1 26c9cc0bbc3f7006d29a3b296cde09ddb7218620 Changes
 SHA1 dacb8210edd162b129a25f13a2d43d3b41d0e30a MANIFEST
-SHA1 d2f8a469f24de445db3e88a4e56cc9eefe60b329 META.yml
+SHA1 021273a1b6250c3e92d867f09330b10e4d5f7f6c META.yml
 SHA1 84a281e457874b94780eef0498159c03b1108cf2 Makefile.PL
 SHA1 a7f79ae0ff0dae3f4ec1bda31e1953a52fe30227 README
-SHA1 30221e972c2d69ea48806c5b53cbdf2861c91770 inc/Module/Install.pm
+SHA1 daa80a960ab8727933e8947996a122678a6c04c9 inc/Module/Install.pm
 SHA1 726a6420b06d98e409bc105cc22f632855bbe3ed inc/Module/Install/Base.pm
-SHA1 1ae0b64895f73745680a2c2950053f64ccc116cc inc/Module/Install/Can.pm
+SHA1 f4171c353bef786e91a7e918eaea388306c9be42 inc/Module/Install/Can.pm
 SHA1 d097dedadac0edcafbee3a14c262e24089f5795e inc/Module/Install/Fetch.pm
-SHA1 9dc6e65553c7e70f57287ecbf2e072611bf2b27f inc/Module/Install/Makefile.pm
-SHA1 7b45ddc2699f9d248a6a3c0e873f16d48f732878 inc/Module/Install/Metadata.pm
+SHA1 4f7d0880122aa5d9ddf37577b434af09d5d8628f inc/Module/Install/Makefile.pm
+SHA1 f5e5d508da03f2fb4de988b26858094b25690de4 inc/Module/Install/Metadata.pm
 SHA1 8c7eb61d081ec7783836d72ad81c0536df65dec0 inc/Module/Install/Scripts.pm
 SHA1 8ee248d67d4c61a4f01e6a96c41afbd93be4c9ef inc/Module/Install/Win32.pm
-SHA1 3c099dd7fb73a49bcc489b152c3ca3c7a1b36427 inc/Module/Install/WriteAll.pm
-SHA1 cb65eba3a27240e4e022efbde235138891793d52 lib/Module/ScanDeps.pm
+SHA1 bbdf00f8ca9d2ddaebd2dd6eb47d442fbc6fac05 inc/Module/Install/WriteAll.pm
+SHA1 d62a0a4a31813b55aa5fa6af79fac7629950cb37 lib/Module/ScanDeps.pm
 SHA1 82d2b547eb1eaf71dce3cc54e23d923228aa0e3a lib/Module/ScanDeps/DataFeed.pm
 SHA1 1bbc53c9f7dba5d569d9a0e91bfbb2646d6bdcc3 script/scandeps.pl
 SHA1 dbe01c33e3e1460525c8e750dc48556d0c6f062b t/1-basic.t
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.4.2 (FreeBSD)
 
-iD8DBQFDwqXGtLPdNzw1AaARAj2wAKCWSRWRSsmGpcvl5iq+OeJyChAMjACgn2jn
-EHDIGiYx/p4stRwj5CpuIaw=
-=Ne2D
+iD8DBQFDxHentLPdNzw1AaARAhGoAJ9L6Me2/+Aiaj3Iejp8jqwGtRQW7gCfdIUC
++6PlYcw9y3QFZSo8cAK0aFk=
+=K3KY
 -----END PGP SIGNATURE-----

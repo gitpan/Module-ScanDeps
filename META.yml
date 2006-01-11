@@ -1,13 +1,14 @@
-abstract: Recursively scan Perl code for dependencies
-author: 'Audrey Tang <autrijus@autrijus.org>'
-distribution_type: module
-generated_by: Module::Install version 0.51
-license: perl
-name: Module-ScanDeps
-no_index:
-  directory:
+
+no_index: 
+  directory: 
     - inc
     - t
-requires:
+generated_by: Module::Install version 0.54
+distribution_type: module
+version: 0.54
+name: Module-ScanDeps
+author: Audrey Tang <autrijus@autrijus.org>
+license: perl
+requires: 
   perl: 5.004
-version: 0.53
+abstract: Recursively scan Perl code for dependencies
