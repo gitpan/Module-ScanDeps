@@ -1,4 +1,4 @@
-#line 1 "/home/autrijus/i/Module-ScanDeps-0.52/inc/Module/Install.pm - /usr/local/lib/perl5/site_perl/5.8.7/Module/Install.pm"
+#line 1 "/home/tsee/data/perl/par/par/Module-ScanDeps/inc/Module/Install.pm - /usr/lib/perl5/site_perl/5.8.6/Module/Install.pm"
 package Module::Install;
 
 use 5.004;
@@ -6,7 +6,7 @@ use strict 'vars';
 use vars qw{$VERSION};
 BEGIN {
     # Don't forget to update Module::Install::Admin too!
-    $VERSION = '0.54';
+    $VERSION = '0.56';
 }
 
 # inc::Module::Install must be loaded first

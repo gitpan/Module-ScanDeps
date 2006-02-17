@@ -4,7 +4,7 @@ use 5.004;
 use strict;
 use vars qw( $VERSION @EXPORT @EXPORT_OK $CurrentPackage );
 
-$VERSION   = '0.54';
+$VERSION   = '0.55';
 @EXPORT    = qw( scan_deps scan_deps_runtime );
 @EXPORT_OK = qw( scan_line scan_chunk add_deps scan_deps_runtime );
 
@@ -31,8 +31,8 @@ Module::ScanDeps - Recursively scan Perl code for dependencies
 
 =head1 VERSION
 
-This document describes version 0.54 of Module::ScanDeps, released
-January 11, 2005.
+This document describes version 0.55 of Module::ScanDeps, released
+February 17, 2005.
 
 =head1 SYNOPSIS
 
@@ -520,10 +520,11 @@ sub scan_line {
             return;
         }
         return if /^\s*(use|require)\s+[\d\._]+/;
-        if ( /^\s*use\s+autouse\s+[\"\']([^"\']+).*/ )
+        if (my ($autouse) = /^\s*use\s+autouse\s+(["'].*?["']|\w+)/)	
         {
-            s/^\s*use\s+autouse\s+[\"\']([^"\']+).*/$1/;
-            return "$_.pm";
+            $autouse =~ s/["']//g;
+            $autouse =~ s{::}{/}g;
+            return ("autouse.pm", "$autouse.pm");
         }
 
         if (my ($libs) = /\b(?:use\s+lib\s+|(?:unshift|push)\W+\@INC\W+)(.+)/)
