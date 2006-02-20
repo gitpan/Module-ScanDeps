@@ -1,4 +1,8 @@
 
+[Changes for 0.56 - 2006-02-20]
+
+* Added special dependency for Tk::Getopt. Suggested by Slaven Rezic.
+
 [Changes for 0.55 - 2006-02-17]
 
 * Applied Roderich Schupp's patch to fix a problem with 'autouse'.

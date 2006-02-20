@@ -4,7 +4,7 @@ use 5.004;
 use strict;
 use vars qw( $VERSION @EXPORT @EXPORT_OK $CurrentPackage );
 
-$VERSION   = '0.55';
+$VERSION   = '0.56';
 @EXPORT    = qw( scan_deps scan_deps_runtime );
 @EXPORT_OK = qw( scan_line scan_chunk add_deps scan_deps_runtime );
 
@@ -300,6 +300,7 @@ my %Preload = (
         _glob_in_inc('Tk/DragDrop', 1),
     },
     'Tk/FBox.pm'        => [qw( Tk/folder.xpm Tk/file.xpm )],
+    'Tk/Getopt.pm'      => [qw( Tk/openfolder.xpm Tk/win.xbm )],
     'Tk/Toplevel.pm'    => [qw( Tk/Wm.pm )],
     'URI.pm'            => sub {
         grep !/.\b[_A-Z]/, _glob_in_inc('URI', 1);
