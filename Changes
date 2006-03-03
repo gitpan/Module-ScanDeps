@@ -1,4 +1,9 @@
 
+[Changes for 0.57 - 2006-03-03]
+
+* Applied Stephen Schulze's patch which fixes the problem that modules are
+  reported as depended upon only once.
+
 [Changes for 0.56 - 2006-02-20]
 
 * Added special dependency for Tk::Getopt. Suggested by Slaven Rezic.

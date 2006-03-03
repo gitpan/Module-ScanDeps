@@ -4,7 +4,7 @@ use 5.004;
 use strict;
 use vars qw( $VERSION @EXPORT @EXPORT_OK $CurrentPackage );
 
-$VERSION   = '0.56';
+$VERSION   = '0.57';
 @EXPORT    = qw( scan_deps scan_deps_runtime );
 @EXPORT_OK = qw( scan_line scan_chunk add_deps scan_deps_runtime );
 
@@ -663,7 +663,10 @@ sub add_deps {
     my $used_by = $args{used_by};
 
     foreach my $module (@{ $args{modules} }) {
-        next if exists $rv->{$module};
+        if (exists $rv->{$module}) {
+            _add_info($rv, undef, undef, $used_by, undef);
+            next;
+        }
 
         my $file = _find_in_inc($module) or next;
         next if $skip->{$file};
