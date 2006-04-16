@@ -1,4 +1,9 @@
 
+[Changes for 0.58 - 2006-04-16]
+
+* Added dependency for Test::Deep
+* Added dependency for Math::Symbolic
+
 [Changes for 0.57 - 2006-03-03]
 
 * Applied Stephen Schulze's patch which fixes the problem that modules are

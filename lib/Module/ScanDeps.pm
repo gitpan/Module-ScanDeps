@@ -4,7 +4,7 @@ use 5.004;
 use strict;
 use vars qw( $VERSION @EXPORT @EXPORT_OK $CurrentPackage );
 
-$VERSION   = '0.57';
+$VERSION   = '0.58';
 @EXPORT    = qw( scan_deps scan_deps_runtime );
 @EXPORT_OK = qw( scan_line scan_chunk add_deps scan_deps_runtime );
 
@@ -246,6 +246,7 @@ my %Preload = (
     'Mail/Audit.pm'                => 'sub',
     'Math/BigInt.pm'                => 'sub',
     'Math/BigFloat.pm'              => 'sub',
+	'Math/Symbolic.pm'              => 'sub',
     'Module/Build.pm'               => 'sub',
     'Module/Pluggable.pm'           => sub {
         _glob_in_inc("$CurrentPackage/Plugin", 1);
@@ -271,24 +272,25 @@ my %Preload = (
     'Parse/AFP.pm'                  => 'sub',
     'Parse/Binary.pm'               => 'sub',
     'Regexp/Common.pm'              => 'sub',
+    'SerialJunk.pm' => [ qw(
+        termios.ph asm/termios.ph sys/termiox.ph sys/termios.ph sys/ttycom.ph
+    ) ],
     'SOAP/Lite.pm'                  => sub {
         (($] >= 5.008 ? ('utf8.pm') : ()), _glob_in_inc('SOAP/Transport', 1));
     },
     'SQL/Parser.pm' => sub {
         _glob_in_inc('SQL/Dialects', 1);
     },
+    'SVK/Command.pm' => sub {
+        _glob_in_inc('SVK', 1);
+    },
     'SVN/Core.pm' => sub {
         _glob_in_inc('SVN', 1),
         map "auto/SVN/$_->{name}", _glob_in_inc('auto/SVN'),
     },
-    'SVK/Command.pm' => sub {
-        _glob_in_inc('SVK', 1);
-    },
-    'SerialJunk.pm' => [ qw(
-        termios.ph asm/termios.ph sys/termiox.ph sys/termios.ph sys/ttycom.ph
-    ) ],
     'Template.pm'      => 'sub',
     'Term/ReadLine.pm' => 'sub',
+	'Test/Deep.pm'     => 'sub',
     'Tk.pm'            => sub {
         $SeenTk = 1;
         qw( Tk/FileSelect.pm Encode/Unicode.pm );

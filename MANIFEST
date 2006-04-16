@@ -1,5 +1,10 @@
 AUTHORS
 Changes
+debian/changelog
+debian/compat
+debian/control
+debian/copyright
+debian/rules
 inc/Module/Install.pm
 inc/Module/Install/Base.pm
 inc/Module/Install/Can.pm
@@ -16,5 +21,5 @@ MANIFEST			This list of files
 META.yml
 README
 script/scandeps.pl
-SIGNATURE
 t/1-basic.t
+SIGNATURE                                Public-key signature (added by MakeMaker)
