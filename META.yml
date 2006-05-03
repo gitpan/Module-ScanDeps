@@ -1,7 +1,7 @@
 abstract: Recursively scan Perl code for dependencies
 author: Audrey Tang <autrijus@autrijus.org>
 distribution_type: module
-generated_by: Module::Install version 0.61
+generated_by: Module::Install version 0.62
 license: perl
 name: Module-ScanDeps
 no_index: 
@@ -9,5 +9,6 @@ no_index:
     - inc
     - t
 requires: 
+  File::Temp: 0
   perl: 5.004
-version: 0.58
+version: 0.59

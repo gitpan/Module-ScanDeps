@@ -1,4 +1,10 @@
 
+[Changes for 0.59 - 2006-05-03]
+* Recovering 5.005 compatibility. (Hopefully!)
+* Using Module::Install 0.62
+* Added a dependency on File::Temp for pre 5.6 perls.
+* Fixed broken Module::Pluggable support.
+
 [Changes for 0.58 - 2006-04-16]
 
 * Added dependency for Test::Deep

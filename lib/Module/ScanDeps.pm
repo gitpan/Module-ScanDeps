@@ -4,7 +4,7 @@ use 5.004;
 use strict;
 use vars qw( $VERSION @EXPORT @EXPORT_OK $CurrentPackage );
 
-$VERSION   = '0.58';
+$VERSION   = '0.59';
 @EXPORT    = qw( scan_deps scan_deps_runtime );
 @EXPORT_OK = qw( scan_line scan_chunk add_deps scan_deps_runtime );
 
@@ -249,7 +249,7 @@ my %Preload = (
 	'Math/Symbolic.pm'              => 'sub',
     'Module/Build.pm'               => 'sub',
     'Module/Pluggable.pm'           => sub {
-        _glob_in_inc("$CurrentPackage/Plugin", 1);
+        _glob_in_inc('$CurrentPackage/Plugin', 1);
     },
     'MIME/Decoder.pm'               => 'sub',
     'Net/DNS/RR.pm'                 => 'sub',
@@ -517,7 +517,7 @@ sub scan_line {
     $line =~ s/[\\\/]+/\//g;
 
     foreach (split(/;/, $line)) {
-        if (/^\s*package\s+(\w+);/) {
+        if (/^\s*package\s+(\w+)/) {
             $CurrentPackage = $1;
             $CurrentPackage =~ s{::}{/}g;
             return;
@@ -719,6 +719,8 @@ sub _glob_in_inc {
     my @files;
 
     require File::Find;
+
+    $subdir =~ s/\$CurrentPackage/$CurrentPackage/;
 
     foreach my $dir (map "$_/$subdir", grep !/\bBSDPAN\b/, @INC) {
         next unless -d $dir;

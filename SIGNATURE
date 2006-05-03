@@ -15,33 +15,33 @@ not run its Makefile.PL or Build.PL.
 Hash: SHA1
 
 SHA1 3cd1ccecf11d1fde98d2c35a8038c89bb7f54c0e AUTHORS
-SHA1 ac10d74a05f8233a1aa7d52f0fe1cc0ec00dad62 Changes
+SHA1 db2d15433c7900c6fc8f38046d795895e72c84d8 Changes
 SHA1 b5968c9e3da04dfc9c49bf66c97aa4e132ea75c0 MANIFEST
-SHA1 443cb8a9e6f2fec18aec337eb3c334a2ed6d9a41 META.yml
-SHA1 84a281e457874b94780eef0498159c03b1108cf2 Makefile.PL
+SHA1 7b4ab31132b375e69121b0863f7ceda2f83dd5a4 META.yml
+SHA1 3f5890c5e393264a97809786e101a35dce6a94ff Makefile.PL
 SHA1 a7f79ae0ff0dae3f4ec1bda31e1953a52fe30227 README
 SHA1 2dc07f8ec7774a1a83b156831d945bd674347632 debian/changelog
 SHA1 9c6b057a2b9d96a4067a749ee3b3b0158d390cf1 debian/compat
 SHA1 cda9342c6002c0675288160e86d48a9c3912c003 debian/control
 SHA1 f336ae5033419b26b7a448f212b9caf18fee15ac debian/copyright
 SHA1 ce9c4829f25e71e05b2ea4dc633e9e963cbb1a48 debian/rules
-SHA1 e7688055bf405375921ea837273d8bdc68803efb inc/Module/Install.pm
-SHA1 e5b3215acb96829f2142dcfce736c1b6484fbc08 inc/Module/Install/Base.pm
-SHA1 07c44e137098675ea35a5d537df1e4af098382d9 inc/Module/Install/Can.pm
-SHA1 8f691f8e451ba687551fa836e8d75c4d514241e5 inc/Module/Install/Fetch.pm
-SHA1 81b798c6ca71d1b665a470fb49d32105084ac389 inc/Module/Install/Makefile.pm
-SHA1 c8c9737da19baa15ffa7d9d5037913f64b592189 inc/Module/Install/Metadata.pm
-SHA1 267e57a7b78351d5fa424fc4b8c595025a89305d inc/Module/Install/Scripts.pm
-SHA1 b97304e2a5c405d950eeaa4afd09c6b5507571c3 inc/Module/Install/Win32.pm
-SHA1 73a588d58f7ad0a6a9ed0ea80c48fa12f234a02c inc/Module/Install/WriteAll.pm
-SHA1 1803962aa6026f00f0f902ae4425b7476890291c lib/Module/ScanDeps.pm
+SHA1 e28cf2d3ba35f6ca3a448acc7bee191b7c390379 inc/Module/Install.pm
+SHA1 e7c1c86f57b6778f4bdc7fd8c1b950e60ef41bc0 inc/Module/Install/Base.pm
+SHA1 e1829448769445cdaac384a888bf9ccf42e0d89a inc/Module/Install/Can.pm
+SHA1 70aa5e2055e8e38b4eecc5fc8c91762c0e97f551 inc/Module/Install/Fetch.pm
+SHA1 8ac832baf4f9e8e72d3e8f103cee6e8a94ac80e1 inc/Module/Install/Makefile.pm
+SHA1 0807e79d6dbfda4fcd3db0fc7df2e33e0cba263b inc/Module/Install/Metadata.pm
+SHA1 567fde53d9f24db2ab823d1031dec5e48f55def6 inc/Module/Install/Scripts.pm
+SHA1 4da0a1fce2339cc3f8c296c7716480d2564d9470 inc/Module/Install/Win32.pm
+SHA1 9a903a1d178954ad864c7dcc98f9fa5c005d1553 inc/Module/Install/WriteAll.pm
+SHA1 36ffc869607082fb04da6d02a9d03c1cbf4789a9 lib/Module/ScanDeps.pm
 SHA1 82d2b547eb1eaf71dce3cc54e23d923228aa0e3a lib/Module/ScanDeps/DataFeed.pm
 SHA1 1bbc53c9f7dba5d569d9a0e91bfbb2646d6bdcc3 script/scandeps.pl
 SHA1 dbe01c33e3e1460525c8e750dc48556d0c6f062b t/1-basic.t
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.4.0 (GNU/Linux)
 
-iD8DBQFEQl/dZCuimE51gxcRAuVfAJ4g8sQTDPi6flRvpjotSQB8omN8hgCgivqz
-r09Uesxcpt77NN1uVgxbAwE=
-=tj1t
+iD8DBQFEWHPdZCuimE51gxcRApREAKCBzLfN0j9k2yP7CJWzTCKL4n4H8ACggHqH
+S3x5DEc1UO3JZlC2r4cWXZg=
+=S20V
 -----END PGP SIGNATURE-----
