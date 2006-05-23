@@ -1,5 +1,12 @@
 
+[Changes for 0.60 - 2006-05-23]
+
+* Fixed bug that prevented "use encoding 'utf-8';" from being
+  picked up. This was because the -8 was stripped and thus, the
+  encoding wasn't recognized.
+
 [Changes for 0.59 - 2006-05-03]
+
 * Recovering 5.005 compatibility. (Hopefully!)
 * Using Module::Install 0.62
 * Added a dependency on File::Temp for pre 5.6 perls.
