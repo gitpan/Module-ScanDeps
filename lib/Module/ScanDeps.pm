@@ -4,7 +4,7 @@ use 5.004;
 use strict;
 use vars qw( $VERSION @EXPORT @EXPORT_OK $CurrentPackage );
 
-$VERSION   = '0.60';
+$VERSION   = '0.61';
 @EXPORT    = qw( scan_deps scan_deps_runtime );
 @EXPORT_OK = qw( scan_line scan_chunk add_deps scan_deps_runtime );
 
@@ -31,8 +31,8 @@ Module::ScanDeps - Recursively scan Perl code for dependencies
 
 =head1 VERSION
 
-This document describes version 0.55 of Module::ScanDeps, released
-February 17, 2005.
+This document describes version 0.61 of Module::ScanDeps, released
+June 30, 2006.
 
 =head1 SYNOPSIS
 
@@ -959,10 +959,9 @@ sub _merge_rv {
     foreach $key (keys(%$rv_sub)) {
         my %mark;
         if ($rv->{$key} and _not_dup($key, $rv, $rv_sub)) {
-            warn "different modules for file: $key: were found" .
-                 "(using the version) after the '=>': ".
-                 "$rv->{$key}{file} => $rv_sub->{$key}{file}\n";
-
+            warn "Different modules for file '$key' were found.\n"
+                . " -> Using '" . _abs_path($rv_sub->{$key}{file}) . "'.\n"
+                . " -> Ignoring '" . _abs_path($rv->{$key}{file}) . "'.\n";
             $rv->{$key}{used_by} = [
                 grep (!$mark{$_}++,
                     @{ $rv->{$key}{used_by} },

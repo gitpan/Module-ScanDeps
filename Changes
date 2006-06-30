@@ -1,4 +1,11 @@
 
+[Changes for 0.61 - 2006-06-30]
+
+* Now presenting more helpful (and correct) error messages when
+  multiple versions of a module (files) are found.
+* Corrected a POD error.
+* Added test for POD correctness.
+
 [Changes for 0.60 - 2006-05-23]
 
 * Fixed bug that prevented "use encoding 'utf-8';" from being

@@ -1,5 +1,5 @@
 This file contains message digests of all files listed in MANIFEST,
-signed via the Module::Signature module, version 0.53.
+signed via the Module::Signature module, version 0.54.
 
 To verify the content in this distribution, first make sure you have
 Module::Signature installed, then type:
@@ -14,38 +14,34 @@ not run its Makefile.PL or Build.PL.
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA1
 
-SHA1 3cd1ccecf11d1fde98d2c35a8038c89bb7f54c0e AUTHORS
-SHA1 b5df0b1002fc6baa008f2728c50ddfe313704a5c Changes
-SHA1 bf0481042b62c06ae9c5f2000655f77470b5ca83 MANIFEST
-SHA1 bf67ce192840fd07f075b8ab0d7aa017a1be2d87 META.yml
+SHA1 c5fa93bca66974a16dbb7e2a5106b80d2762b014 AUTHORS
+SHA1 940e1dda6d88dcfdc31d82fde14d682272846b34 Changes
+SHA1 f5e8f42b8c0bf8ca4f64053d79c12c1d4d02ff2e MANIFEST
+SHA1 e9d3fb2a515256390078f9452b3fcd0191931cc2 META.yml
 SHA1 3f5890c5e393264a97809786e101a35dce6a94ff Makefile.PL
 SHA1 a7f79ae0ff0dae3f4ec1bda31e1953a52fe30227 README
-SHA1 2dc07f8ec7774a1a83b156831d945bd674347632 debian/changelog
-SHA1 9c6b057a2b9d96a4067a749ee3b3b0158d390cf1 debian/compat
-SHA1 cda9342c6002c0675288160e86d48a9c3912c003 debian/control
-SHA1 f336ae5033419b26b7a448f212b9caf18fee15ac debian/copyright
-SHA1 ce9c4829f25e71e05b2ea4dc633e9e963cbb1a48 debian/rules
-SHA1 e28cf2d3ba35f6ca3a448acc7bee191b7c390379 inc/Module/Install.pm
-SHA1 e7c1c86f57b6778f4bdc7fd8c1b950e60ef41bc0 inc/Module/Install/Base.pm
-SHA1 e1829448769445cdaac384a888bf9ccf42e0d89a inc/Module/Install/Can.pm
-SHA1 70aa5e2055e8e38b4eecc5fc8c91762c0e97f551 inc/Module/Install/Fetch.pm
-SHA1 8ac832baf4f9e8e72d3e8f103cee6e8a94ac80e1 inc/Module/Install/Makefile.pm
-SHA1 0807e79d6dbfda4fcd3db0fc7df2e33e0cba263b inc/Module/Install/Metadata.pm
-SHA1 567fde53d9f24db2ab823d1031dec5e48f55def6 inc/Module/Install/Scripts.pm
-SHA1 4da0a1fce2339cc3f8c296c7716480d2564d9470 inc/Module/Install/Win32.pm
-SHA1 9a903a1d178954ad864c7dcc98f9fa5c005d1553 inc/Module/Install/WriteAll.pm
-SHA1 6ea1647d383505e24f39e9455149a61aa0ee9554 lib/Module/ScanDeps.pm
+SHA1 017bedfcba1e0c72b36301e6ef21b8712b84d175 inc/Module/Install.pm
+SHA1 b1a70869c098ba602151631386fc510b5bfd3511 inc/Module/Install/Base.pm
+SHA1 dd7313db23119d49ae78593bfa576554fb5b0fd8 inc/Module/Install/Can.pm
+SHA1 7c3a5153a5574556d895f23e121a41e680da11c1 inc/Module/Install/Fetch.pm
+SHA1 176d68fe7c07b6ab7cfe09093078b8127bbde786 inc/Module/Install/Makefile.pm
+SHA1 8b37b38215d14f922b3d5132ce33d11d21d531ba inc/Module/Install/Metadata.pm
+SHA1 1d8f4739eda5d665bbfe4206bd87274ad104ba77 inc/Module/Install/Scripts.pm
+SHA1 7eb44b00058c44795038d7fa4c0c77470f20a7f8 inc/Module/Install/Win32.pm
+SHA1 6d05967a5e1680b5f118315aaa6b8a1e143d79d8 inc/Module/Install/WriteAll.pm
+SHA1 1541caff2dd0ca889c13c2d01b3b3118ec202b01 lib/Module/ScanDeps.pm
 SHA1 82d2b547eb1eaf71dce3cc54e23d923228aa0e3a lib/Module/ScanDeps/DataFeed.pm
-SHA1 1bbc53c9f7dba5d569d9a0e91bfbb2646d6bdcc3 script/scandeps.pl
+SHA1 af013f0bafc1713592a491697e61d2d77a321a6d script/scandeps.pl
+SHA1 659cd8c86e779270012c45220a6e1f23d28dcc5e t/0-pod.t
 SHA1 dbe01c33e3e1460525c8e750dc48556d0c6f062b t/1-basic.t
 SHA1 6d44e40caa0ca6934b9f3c6c572a99b7bcaf289f t/2-pluggable.t
 SHA1 e439bb21ada5bb1dabd63624a2eb4c34b64a3fe7 t/data/Foo.pm
 SHA1 844dab1b3ba5256c0b0c688ce97168ac16f6f41b t/data/Foo/Plugin/Bar.pm
 SHA1 f75fd03ca8165addb5dcc535312f6ce75184d0ef t/data/Foo/Plugin/Baz.pm
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.0 (GNU/Linux)
+Version: GnuPG v1.4.2.2 (GNU/Linux)
 
-iD8DBQFEcynWZCuimE51gxcRAuOdAKDIH4FY+Oqn7udO/sQu2M5JQ7AnpQCfSlXe
-Ku8RDNIVkaM1AVabw9grjeI=
-=ccgw
+iD8DBQFEpXcbZCuimE51gxcRAigMAKCJ5sc5DrLeFaQwWjOvrcyPRAOaCQCgniJN
+drwsP04QHfGj4xp+zGTn9uo=
+=UvZ3
 -----END PGP SIGNATURE-----

@@ -182,6 +182,8 @@ Include core modules in the output and the recursive search list.
 Verbose mode: Output all files found during the process; 
 show dependencies between modules and availability.
 
+=back
+
 =head1 SEE ALSO
 
 L<Module::ScanDeps>, L<CPANPLUS::Backend>, L<PAR>
