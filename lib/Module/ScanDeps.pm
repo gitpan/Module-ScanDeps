@@ -4,7 +4,7 @@ use 5.004;
 use strict;
 use vars qw( $VERSION @EXPORT @EXPORT_OK $CurrentPackage );
 
-$VERSION   = '0.61';
+$VERSION   = '0.62';
 @EXPORT    = qw( scan_deps scan_deps_runtime );
 @EXPORT_OK = qw( scan_line scan_chunk add_deps scan_deps_runtime );
 
@@ -323,9 +323,35 @@ my %Preload = (
         _glob_in_inc('XMLRPC/Transport', 1),;
     },
     'diagnostics.pm' => sub {
-        _find_in_inc('Pod/perldiag.pod')
-          ? 'Pod/perldiag.pl'
-          : 'pod/perldiag.pod';
+        # shamelessly taken and adapted from diagnostics.pm
+        use Config;
+        my($privlib, $archlib) = @Config{qw(privlibexp archlibexp)};
+        if ($^O eq 'VMS') {
+            require VMS::Filespec;
+            $privlib = VMS::Filespec::unixify($privlib);
+            $archlib = VMS::Filespec::unixify($archlib);
+        }
+
+        for (
+              "pod/perldiag.pod",
+              "Pod/perldiag.pod",
+              "pod/perldiag-$Config{version}.pod",
+              "Pod/perldiag-$Config{version}.pod",
+              "pods/perldiag.pod",
+              "pods/perldiag-$Config{version}.pod",
+        ) {
+            return $_ if _find_in_inc($_);
+        }
+        
+        for (
+              "$archlib/pods/perldiag.pod",
+              "$privlib/pods/perldiag-$Config{version}.pod",
+              "$privlib/pods/perldiag.pod",
+        ) {
+            return $_ if -f $_;
+        }
+
+        return 'pod/perldiag.pod';
     },
     'utf8.pm' => [
         'utf8_heavy.pl', do {

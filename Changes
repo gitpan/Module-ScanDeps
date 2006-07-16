@@ -1,4 +1,9 @@
 
+[Changes for 0.62 - 2006-07-16]
+
+* Better diagnostics.pm support for searching the related
+  .pod file.
+
 [Changes for 0.61 - 2006-06-30]
 
 * Now presenting more helpful (and correct) error messages when
