@@ -1,4 +1,7 @@
 
+[Changes for 0.63 - 2006-08-27]
+* Upgraded to Module::Install 0.63
+
 [Changes for 0.62 - 2006-07-16]
 
 * Better diagnostics.pm support for searching the related

@@ -16,7 +16,6 @@ MANIFEST			This list of files
 META.yml
 README
 script/scandeps.pl
-SIGNATURE
 t/0-pod.t
 t/1-basic.t
 t/2-pluggable.t
