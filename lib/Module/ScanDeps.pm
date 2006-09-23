@@ -4,7 +4,7 @@ use 5.004;
 use strict;
 use vars qw( $VERSION @EXPORT @EXPORT_OK $CurrentPackage );
 
-$VERSION   = '0.63';
+$VERSION   = '0.64';
 @EXPORT    = qw( scan_deps scan_deps_runtime );
 @EXPORT_OK = qw( scan_line scan_chunk add_deps scan_deps_runtime );
 
@@ -31,8 +31,8 @@ Module::ScanDeps - Recursively scan Perl code for dependencies
 
 =head1 VERSION
 
-This document describes version 0.61 of Module::ScanDeps, released
-June 30, 2006.
+This document describes version 0.64 of Module::ScanDeps, released
+September 22, 2006.
 
 =head1 SYNOPSIS
 
@@ -118,6 +118,12 @@ termination to determine additional runtime dependencies.
 
 If C<$execute> is an array reference, runs the files contained
 in it instead of C<@files>.
+
+Additionally, an option C<warn_missing> is recognized. If set to true,
+C<scan_deps> issues a warning to STDOUT for every module file that the
+scanned code depends but that wasn't found. Please note that this may
+also report numerous false positives. That is why by default, the heuristic
+silently drops all dependencies it cannot find.
 
 =head2 B<scan_deps_runtime>
 
@@ -386,7 +392,7 @@ my %Preload = (
 
 # }}}
 
-my $Keys = 'files|keys|recurse|rv|skip|first|execute|compile';
+my $Keys = 'files|keys|recurse|rv|skip|first|execute|compile|warn_missing';
 sub scan_deps {
     my %args = (
         rv => {},
@@ -411,7 +417,7 @@ sub scan_deps {
 sub scan_deps_static {
     my ($args) = @_;
     my ($files, $keys, $recurse, $rv, $skip, $first, $execute, $compile) =
-      @$args{qw( files keys recurse rv skip first execute compile )};
+        @$args{qw( files keys recurse rv skip first execute compile )};
 
     $rv   ||= {};
     $skip ||= {};
@@ -445,7 +451,8 @@ sub scan_deps_static {
                     used_by => $key,
                     rv      => $rv,
                     modules => [$pm],
-                    skip    => $skip
+                    skip    => $skip,
+                    warn_missing => $args->{warn_missing},
                 );
 
                 my $preload = $Preload{$pm} or next;
@@ -461,7 +468,8 @@ sub scan_deps_static {
                     used_by => $key,
                     rv      => $rv,
                     modules => $preload,
-                    skip    => $skip
+                    skip    => $skip,
+                    warn_missing => $args->{warn_missing},
                 );
             }
         }
@@ -682,7 +690,7 @@ sub _add_info {
 
 sub add_deps {
     my %args =
-      ((@_ and $_[0] =~ /^(?:modules|rv|used_by)$/)
+      ((@_ and $_[0] =~ /^(?:modules|rv|used_by|warn_missing)$/)
         ? @_
         : (rv => (ref($_[0]) ? shift(@_) : undef), modules => [@_]));
 
@@ -696,7 +704,8 @@ sub add_deps {
             next;
         }
 
-        my $file = _find_in_inc($module) or next;
+        my $file = _find_in_inc($module)
+          or _warn_of_missing_module($module, $args{warn_missing}), next;
         next if $skip->{$file};
         next if is_insensitive_fs() and $skip->{lc($file)};
 
@@ -794,7 +803,8 @@ sub set_options {
     foreach my $module (@{ $args{add_modules} }) {
         $module =~ s/::/\//g;
         $module .= '.pm' unless $module =~ /\.p[mh]$/i;
-        my $file = _find_in_inc($module) or next;
+        my $file = _find_in_inc($module)
+          or _warn_of_missing_module($module, $args{warn_missing}), next;
         $self->{files}{$module} = $file;
     }
 }
@@ -1031,6 +1041,15 @@ sub _abs_path {
 }
 
 1;
+
+sub _warn_of_missing_module {
+    my $module = shift;
+    my $warn = shift;
+    return if not $warn;
+    return if not $module =~ /\.p[ml]$/;
+    print "# Could not find source file '$module' in \@INC. Skipping it.\n"
+      if not -f $module;
+}
 
 __END__
 

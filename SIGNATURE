@@ -1,0 +1,47 @@
+This file contains message digests of all files listed in MANIFEST,
+signed via the Module::Signature module, version 0.54.
+
+To verify the content in this distribution, first make sure you have
+Module::Signature installed, then type:
+
+    % cpansign -v
+
+It will check each file's integrity, as well as the signature's
+validity.  If "==> Signature verified OK! <==" is not displayed,
+the distribution may already have been compromised, and you should
+not run its Makefile.PL or Build.PL.
+
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
+
+SHA1 c5fa93bca66974a16dbb7e2a5106b80d2762b014 AUTHORS
+SHA1 715c8df68d01856f87470e9c9d4d72042cee689e Changes
+SHA1 ab1c70f9652f35eab15f385bb91cd02e6149794a MANIFEST
+SHA1 74eeda3d140eaf03e694213ed1bb117f77bf8c52 META.yml
+SHA1 3f5890c5e393264a97809786e101a35dce6a94ff Makefile.PL
+SHA1 a7f79ae0ff0dae3f4ec1bda31e1953a52fe30227 README
+SHA1 9b2f9d83bcf77860f53a0c07c90a4a59ad9f5df1 inc/Module/Install.pm
+SHA1 abe32855d75ab13747cf65765af9947b7a8c3057 inc/Module/Install/Base.pm
+SHA1 95b81d1e91bd634467bf633571eff4420e9c04eb inc/Module/Install/Can.pm
+SHA1 1fe98c63cf9d7271c8cb4183ba230f152df69e26 inc/Module/Install/Fetch.pm
+SHA1 2249171a2b72cd73ff2c0a06597d29f86e5df456 inc/Module/Install/Makefile.pm
+SHA1 381bb98ea3877bba49ae85e7a7ea130645fd3dbf inc/Module/Install/Metadata.pm
+SHA1 b384bd42bc6263dc56d04a884ef4e5fe340049f8 inc/Module/Install/Scripts.pm
+SHA1 0c2118868ef82ac517eb6d9c3bd93e6eb9bbf83e inc/Module/Install/Win32.pm
+SHA1 e827d6d43771032fa3df35c0ad5e5698d0e54cda inc/Module/Install/WriteAll.pm
+SHA1 723650820f70bee7d6191d96962158caccc02023 lib/Module/ScanDeps.pm
+SHA1 d7521b32b2d142aa5b3590abfeac06722f68d47c lib/Module/ScanDeps/DataFeed.pm
+SHA1 f2fba14605345129c6e97ea9716265f62e59c7ce script/scandeps.pl
+SHA1 659cd8c86e779270012c45220a6e1f23d28dcc5e t/0-pod.t
+SHA1 dbe01c33e3e1460525c8e750dc48556d0c6f062b t/1-basic.t
+SHA1 6d44e40caa0ca6934b9f3c6c572a99b7bcaf289f t/2-pluggable.t
+SHA1 e439bb21ada5bb1dabd63624a2eb4c34b64a3fe7 t/data/Foo.pm
+SHA1 844dab1b3ba5256c0b0c688ce97168ac16f6f41b t/data/Foo/Plugin/Bar.pm
+SHA1 f75fd03ca8165addb5dcc535312f6ce75184d0ef t/data/Foo/Plugin/Baz.pm
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2.2 (GNU/Linux)
+
+iD8DBQFFFOXJZCuimE51gxcRAsarAKCTM1FFn+QY+SimHlEt8mTHbfJNRACfTCw7
+6znvsN9+eONiRviIvkxC2kA=
+=mBD9
+-----END PGP SIGNATURE-----

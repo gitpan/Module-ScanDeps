@@ -1,4 +1,10 @@
 
+[Changes for 0.64 - 2006-09-22]
+* Upgraded to Module::Install 0.64
+* Added warning of missing modules when -V is in effect (scandeps.pl).
+* Added warning of missing modules if "warn_missing=>1" specified as
+  an option to scan_deps.
+
 [Changes for 0.63 - 2006-08-27]
 * Upgraded to Module::Install 0.63
 

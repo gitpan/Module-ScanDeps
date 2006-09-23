@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-$VERSION = '0.06';
+$VERSION = '0.07';
 
 use strict;
 use Config;
@@ -38,6 +38,7 @@ my $map = scan_deps(
     recurse => 1,
     $opts{x} ? ( execute => 1 ) :
     $opts{c} ? ( compile => 1 ) : (),
+    $opts{V} ? ( warn_missing => 1 ) : (),
 );
 
 
@@ -155,7 +156,12 @@ C<CPANPLUS.pm>) are marked with C<C>.
 Finally, modules that has loadable shared object files (usually
 needing a compiler to install) are marked with C<X>; with the
 C<-V> flag, those files (and all other files found) will be listed
-before the main output.
+before the main output. Additionally, all module files that the
+scanned code depends on but were not found (and thus not scanned
+recursively) are listed. These may include genuinely missing
+modules or false positives. That means, modules your code does
+not depend on (on this particular platform) but that were picked
+up by the heuristic anyway.
 
 =head1 OPTIONS
 
@@ -182,6 +188,10 @@ Include core modules in the output and the recursive search list.
 Verbose mode: Output all files found during the process; 
 show dependencies between modules and availability.
 
+Additionally, warns of any missing dependencies. If you find missing
+dependencies that aren't really dependencies, you have probably found
+false positives.
+
 =back
 
 =head1 SEE ALSO
@@ -198,7 +208,7 @@ Audrey Tang E<lt>autrijus@autrijus.orgE<gt>
 
 =head1 COPYRIGHT
 
-Copyright 2003, 2004, 2005 by Audrey Tang E<lt>autrijus@autrijus.orgE<gt>.
+Copyright 2003, 2004, 2005, 2006 by Audrey Tang E<lt>autrijus@autrijus.orgE<gt>.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

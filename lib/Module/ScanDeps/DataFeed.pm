@@ -1,5 +1,6 @@
 package Module::ScanDeps::DataFeed;
-$Module::ScanDeps::DataFeed::VERSION = '0.03';
+use strict;
+$Module::ScanDeps::DataFeed::VERSION = '0.04';
 
 =head1 NAME
 
