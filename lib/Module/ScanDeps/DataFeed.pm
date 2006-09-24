@@ -1,6 +1,7 @@
 package Module::ScanDeps::DataFeed;
-use strict;
-$Module::ScanDeps::DataFeed::VERSION = '0.05';
+# No compile time deps!
+#use strict; 
+$Module::ScanDeps::DataFeed::VERSION = '0.07';
 
 =head1 NAME
 
@@ -14,12 +15,20 @@ Module::ScanDeps::DataFeed - Runtime dependency scanning helper
 
 No user-serviceable parts inside.
 
+This module is used by the L<Module::ScanDeps> run- and compile-time scanners.
+It is included in the code run by C<Module::ScanDeps> and will write
+a string of loaded modules and C<@INC> entries to a file. This is
+achieved using an C<END {}> hook.
+
+Implementation might change, so don't use it outside of Module::ScanDeps!
+
 =cut
 
 my $_filename;
 
 sub import {
     my ($pkg, $filename) = @_;
+    # This is the file we'll write the @INC and %INC info to at END.
     $_filename = $filename;
 
     my $fname = __PACKAGE__;
@@ -29,6 +38,7 @@ sub import {
 }
 
 END {
+    # Write %INC and @INC to the file specified at compile time in import()
     defined $_filename or return;
 
     my %inc = %INC;
@@ -53,7 +63,8 @@ END {
     print FH "\n);\n";
 
     print FH '@incarray = (' . "\n\t";
-    print FH join(',', map("\n\t'$_'", @inc));
+    # inner map escapes trailing backslashes
+    print FH join(',', map("\n\t'$_'", map {s/\\$/\\\\/} @inc));
     print FH "\n);\n";
 
     my @dl_bs = @dl_so;
@@ -109,7 +120,8 @@ L<Module::ScanDeps>
 =head1 AUTHORS
 
 Edward S. Peschko E<lt>esp5@pge.comE<gt>,
-Audrey Tang E<lt>autrijus@autrijus.orgE<gt>
+Audrey Tang E<lt>autrijus@autrijus.orgE<gt>,
+to a lesser degree Steffen Mueller E<lt>smueller@cpan.orgE<gt>
 
 L<http://par.perl.org/> is the official website for this module.  You
 can write to the mailing list at E<lt>par@perl.orgE<gt>, or send an empty
@@ -119,8 +131,9 @@ Please submit bug reports to E<lt>bug-Module-ScanDeps@rt.cpan.orgE<gt>.
 
 =head1 COPYRIGHT
 
-Copyright 2004, 2005 by Edward S. Peschko E<lt>esp5@pge.comE<gt>,
-Audrey Tang E<lt>autrijus@autrijus.orgE<gt>
+Copyright 2004, 2005, 2006 by Edward S. Peschko E<lt>esp5@pge.comE<gt>,
+Audrey Tang E<lt>autrijus@autrijus.orgE<gt>,
+Steffen Mueller E<lt>smueller@cpan.orgE<gt>
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

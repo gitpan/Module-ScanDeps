@@ -11,4 +11,4 @@ no_index:
 requires: 
   File::Temp: 0
   perl: 5.004
-version: 0.64
+version: 0.66

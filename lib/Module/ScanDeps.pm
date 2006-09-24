@@ -4,7 +4,7 @@ use 5.004;
 use strict;
 use vars qw( $VERSION @EXPORT @EXPORT_OK $CurrentPackage );
 
-$VERSION   = '0.65';
+$VERSION   = '0.66';
 @EXPORT    = qw( scan_deps scan_deps_runtime );
 @EXPORT_OK = qw( scan_line scan_chunk add_deps scan_deps_runtime );
 
@@ -1067,6 +1067,8 @@ documentations on CPAN for further information.
 
 Audrey Tang E<lt>autrijus@autrijus.orgE<gt>
 
+To a lesser degree: Steffen Mueller E<lt>smueller@cpan.orgE<gt>
+
 Parts of heuristics were deduced from:
 
 =over 4
@@ -1092,7 +1094,8 @@ Please submit bug reports to E<lt>bug-Module-ScanDeps@rt.cpan.orgE<gt>.
 =head1 COPYRIGHT
 
 Copyright 2002, 2003, 2004, 2005, 2006 by
-Audrey Tang E<lt>autrijus@autrijus.orgE<gt>.
+Audrey Tang E<lt>autrijus@autrijus.orgE<gt>;
+2005, 2006 by Steffen Mueller E<lt>smueller@cpan.orgE<gt>.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

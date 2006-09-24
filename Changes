@@ -1,4 +1,12 @@
 
+[Changes for 0.66 - 2006-09-24]
+* Fixed another bug in Module::ScanDeps::Datafeed which would break
+  run- and compile-time dependency scanners if $ENV{PERL5LIB} entries
+  had trailing backslashes. Thanks to Steven Mackenzie for pointing
+  this out.
+* Added some documentation and comments to M::SD::Datafeed for the sake of
+  future maintainers.
+
 [Changes for 0.65 - 2006-09-24]
 * Fixed bug in Module::ScanDeps::Datafeed which would die() in 0.64.
 
