@@ -1,4 +1,7 @@
 
+[Changes for 0.65 - 2006-09-24]
+* Fixed bug in Module::ScanDeps::Datafeed which would die() in 0.64.
+
 [Changes for 0.64 - 2006-09-22]
 * Upgraded to Module::Install 0.64
 * Added warning of missing modules when -V is in effect (scandeps.pl).

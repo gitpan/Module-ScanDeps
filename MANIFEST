@@ -22,4 +22,3 @@ t/2-pluggable.t
 t/data/Foo.pm
 t/data/Foo/Plugin/Bar.pm
 t/data/Foo/Plugin/Baz.pm
-SIGNATURE                                Public-key signature (added by MakeMaker)

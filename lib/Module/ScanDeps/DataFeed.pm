@@ -1,6 +1,6 @@
 package Module::ScanDeps::DataFeed;
 use strict;
-$Module::ScanDeps::DataFeed::VERSION = '0.04';
+$Module::ScanDeps::DataFeed::VERSION = '0.05';
 
 =head1 NAME
 
@@ -93,7 +93,7 @@ sub _dl_mod2filename {
     my $modpname = join('/', @modparts);
 
     foreach my $dir (@INC) {
-        $file = "$dir/auto/$modpname/$modfname.$dl_ext";
+        my $file = "$dir/auto/$modpname/$modfname.$dl_ext";
         return $file if -r $file;
     }
 
