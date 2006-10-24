@@ -1,4 +1,10 @@
 
+[Changes for 0.67 - 2006-10-24]
+* Added @IncludeLibs which is used alongside @INC for searching modules.
+  (David Romano)
+* Won't pick up Tk as a dependency for Term::ReadLine any more.
+  You can stop laughing now!
+
 [Changes for 0.66 - 2006-09-24]
 * Fixed another bug in Module::ScanDeps::Datafeed which would break
   run- and compile-time dependency scanners if $ENV{PERL5LIB} entries

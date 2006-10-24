@@ -2,9 +2,9 @@ package Module::ScanDeps;
 
 use 5.004;
 use strict;
-use vars qw( $VERSION @EXPORT @EXPORT_OK $CurrentPackage );
+use vars qw( $VERSION @EXPORT @EXPORT_OK $CurrentPackage @IncludeLibs );
 
-$VERSION   = '0.66';
+$VERSION   = '0.67';
 @EXPORT    = qw( scan_deps scan_deps_runtime );
 @EXPORT_OK = qw( scan_line scan_chunk add_deps scan_deps_runtime );
 
@@ -31,8 +31,8 @@ Module::ScanDeps - Recursively scan Perl code for dependencies
 
 =head1 VERSION
 
-This document describes version 0.64 of Module::ScanDeps, released
-September 22, 2006.
+This document describes version 0.67 of Module::ScanDeps, released
+October 24, 2006.
 
 =head1 SYNOPSIS
 
@@ -158,10 +158,17 @@ or C<undef>.
     $rv_ref = add_deps( @modules ); # shorthand, without rv
 
 Resolves a list of module names to its actual on-disk location, by
-finding in C<@INC>; modules that cannot be found are skipped.
+finding in C<@INC> and C<@Module::ScanDeps::IncludeLibs>;
+modules that cannot be found are skipped.
 
 This function populates the C<%rv> hash with module/filename pairs, and
 returns a reference to it.
+
+=head1 NOTES
+
+You can set the global variable C<@Module::ScanDeps::IncludeLibs> to
+specify additional directories in which to search modules
+without modifying C<@INC> itself.
 
 =head1 CAVEATS
 
@@ -432,13 +439,21 @@ sub scan_deps_static {
         open FH, $file or die "Cannot open $file: $!";
 
         $SeenTk = 0;
-
         # Line-by-line scanning
         LINE:
         while (<FH>) {
             chomp(my $line = $_);
             foreach my $pm (scan_line($line)) {
                 last LINE if $pm eq '__END__';
+                
+                # Skip Tk hits from Term::ReadLine
+                my $pathsep = qr/\/|\\|::/;
+                if (
+                    $file =~ /${pathsep}Term${pathsep}ReadLine.pm$/
+                    and $pm =~ /^Tk\b/
+                ) {
+                    next;
+                }
 
                 if ($pm eq '__POD__') {
                     while (<FH>) { last if (/^=cut/) }
@@ -742,7 +757,7 @@ sub _find_in_inc {
     # absolute file names
     return $file if -f $file;
 
-    foreach my $dir (grep !/\bBSDPAN\b/, @INC) {
+    foreach my $dir (grep !/\bBSDPAN\b/, @INC, @IncludeLibs) {
         return "$dir/$file" if -f "$dir/$file";
     }
     return;
@@ -757,7 +772,7 @@ sub _glob_in_inc {
 
     $subdir =~ s/\$CurrentPackage/$CurrentPackage/;
 
-    foreach my $dir (map "$_/$subdir", grep !/\bBSDPAN\b/, @INC) {
+    foreach my $dir (map "$_/$subdir", grep !/\bBSDPAN\b/, @INC, @IncludeLibs) {
         next unless -d $dir;
         File::Find::find(
             sub {
@@ -918,7 +933,7 @@ sub _execute {
     $fhin->close;
 
     File::Path::rmtree( ['_Inline'], 0, 1); # XXX hack
-    system($perl, $fname) == 0 or die "SYSTEM ERROR in executing $file: $?";
+    system($perl, (map { "-I$_" } @IncludeLibs), $fname) == 0 or die "SYSTEM ERROR in executing $file: $?";
 
     _extract_info("$fname.out", $inchash, $dl_shared_objects, $incarray);
     unlink("$fname");
@@ -1047,7 +1062,7 @@ sub _warn_of_missing_module {
     my $warn = shift;
     return if not $warn;
     return if not $module =~ /\.p[ml]$/;
-    print "# Could not find source file '$module' in \@INC. Skipping it.\n"
+    print "# Could not find source file '$module' in \@INC or \@IncludeLibs. Skipping it.\n"
       if not -f $module;
 }
 
