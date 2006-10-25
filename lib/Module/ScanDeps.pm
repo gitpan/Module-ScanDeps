@@ -4,7 +4,7 @@ use 5.004;
 use strict;
 use vars qw( $VERSION @EXPORT @EXPORT_OK $CurrentPackage @IncludeLibs );
 
-$VERSION   = '0.67';
+$VERSION   = '0.68';
 @EXPORT    = qw( scan_deps scan_deps_runtime );
 @EXPORT_OK = qw( scan_line scan_chunk add_deps scan_deps_runtime );
 
@@ -22,6 +22,7 @@ use constant is_insensitive_fs => (
 use Cwd ();
 use File::Path ();
 use File::Temp ();
+use File::Spec ();
 use File::Basename ();
 use FileHandle;
 
@@ -31,8 +32,8 @@ Module::ScanDeps - Recursively scan Perl code for dependencies
 
 =head1 VERSION
 
-This document describes version 0.67 of Module::ScanDeps, released
-October 24, 2006.
+This document describes version 0.68 of Module::ScanDeps, released
+October 25, 2006.
 
 =head1 SYNOPSIS
 
@@ -284,6 +285,7 @@ my %Preload = (
     ],
     'Parse/AFP.pm'                  => 'sub',
     'Parse/Binary.pm'               => 'sub',
+    'PerlIO.pm'                     => [ 'PerlIO/scalar.pm' ],
     'Regexp/Common.pm'              => 'sub',
     'SerialJunk.pm' => [ qw(
         termios.ph asm/termios.ph sys/termiox.ph sys/termios.ph sys/ttycom.ph
@@ -470,14 +472,7 @@ sub scan_deps_static {
                     warn_missing => $args->{warn_missing},
                 );
 
-                my $preload = $Preload{$pm} or next;
-                if ($preload eq 'sub') {
-                    $pm =~ s/\.p[mh]$//i;
-                    $preload = [ _glob_in_inc($pm, 1) ];
-                }
-                elsif (UNIVERSAL::isa($preload, 'CODE')) {
-                    $preload = [ $preload->($pm) ];
-                }
+                my $preload = _get_preload($pm) or next;
 
                 add_deps(
                     used_by => $key,
@@ -803,10 +798,9 @@ sub new {
 sub set_file {
     my $self = shift;
     foreach my $script (@_) {
-        my $basename = $script;
-        $basename =~ s/.*\///;
+        my ($vol, $dir, $file) = File::Spec->splitpath($script);
         $self->{main} = {
-            key  => $basename,
+            key  => $file,
             file => $script,
         };
     }
@@ -827,8 +821,8 @@ sub set_options {
 sub calculate_info {
     my $self = shift;
     my $rv   = scan_deps(
-        keys  => [ $self->{main}{key}, sort keys %{ $self->{files} }, ],
-        files => [ $self->{main}{file},
+        'keys' => [ $self->{main}{key}, sort keys %{ $self->{files} }, ],
+        files  => [ $self->{main}{file},
             map { $self->{files}{$_} } sort keys %{ $self->{files} },
         ],
         recurse => 1,
@@ -1055,7 +1049,6 @@ sub _abs_path {
     );
 }
 
-1;
 
 sub _warn_of_missing_module {
     my $module = shift;
@@ -1066,6 +1059,20 @@ sub _warn_of_missing_module {
       if not -f $module;
 }
 
+sub _get_preload {
+    my $pm = shift;
+    my $preload = $Preload{$pm} or return();
+    if ($preload eq 'sub') {
+        $pm =~ s/\.p[mh]$//i;
+        $preload = [ _glob_in_inc($pm, 1) ];
+    }
+    elsif (UNIVERSAL::isa($preload, 'CODE')) {
+        $preload = [ $preload->($pm) ];
+    }
+    return $preload;
+}
+
+1;
 __END__
 
 =head1 SEE ALSO
