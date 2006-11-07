@@ -1,4 +1,8 @@
 
+[Changes for 0.69 - 2006-11-07]
+* Additional corner cases for LWP::UserAgent and LWP::Parallel::UserAgent and
+  friends.
+
 [Changes for 0.68 - 2006-10-25]
 * Added special case for PerlIO.pm. If PerlIO.pm is needed, require
   PerlIO::scalar, too, because it can be used "under the hood".

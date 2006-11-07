@@ -4,7 +4,7 @@ use 5.004;
 use strict;
 use vars qw( $VERSION @EXPORT @EXPORT_OK $CurrentPackage @IncludeLibs );
 
-$VERSION   = '0.68';
+$VERSION   = '0.69';
 @EXPORT    = qw( scan_deps scan_deps_runtime );
 @EXPORT_OK = qw( scan_line scan_chunk add_deps scan_deps_runtime );
 
@@ -194,7 +194,8 @@ But this one does not:
 my $SeenTk;
 
 # Pre-loaded module dependencies {{{
-my %Preload = (
+my %Preload;
+%Preload = (
     'AnyDBM_File.pm'  => [qw( SDBM_File.pm )],
     'Authen/SASL.pm'  => 'sub',
     'Bio/AlignIO.pm'  => 'sub',
@@ -251,10 +252,26 @@ my %Preload = (
         IO/Pipe.pm          IO/Socket.pm        IO/Dir.pm
     ) ],
     'IO/Socket.pm'     => [qw( IO/Socket/UNIX.pm )],
-    'LWP/UserAgent.pm' => [ qw(
-        URI/URL.pm          URI/http.pm         LWP/Protocol/http.pm
-        LWP/Protocol/https.pm
-    ), _glob_in_inc("LWP/Authen", 1) ],
+    'LWP/UserAgent.pm' => sub {
+        return(
+            qw(
+            URI/URL.pm          URI/http.pm         LWP/Protocol/http.pm
+            ),
+            _glob_in_inc("LWP/Authen", 1),
+            _glob_in_inc("LWP/Protocol", 1),
+        );
+    },
+    'LWP/Parallel.pm' => sub {
+        _glob_in_inc( 'LWP/Parallel', 1 ),
+        qw(
+            LWP/ParallelUA.pm       LWP/UserAgent.pm
+            LWP/RobotPUA.pm         LWP/RobotUA.pm
+        ),
+    },
+    'LWP/Parallel/UserAgent.pm' => sub {
+        qw( LWP/Parallel.pm ),
+        @{ _get_preload('LWP/Parallel.pm') }
+    },
     'Locale/Maketext/Lexicon.pm'    => 'sub',
     'Locale/Maketext/GutsLoader.pm' => [qw( Locale/Maketext/Guts.pm )],
     'Mail/Audit.pm'                => 'sub',
