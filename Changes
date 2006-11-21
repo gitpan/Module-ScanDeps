@@ -1,4 +1,7 @@
 
+[Changes for 0.70 - 2006-11-21]
+* Added special case for Image::Info.
+
 [Changes for 0.69 - 2006-11-07]
 * Additional corner cases for LWP::UserAgent and LWP::Parallel::UserAgent and
   friends.

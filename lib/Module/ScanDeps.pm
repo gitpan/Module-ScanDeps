@@ -4,7 +4,7 @@ use 5.004;
 use strict;
 use vars qw( $VERSION @EXPORT @EXPORT_OK $CurrentPackage @IncludeLibs );
 
-$VERSION   = '0.69';
+$VERSION   = '0.70';
 @EXPORT    = qw( scan_deps scan_deps_runtime );
 @EXPORT_OK = qw( scan_line scan_chunk add_deps scan_deps_runtime );
 
@@ -247,6 +247,11 @@ my %Preload;
     'HTTP/Message.pm' => [ qw(
         URI/URL.pm          URI.pm
     ) ],
+    'Image/Info.pm' => sub {
+        return( _glob_in_inc("Image/Info", 1), qw(
+            Image/TIFF.pm
+        ));
+    },
     'IO.pm' => [ qw(
         IO/Handle.pm        IO/Seekable.pm      IO/File.pm
         IO/Pipe.pm          IO/Socket.pm        IO/Dir.pm
