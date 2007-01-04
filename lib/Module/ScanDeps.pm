@@ -4,7 +4,7 @@ use 5.004;
 use strict;
 use vars qw( $VERSION @EXPORT @EXPORT_OK $CurrentPackage @IncludeLibs );
 
-$VERSION   = '0.70';
+$VERSION   = '0.71';
 @EXPORT    = qw( scan_deps scan_deps_runtime );
 @EXPORT_OK = qw( scan_line scan_chunk add_deps scan_deps_runtime );
 
@@ -32,8 +32,8 @@ Module::ScanDeps - Recursively scan Perl code for dependencies
 
 =head1 VERSION
 
-This document describes version 0.68 of Module::ScanDeps, released
-October 25, 2006.
+This document describes version 0.71 of Module::ScanDeps, released
+January  4, 2007.
 
 =head1 SYNOPSIS
 
@@ -221,6 +221,14 @@ my %Preload;
     'Bio/TreeIO.pm'  => 'sub',
     'Bio/LiveSeq/IO.pm'  => 'sub',
     'Bio/Variation/IO.pm'  => 'sub',
+    'Catalyst.pm' => sub {
+        return ('Catalyst/Runtime.pm',
+                'Catalyst/Dispatcher.pm',
+                _glob_in_inc('Catalyst/DispatchType', 1));
+    },
+    'Catalyst/Engine.pm' => 'sub',
+    'Class/MakeMethods.pm' => 'sub',
+    'Config/Any.pm' =>'sub',
     'Crypt/Random.pm' => sub {
         _glob_in_inc('Crypt/Random/Provider', 1);
     },
@@ -230,12 +238,14 @@ my %Preload;
     'DBI.pm' => sub {
         grep !/\bProxy\b/, _glob_in_inc('DBD', 1);
     },
+    'DBIx/Class.pm' => 'sub',
     'DBIx/SearchBuilder.pm' => 'sub',
     'DBIx/ReportBuilder.pm' => 'sub',
     'Device/ParallelPort.pm' => 'sub',
     'Device/SerialPort.pm' => [ qw(
         termios.ph asm/termios.ph sys/termiox.ph sys/termios.ph sys/ttycom.ph
     ) ],
+    'Email/Send.pm' => 'sub',
     'ExtUtils/MakeMaker.pm' => sub {
         grep /\bMM_/, _glob_in_inc('ExtUtils', 1);
     },
@@ -257,6 +267,7 @@ my %Preload;
         IO/Pipe.pm          IO/Socket.pm        IO/Dir.pm
     ) ],
     'IO/Socket.pm'     => [qw( IO/Socket/UNIX.pm )],
+    'Log/Log4perl.pm' => 'sub',
     'LWP/UserAgent.pm' => sub {
         return(
             qw(
@@ -317,6 +328,9 @@ my %Preload;
     },
     'SQL/Parser.pm' => sub {
         _glob_in_inc('SQL/Dialects', 1);
+    },
+    'SQL/Translator/Schema.pm' => sub {
+        _glob_in_inc('SQL/Translator', 1);
     },
     'SVK/Command.pm' => sub {
         _glob_in_inc('SVK', 1);

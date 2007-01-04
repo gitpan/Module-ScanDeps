@@ -1,3 +1,13 @@
+[Changes for 0.71 - 2007-01-04]
+* Added special cases for
+  Catalyst
+  Class::MakeMethods
+  Config::Any
+  DBIx::Class
+  Email::Send
+  Log::Log4perl
+  SQL::Translator
+* print() the "# Legend..." line instead of warn()ing it.
 
 [Changes for 0.70 - 2006-11-21]
 * Added special case for Image::Info.

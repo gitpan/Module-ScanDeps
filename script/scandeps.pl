@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-$VERSION = '0.07';
+$VERSION = '0.71';
 
 use strict;
 use Config;
@@ -81,7 +81,7 @@ foreach my $key (sort keys %$map) {
 
 $len += 2;
 
-warn "# Legend: [C]ore [X]ternal [S]ubmodule [?]NotOnCPAN\n" if $verbose;
+print "# Legend: [C]ore [X]ternal [S]ubmodule [?]NotOnCPAN\n" if $verbose;
 
 foreach my $mod (sort {
     "@{$a->{used_by}}" cmp "@{$b->{used_by}}" or
