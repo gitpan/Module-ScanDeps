@@ -1,7 +1,7 @@
 package Module::ScanDeps::DataFeed;
 # No compile time deps!
 #use strict; 
-$Module::ScanDeps::DataFeed::VERSION = '0.07';
+$Module::ScanDeps::DataFeed::VERSION = '0.09';
 
 =head1 NAME
 
@@ -64,7 +64,7 @@ END {
 
     print FH '@incarray = (' . "\n\t";
     # inner map escapes trailing backslashes
-    print FH join(',', map("\n\t'$_'", map {s/\\$/\\\\/} @inc));
+    print FH join(',', map("\n\t'$_'", map {s/\\$/\\\\/; $_} @inc));
     print FH "\n);\n";
 
     my @dl_bs = @dl_so;

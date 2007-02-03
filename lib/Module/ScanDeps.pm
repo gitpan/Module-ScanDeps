@@ -4,7 +4,7 @@ use 5.004;
 use strict;
 use vars qw( $VERSION @EXPORT @EXPORT_OK $CurrentPackage @IncludeLibs );
 
-$VERSION   = '0.71';
+$VERSION   = '0.72';
 @EXPORT    = qw( scan_deps scan_deps_runtime );
 @EXPORT_OK = qw( scan_line scan_chunk add_deps scan_deps_runtime );
 
@@ -579,6 +579,8 @@ sub scan_deps_runtime {
             $first_flag = 0;
         }
 
+        # XXX only retains data from last execute ...  Why? I suspect
+        # the above loop was added later.  Needs test cases --Eric
         my $rv_sub = _make_rv($inchash, $dl_shared_objects, $incarray);
         _merge_rv($rv_sub, $rv);
     }
@@ -970,12 +972,15 @@ sub _execute {
     unlink("$fname.out");
 }
 
+# create a new hashref, applying fixups
 sub _make_rv {
     my ($inchash, $dl_shared_objects, $inc_array) = @_;
 
     my $rv = {};
     my @newinc = map(quotemeta($_), @$inc_array);
     my $inc = join('|', sort { length($b) <=> length($a) } @newinc);
+    # don't pack lib/c:/ or lib/C:/
+    $inc = qr/$inc/i if(is_insensitive_fs());
 
     require File::Spec;
 
@@ -1033,6 +1038,7 @@ sub _gettype {
     return 'data';
 }
 
+# merge all keys from $rv_sub into the $rv mega-ref
 sub _merge_rv {
     my ($rv_sub, $rv) = @_;
 
