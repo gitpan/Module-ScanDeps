@@ -14,10 +14,10 @@ not run its Makefile.PL or Build.PL.
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA1
 
-SHA1 7ba815db40c0d36e270b212bc5aa80361331d56e AUTHORS
-SHA1 66ed39b120133ed952d6c9b3ca37a0ee952ace16 Changes
+SHA1 33ec09a895783c46b20e71941fc04e9d74de1e0d AUTHORS
+SHA1 a412402cfbb65c61e9dc46aefdad270bef3d8647 Changes
 SHA1 ab1c70f9652f35eab15f385bb91cd02e6149794a MANIFEST
-SHA1 79356efe8452cfe198c7c90b037ad6f115a63258 META.yml
+SHA1 0834ba94bd70eb260165f8559bbca477c9fbd767 META.yml
 SHA1 54c5e969364b3c640700ca94c3138b1036dbc948 Makefile.PL
 SHA1 a7f79ae0ff0dae3f4ec1bda31e1953a52fe30227 README
 SHA1 9b2f9d83bcf77860f53a0c07c90a4a59ad9f5df1 inc/Module/Install.pm
@@ -29,7 +29,7 @@ SHA1 f1d4e1bbcb40bb269f36e6dc011b3ca25d3829b7 inc/Module/Install/Metadata.pm
 SHA1 b384bd42bc6263dc56d04a884ef4e5fe340049f8 inc/Module/Install/Scripts.pm
 SHA1 0c2118868ef82ac517eb6d9c3bd93e6eb9bbf83e inc/Module/Install/Win32.pm
 SHA1 e827d6d43771032fa3df35c0ad5e5698d0e54cda inc/Module/Install/WriteAll.pm
-SHA1 d0eee1e771915117bf8dbceaf3eaab2f48e43163 lib/Module/ScanDeps.pm
+SHA1 4e0b82cb20cfbc2325813dab122653fce28d6f97 lib/Module/ScanDeps.pm
 SHA1 21db0ad572d568905521c92c3d0216c48f1c433d lib/Module/ScanDeps/DataFeed.pm
 SHA1 dcb5b18542784b1ed15445137d732fc1d19df05a script/scandeps.pl
 SHA1 659cd8c86e779270012c45220a6e1f23d28dcc5e t/0-pod.t
@@ -41,7 +41,7 @@ SHA1 f75fd03ca8165addb5dcc535312f6ce75184d0ef t/data/Foo/Plugin/Baz.pm
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.4.3 (GNU/Linux)
 
-iD8DBQFFxGWzZCuimE51gxcRAtESAJ0Qj+U+ym4zcoakHmPiXKIKz6m9ywCgoGBj
-SrHwtmp9YiZ5qMvFwCpJyZ8=
-=TAxx
+iD8DBQFGBsDmZCuimE51gxcRAu0MAJsHBTOO6/sItmhlrllEWSLZP5q9yQCgxt7E
+7yOmdUNh8wSQgX71R23/Vz4=
+=E33R
 -----END PGP SIGNATURE-----
