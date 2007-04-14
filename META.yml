@@ -16,4 +16,4 @@ requires:
   File::Spec: 0
   File::Temp: 0
   perl: 5.004
-version: 0.73
+version: 0.73_01

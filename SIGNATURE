@@ -14,10 +14,10 @@ not run its Makefile.PL or Build.PL.
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA1
 
-SHA1 33ec09a895783c46b20e71941fc04e9d74de1e0d AUTHORS
-SHA1 a412402cfbb65c61e9dc46aefdad270bef3d8647 Changes
-SHA1 ab1c70f9652f35eab15f385bb91cd02e6149794a MANIFEST
-SHA1 0834ba94bd70eb260165f8559bbca477c9fbd767 META.yml
+SHA1 e927c362d2923939970d04b1dcec4cef16a1bb34 AUTHORS
+SHA1 373609489a4d508c298656f2d92c8126b0d4c335 Changes
+SHA1 8b3e854d9705abaa049cba5db559b293b23564c6 MANIFEST
+SHA1 ce82f036f14e6fe386ddcc0e6d9ff98f211f8672 META.yml
 SHA1 54c5e969364b3c640700ca94c3138b1036dbc948 Makefile.PL
 SHA1 a7f79ae0ff0dae3f4ec1bda31e1953a52fe30227 README
 SHA1 9b2f9d83bcf77860f53a0c07c90a4a59ad9f5df1 inc/Module/Install.pm
@@ -29,19 +29,46 @@ SHA1 f1d4e1bbcb40bb269f36e6dc011b3ca25d3829b7 inc/Module/Install/Metadata.pm
 SHA1 b384bd42bc6263dc56d04a884ef4e5fe340049f8 inc/Module/Install/Scripts.pm
 SHA1 0c2118868ef82ac517eb6d9c3bd93e6eb9bbf83e inc/Module/Install/Win32.pm
 SHA1 e827d6d43771032fa3df35c0ad5e5698d0e54cda inc/Module/Install/WriteAll.pm
-SHA1 4e0b82cb20cfbc2325813dab122653fce28d6f97 lib/Module/ScanDeps.pm
+SHA1 82241410d69b00415c3dc1e5cfca8fc04fb55efe lib/Module/ScanDeps.pm
 SHA1 21db0ad572d568905521c92c3d0216c48f1c433d lib/Module/ScanDeps/DataFeed.pm
 SHA1 dcb5b18542784b1ed15445137d732fc1d19df05a script/scandeps.pl
 SHA1 659cd8c86e779270012c45220a6e1f23d28dcc5e t/0-pod.t
-SHA1 dbe01c33e3e1460525c8e750dc48556d0c6f062b t/1-basic.t
-SHA1 6d44e40caa0ca6934b9f3c6c572a99b7bcaf289f t/2-pluggable.t
-SHA1 e439bb21ada5bb1dabd63624a2eb4c34b64a3fe7 t/data/Foo.pm
-SHA1 844dab1b3ba5256c0b0c688ce97168ac16f6f41b t/data/Foo/Plugin/Bar.pm
-SHA1 f75fd03ca8165addb5dcc535312f6ce75184d0ef t/data/Foo/Plugin/Baz.pm
+SHA1 84ba93c625e4a84e3f13fa809789780a13b5f653 t/1-static_functional_interface_real.t
+SHA1 5e04cf497d39e10b49ead100e6ba177c2f6cdd51 t/2-static_functional_interface_fake.t
+SHA1 bcc62f9c99311c136169425a1736add941944a11 t/3-static_oo_interface_real.t
+SHA1 efbdda562e0e28c25f23caac7f1af36875d47742 t/4-static_functional_interface_options_fake.t
+SHA1 38ac7379bb20cf1a23aa2775f7bf12243e6d0320 t/5-pluggable_fake.t
+SHA1 c70250a79cbfed972d53f00e4fde8a0b405bda7a t/6-file-glob.t
+SHA1 8b6f60799a04fc763e2c44fce43d094c31be5268 t/Utils.pm
+SHA1 7425d8753af377912d85c70b6da071d708da7f4b t/data/file-glob-no.pl
+SHA1 37189ebe16d5aa222173b96d59bf222aa027d8be t/data/file-glob-yes.pl
+SHA1 e439bb21ada5bb1dabd63624a2eb4c34b64a3fe7 t/data/pluggable/Foo.pm
+SHA1 844dab1b3ba5256c0b0c688ce97168ac16f6f41b t/data/pluggable/Foo/Plugin/Bar.pm
+SHA1 f75fd03ca8165addb5dcc535312f6ce75184d0ef t/data/pluggable/Foo/Plugin/Baz.pm
+SHA1 0ab9e623bf7a769fecbd32d155345c63f60850ce t/data/static/Duplicated.pm
+SHA1 f88facbf805c88936bc30469d105ce31c4f47a9c t/data/static/Duplicator.pl
+SHA1 1ba6931e941e42428773c63fb051f666713d0eb6 t/data/static/InputA.pl
+SHA1 c31a1d5adf791f1bfdc15bf7714494b8924e5bb2 t/data/static/InputB.pl
+SHA1 0e2c13fcc445cc9e5e9152fdd3f8149313be7171 t/data/static/InputC.pl
+SHA1 f55b8b9b494fbcbf005d9f73fadcb2a5ade7eae1 t/data/static/TestA.pm
+SHA1 d4ca784604a23e0421dce9b9e999868e67a1815c t/data/static/TestB.pm
+SHA1 29c28a3a6941f744f1f1c50b328850f80247f9ea t/data/static/TestC.pm
+SHA1 55febfa315bfa4d53a0f89b36bf6036f7771dd64 t/data/static/TestD.pm
+SHA1 102de878d41eac1469e46fcd33355ed82776f15b t/data/static/chicken.pm
+SHA1 07150dc9da53b9876e52af945839f69a357aec00 t/data/static/egg.pm
+SHA1 1b4de7c05c621ae05bed14261f1ae4234887a358 t/data/static/inner_diamond_E.pm
+SHA1 f1602206a087551ff33f613e1b0d936aace3bb99 t/data/static/inner_diamond_N.pm
+SHA1 b0978e7a98de735ddf236591fa4c4db8aa98c599 t/data/static/inner_diamond_S.pm
+SHA1 e89cb8c8e305930410573d2ce60acdf2be6a1a89 t/data/static/inner_diamond_W.pm
+SHA1 da39a3ee5e6b4b0d3255bfef95601890afd80709 t/data/static/null.pl
+SHA1 df40133f2d8ded5e98a8ec50735352be9d40fb63 t/data/static/outer_diamond_E.pm
+SHA1 d9531a968da00f515972727d17a6d602731918e0 t/data/static/outer_diamond_N.pm
+SHA1 1f6657c5bdd535993c7a80f7c8e3c18f69c6fe40 t/data/static/outer_diamond_S.pm
+SHA1 c90f94b48746c53f3a1d3bb5eddc3bf2717308c5 t/data/static/outer_diamond_W.pm
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.4.3 (GNU/Linux)
 
-iD8DBQFGBsDmZCuimE51gxcRAu0MAJsHBTOO6/sItmhlrllEWSLZP5q9yQCgxt7E
-7yOmdUNh8wSQgX71R23/Vz4=
-=E33R
+iD8DBQFGIJvXZCuimE51gxcRAgB6AKCsStZqOZm1mSjk1hTRTSbY4BtuigCcCZAK
+NTM0qqG4iuQxHeHsoRpLtL0=
+=6+IU
 -----END PGP SIGNATURE-----
