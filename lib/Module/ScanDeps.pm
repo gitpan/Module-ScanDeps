@@ -4,9 +4,9 @@ use 5.004;
 use strict;
 use vars qw( $VERSION @EXPORT @EXPORT_OK $CurrentPackage @IncludeLibs );
 
-$VERSION   = '0.74';
+$VERSION   = '0.75';
 @EXPORT    = qw( scan_deps scan_deps_runtime );
-@EXPORT_OK = qw( scan_line scan_chunk add_deps scan_deps_runtime );
+@EXPORT_OK = qw( scan_line scan_chunk add_deps scan_deps_runtime path_to_inc_name );
 
 use Config;
 use Exporter;
@@ -25,6 +25,7 @@ use File::Temp ();
 use File::Spec ();
 use File::Basename ();
 use FileHandle;
+use Module::Build::ModuleInfo;
 
 =head1 NAME
 
@@ -164,6 +165,17 @@ modules that cannot be found are skipped.
 
 This function populates the C<%rv> hash with module/filename pairs, and
 returns a reference to it.
+
+=head2 B<path_to_inc_name>
+
+    $perl_name = path_to_inc_name($path, $warn)
+
+Assumes C<$path> refers to a perl file and does it's best to return the
+name as it would appear in %INC. Returns undef if no match was found 
+and a prints a warning to STDOUT if C<$warn> is true.
+
+E.g. if C<$path> = perl/site/lib/Module/ScanDeps.pm then C<$perl_name>
+will be Module/ScanDeps.pm.
 
 =head1 NOTES
 
@@ -307,15 +319,15 @@ my %Preload;
         _glob_in_inc('PDF/API2/Basic/TTF', 1);
     },
     'PDF/Writer.pm'                 => 'sub',
-    'POE'                           => [ qw(
+    'POE.pm'                           => [ qw(
         POE/Kernel.pm POE/Session.pm
     ) ],
-    'POE/Kernel.pm'                    => [
-        map "POE/Resource/$_.pm", qw(
-            Aliases Events Extrefs FileHandles
-            SIDs Sessions Signals Statistics
-        )
-    ],
+    'POE/Kernel.pm'                    => sub {
+	_glob_in_inc('POE/XS/Resource', 1),
+	_glob_in_inc('POE/Resource', 1),
+	_glob_in_inc('POE/XS/Loop', 1),
+	_glob_in_inc('POE/Loop', 1),
+    },
     'Parse/AFP.pm'                  => 'sub',
     'Parse/Binary.pm'               => 'sub',
     'PerlIO.pm'                     => [ 'PerlIO/scalar.pm' ],
@@ -438,10 +450,27 @@ my %Preload;
 
 # }}}
 
-sub _path_to_filename {
-    my $file = shift @_;
-    my ($vol, $dir, $key) = File::Spec->splitpath($file);
-    return $key;
+sub path_to_inc_name($$) {
+    my $path = shift;
+    my $warn = shift;
+    my $inc_name;
+
+    if ($path =~ m/\.pm$/io) {
+        die "$path doesn't exist" unless (-f $path);
+        my $module_info = Module::Build::ModuleInfo->new_from_file($path);
+        die "Module::Build::ModuleInfo error: $!" unless defined($module_info);
+        $inc_name = $module_info->name();
+        if (defined($inc_name)) {
+            $inc_name =~ s|\:\:|\/|og;
+            $inc_name .= '.pm';
+        } else {
+            print "# Couldn't find include name for $path\n" if $warn;
+        }
+    } else {
+        (my $vol, my $dir, $inc_name) = File::Spec->splitpath($path);
+    }
+
+    return $inc_name;
 }
 
 my $Keys = 'files|keys|recurse|rv|skip|first|execute|compile|warn_missing';
@@ -452,7 +481,7 @@ sub scan_deps {
     );
 
     if (!defined($args{keys})) { 
-        $args{keys} = [map {_path_to_filename($_)} @{$args{files}}]
+        $args{keys} = [map {path_to_inc_name($_, $args{warn_missing})} @{$args{files}}]
     }
 
     my ($type, $path);
@@ -460,7 +489,7 @@ sub scan_deps {
         $type = 'module';
         $type = 'data' unless $input_file =~ /\.p[mh]$/io;
         $path = $input_file;
-        _add_info($args{rv}, _path_to_filename($path), $path, undef, $type);
+        _add_info($args{rv}, path_to_inc_name($path, $args{warn_missing}), $path, undef, $type);
     }
 
     scan_deps_static(\%args);
@@ -699,8 +728,8 @@ sub scan_chunk {
         }
         return $1 if /(?:^|\s)(?:do|require)\s+[^"]*"(.*?)"/;
         return $1 if /(?:^|\s)(?:do|require)\s+[^']*'(.*?)'/;
-        return $1 if /[^\$]\b([\w:]+)->\w/ and $1 ne 'Tk';
-        return $1 if /\b(\w[\w:]*)::\w+\(/;
+        return $1 if /[^\$]\b([\w:]+)->\w/ and $1 ne 'Tk' and $1 ne 'shift';
+        return $1 if /\b(\w[\w:]*)::\w+\(/ and $1 ne 'main' and $1 ne 'SUPER';
 
         if ($SeenTk) {
             my @modules;
