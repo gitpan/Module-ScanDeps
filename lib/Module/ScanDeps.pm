@@ -4,7 +4,7 @@ use 5.004;
 use strict;
 use vars qw( $VERSION @EXPORT @EXPORT_OK $CurrentPackage @IncludeLibs );
 
-$VERSION   = '0.75';
+$VERSION   = '0.76';
 @EXPORT    = qw( scan_deps scan_deps_runtime );
 @EXPORT_OK = qw( scan_line scan_chunk add_deps scan_deps_runtime path_to_inc_name );
 
@@ -33,8 +33,8 @@ Module::ScanDeps - Recursively scan Perl code for dependencies
 
 =head1 VERSION
 
-This document describes version 0.71 of Module::ScanDeps, released
-January  4, 2007.
+This document describes version 0.76 of Module::ScanDeps, released
+July 21, 2007.
 
 =head1 SYNOPSIS
 
@@ -122,7 +122,7 @@ If C<$execute> is an array reference, runs the files contained
 in it instead of C<@files>.
 
 Additionally, an option C<warn_missing> is recognized. If set to true,
-C<scan_deps> issues a warning to STDOUT for every module file that the
+C<scan_deps> issues a warning to STDERR for every module file that the
 scanned code depends but that wasn't found. Please note that this may
 also report numerous false positives. That is why by default, the heuristic
 silently drops all dependencies it cannot find.
@@ -172,7 +172,7 @@ returns a reference to it.
 
 Assumes C<$path> refers to a perl file and does it's best to return the
 name as it would appear in %INC. Returns undef if no match was found 
-and a prints a warning to STDOUT if C<$warn> is true.
+and a prints a warning to STDERR if C<$warn> is true.
 
 E.g. if C<$path> = perl/site/lib/Module/ScanDeps.pm then C<$perl_name>
 will be Module/ScanDeps.pm.
@@ -417,6 +417,9 @@ my %Preload;
 
         return 'pod/perldiag.pod';
     },
+    'threads/shared.pm' => [qw( attributes.pm )],
+    	# anybody using threads::shared is likely to declare variables
+	# with attribute :shared
     'utf8.pm' => [
         'utf8_heavy.pl', do {
             my $dir = 'unicore';
@@ -464,9 +467,10 @@ sub path_to_inc_name($$) {
             $inc_name =~ s|\:\:|\/|og;
             $inc_name .= '.pm';
         } else {
-            print "# Couldn't find include name for $path\n" if $warn;
+            warn "# Couldn't find include name for $path\n" if $warn;
         }
     } else {
+        # Bad solution!
         (my $vol, my $dir, $inc_name) = File::Spec->splitpath($path);
     }
 
@@ -481,7 +485,7 @@ sub scan_deps {
     );
 
     if (!defined($args{keys})) { 
-        $args{keys} = [map {path_to_inc_name($_, $args{warn_missing})} @{$args{files}}]
+        $args{keys} = [map {path_to_inc_name($_, $args{warn_missing})} @{$args{files}}];
     }
 
     my ($type, $path);
@@ -489,7 +493,25 @@ sub scan_deps {
         $type = 'module';
         $type = 'data' unless $input_file =~ /\.p[mh]$/io;
         $path = $input_file;
-        _add_info($args{rv}, path_to_inc_name($path, $args{warn_missing}), $path, undef, $type);
+        if ($type eq 'module') {
+            # necessary because add_deps does the search for shared libraries and such
+            add_deps(
+                used_by => undef,
+                rv => $args{rv},
+                modules => [path_to_inc_name($path, $args{warn_missing})],
+                skip => undef,
+                warn_missing => $args{warn_missing},
+            );
+        }
+        else {
+            _add_info(
+                rv      => $args{rv},
+                module  => path_to_inc_name($path, $args{warn_missing}),
+                file    => $path,
+                used_by => undef,
+                type    => $type,
+            );
+        }
     }
 
     scan_deps_static(\%args);
@@ -532,13 +554,11 @@ sub scan_deps_static {
             foreach my $pm (scan_line($line)) {
                 last LINE if $pm eq '__END__';
                 
-                # Skip Tk hits from Term::ReadLine
+                # Skip Tk hits from Term::ReadLine and Tcl::Tk
                 my $pathsep = qr/\/|\\|::/;
-                if (
-                    $file =~ /${pathsep}Term${pathsep}ReadLine.pm$/
-                    and $pm =~ /^Tk\b/
-                ) {
-                    next;
+                if ($pm =~ /^Tk\b/) {
+                  next if $file =~ /(?:^|${pathsep})Term${pathsep}ReadLine\.pm$/;
+                  next if $file =~ /(?:^|${pathsep})Tcl${pathsep}Tk\W/;
                 }
 
                 if ($pm eq '__POD__') {
@@ -546,7 +566,7 @@ sub scan_deps_static {
                     next LINE;
                 }
 
-                $pm = 'CGI/Apache.pm' if /^Apache(?:\.pm)$/;
+                $pm = 'CGI/Apache.pm' if $file =~ /^Apache(?:\.pm)$/;
 
                 add_deps(
                     used_by => $key,
@@ -771,12 +791,25 @@ sub _find_encoding {
 }
 
 sub _add_info {
-    my ($rv, $module, $file, $used_by, $type) = @_;
+    my %args = @_;
+    my ($rv, $module, $file, $used_by, $type) = @args{qw/rv module file used_by type/};
+
     return unless defined($module) and defined($file);
 
     # Ensure file is always absolute
     $file = File::Spec->rel2abs($file);
     $file =~ s|\\|\/|go;
+
+    # Avoid duplicates that can arise due to case differences that don't actually 
+    # matter on a case tolerant system
+    if (File::Spec->case_tolerant()) {
+        foreach my $key (keys %$rv) {
+            if (lc($key) eq lc($module)) {
+                $module = $key;
+                last;
+            }
+        }
+    }
 
     $rv->{$module} ||= {
         file => $file,
@@ -787,7 +820,8 @@ sub _add_info {
     push @{ $rv->{$module}{used_by} }, $used_by
       if defined($used_by)
       and $used_by ne $module
-      and !grep { $_ eq $used_by } @{ $rv->{$module}{used_by} };
+      and ( (!File::Spec->case_tolerant() && !grep { $_ eq $used_by } @{ $rv->{$module}{used_by} })
+         or ( File::Spec->case_tolerant() && !grep { lc($_) eq lc($used_by) } @{ $rv->{$module}{used_by} }));
 }
 
 # This subroutine relies on not being called for modules that should be skipped
@@ -805,13 +839,17 @@ sub add_deps {
           or _warn_of_missing_module($module, $args{warn_missing}), next;
 
         if (exists $rv->{$module}) {
-            _add_info($rv, $module, $file, $used_by, undef);
+            _add_info( rv     => $rv,      module  => $module,
+                       file   => $file,    used_by => $used_by,
+                       type   => undef );
             next;
         }
 
         my $type = 'module';
         $type = 'data' unless $file =~ /\.p[mh]$/i;
-        _add_info($rv, $module, $file, $used_by, $type);
+        _add_info( rv     => $rv,   module  => $module,
+                   file   => $file, used_by => $used_by,
+                   type   => $type );
 
         if ($module =~ /(.*?([^\/]*))\.p[mh]$/i) {
             my ($path, $basename) = ($1, $2);
@@ -825,8 +863,9 @@ sub add_deps {
                 $type = 'autoload' if $ext eq '.ix' or $ext eq '.al';
                 $type ||= 'data';
 
-                _add_info($rv, "auto/$path/$_->{name}", $_->{file}, $module,
-                    $type);
+                _add_info( rv     => $rv,        module  => "auto/$path/$_->{name}",
+                           file   => $_->{file}, used_by => $module,
+                           type   => $type );
             }
         }
     }
@@ -1131,7 +1170,12 @@ sub _merge_rv {
 
 sub _not_dup {
     my ($key, $rv1, $rv2) = @_;
-    (_abs_path($rv1->{$key}{file}) ne _abs_path($rv2->{$key}{file}));
+    if (File::Spec->case_tolerant()) {
+        return lc(_abs_path($rv1->{$key}{file})) ne lc(_abs_path($rv2->{$key}{file}));
+    }
+    else {
+        return _abs_path($rv1->{$key}{file}) ne _abs_path($rv2->{$key}{file});
+    }
 }
 
 sub _abs_path {
@@ -1148,7 +1192,7 @@ sub _warn_of_missing_module {
     my $warn = shift;
     return if not $warn;
     return if not $module =~ /\.p[ml]$/;
-    print "# Could not find source file '$module' in \@INC or \@IncludeLibs. Skipping it.\n"
+    warn "# Could not find source file '$module' in \@INC or \@IncludeLibs. Skipping it.\n"
       if not -f $module;
 }
 
