@@ -15,9 +15,9 @@ not run its Makefile.PL or Build.PL.
 Hash: SHA1
 
 SHA1 e927c362d2923939970d04b1dcec4cef16a1bb34 AUTHORS
-SHA1 5bdf22cd870e5d53b9f9e4128db19a07c650cc4a Changes
+SHA1 a6e84b6d0b7c1286cc04b54d538ec791a355ab32 Changes
 SHA1 8b3e854d9705abaa049cba5db559b293b23564c6 MANIFEST
-SHA1 0e8148d3858c5a8158309f68c9344004ff561576 META.yml
+SHA1 85153db2ccb4a6ea124f245c64d02b768c8f2dc1 META.yml
 SHA1 c3dbe9ed01985513157bc5c321efcc95befc9fbd Makefile.PL
 SHA1 246c7495137bf44edad838dcb85a1669a01b0edf README
 SHA1 78edb89a439463e44c33a72bbee84c54d0dc8aaf inc/Module/Install.pm
@@ -29,17 +29,17 @@ SHA1 5d6189b2cad15cf9932a28faafd55130c8247e83 inc/Module/Install/Metadata.pm
 SHA1 8015c2aceacb9b793e8a472036f93d0bac67c0db inc/Module/Install/Scripts.pm
 SHA1 02af973fae2ac3531fa6b704574b2b8cb2a08148 inc/Module/Install/Win32.pm
 SHA1 3a2eab96e91cca8d99938cda7791759ae9d97b3a inc/Module/Install/WriteAll.pm
-SHA1 482967979017fd1c0751f45068675ead131d3045 lib/Module/ScanDeps.pm
-SHA1 21db0ad572d568905521c92c3d0216c48f1c433d lib/Module/ScanDeps/DataFeed.pm
+SHA1 b0fcb85d060c42ebffa97a3be3291645713d770b lib/Module/ScanDeps.pm
+SHA1 76ea5d0db7a2fdd5edd213c5d494d05e0ad87703 lib/Module/ScanDeps/DataFeed.pm
 SHA1 0bd530868df1aa496be9890f493a15a79a021770 script/scandeps.pl
 SHA1 659cd8c86e779270012c45220a6e1f23d28dcc5e t/0-pod.t
 SHA1 84ba93c625e4a84e3f13fa809789780a13b5f653 t/1-static_functional_interface_real.t
-SHA1 5e04cf497d39e10b49ead100e6ba177c2f6cdd51 t/2-static_functional_interface_fake.t
+SHA1 bcdd451916430715377407ac6959be62166a1ac3 t/2-static_functional_interface_fake.t
 SHA1 bcc62f9c99311c136169425a1736add941944a11 t/3-static_oo_interface_real.t
-SHA1 efbdda562e0e28c25f23caac7f1af36875d47742 t/4-static_functional_interface_options_fake.t
+SHA1 952502933adae2aa455cf1f59f2dddfe98b97cfa t/4-static_functional_interface_options_fake.t
 SHA1 c1658e8b6fcfcda6233f9e0f9c681f3192b3a079 t/5-pluggable_fake.t
 SHA1 c70250a79cbfed972d53f00e4fde8a0b405bda7a t/6-file-glob.t
-SHA1 8e197aef1796d244997060ccf1c525cbc5d8d75d t/Utils.pm
+SHA1 7c2ae27e2f97cb0bb711515778a4385787c7f8ed t/Utils.pm
 SHA1 7425d8753af377912d85c70b6da071d708da7f4b t/data/file-glob-no.pl
 SHA1 37189ebe16d5aa222173b96d59bf222aa027d8be t/data/file-glob-yes.pl
 SHA1 e439bb21ada5bb1dabd63624a2eb4c34b64a3fe7 t/data/pluggable/Foo.pm
@@ -68,7 +68,7 @@ SHA1 c90f94b48746c53f3a1d3bb5eddc3bf2717308c5 t/data/static/outer_diamond_W.pm
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.4.6 (GNU/Linux)
 
-iD8DBQFGoie3ZCuimE51gxcRAs2CAJ9MPrjGm8k2w4JfFfO9E6m3SZ1KhACeKOZG
-f65hXnDwFVtrNmH60hVCriI=
-=A6MA
+iD8DBQFG8rCoZCuimE51gxcRAl2wAJ4psLkVv7NWzW5VNZ13GtX/ZQWLpwCcDvz5
+FOJIS1QTNkptiqiS5BXInp8=
+=yOTe
 -----END PGP SIGNATURE-----

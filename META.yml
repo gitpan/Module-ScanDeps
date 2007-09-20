@@ -1,6 +1,6 @@
 --- 
 abstract: Recursively scan Perl code for dependencies
-author: Audrey Tang <autrijus@autrijus.org>
+author: Audrey Tang <cpan@audreyt.org>
 distribution_type: module
 generated_by: Module::Install version 0.67
 license: perl
@@ -17,4 +17,4 @@ requires:
   File::Temp: 0
   Module::Build::ModuleInfo: 0
   perl: 5.004
-version: 0.76
+version: 0.77

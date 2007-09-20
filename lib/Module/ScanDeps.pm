@@ -2,9 +2,9 @@ package Module::ScanDeps;
 
 use 5.004;
 use strict;
-use vars qw( $VERSION @EXPORT @EXPORT_OK $CurrentPackage @IncludeLibs );
+use vars qw( $VERSION @EXPORT @EXPORT_OK $CurrentPackage @IncludeLibs $ScanFileRE );
 
-$VERSION   = '0.76';
+$VERSION   = '0.77';
 @EXPORT    = qw( scan_deps scan_deps_runtime );
 @EXPORT_OK = qw( scan_line scan_chunk add_deps scan_deps_runtime path_to_inc_name );
 
@@ -27,14 +27,16 @@ use File::Basename ();
 use FileHandle;
 use Module::Build::ModuleInfo;
 
+$ScanFileRE = qr/\.(?i:p[ml]|t|al)/;
+
 =head1 NAME
 
 Module::ScanDeps - Recursively scan Perl code for dependencies
 
 =head1 VERSION
 
-This document describes version 0.76 of Module::ScanDeps, released
-July 21, 2007.
+This document describes version 0.77 of Module::ScanDeps, released
+September 20, 2007.
 
 =head1 SYNOPSIS
 
@@ -77,11 +79,12 @@ hash reference; its keys are the module names as appears in C<%INC>
         key     => 'Test/More.pm',
         type    => 'module',    # or 'autoload', 'data', 'shared'
         used_by => [ 'Test/Simple.pm', ... ],
+        uses    => [ 'Test/Other.pm', ... ],
     }
 
-One function, C<scan_deps>, is exported by default.  Three other
-functions (C<scan_line>, C<scan_chunk>, C<add_deps>) are exported upon
-request.
+One function, C<scan_deps>, is exported by default.  Other
+functions such as (C<scan_line>, C<scan_chunk>, C<add_deps>, C<path_to_inc_name>)
+are exported upon request.
 
 Users of B<App::Packer> may also use this module as the dependency-checking
 frontend, by tweaking their F<p2e.pl> like below:
@@ -179,9 +182,20 @@ will be Module/ScanDeps.pm.
 
 =head1 NOTES
 
-You can set the global variable C<@Module::ScanDeps::IncludeLibs> to
-specify additional directories in which to search modules
-without modifying C<@INC> itself.
+=head2 B<@Module::ScanDeps::IncludeLibs>
+
+You can set this global variable to specify additional directories in
+which to search modules without modifying C<@INC> itself.
+
+=head2 B<$Module::ScanDeps::ScanFileRE>
+
+You can set this global variable to specify a regular expression to 
+identify what files to scan. By default it includes all files of 
+the following types: .pm, .pl, .t and .al.
+
+For instance, if you want to scan all files then use the following:
+
+C<$Module::ScanDeps::ScanFileRE = qr/.*/>
 
 =head1 CAVEATS
 
@@ -484,12 +498,17 @@ sub scan_deps {
         (@_ and $_[0] =~ /^(?:$Keys)$/o) ? @_ : (files => [@_], recurse => 1)
     );
 
-    if (!defined($args{keys})) { 
+    if (!defined($args{keys})) {
         $args{keys} = [map {path_to_inc_name($_, $args{warn_missing})} @{$args{files}}];
     }
 
     my ($type, $path);
     foreach my $input_file (@{$args{files}}) {
+        if ($input_file !~ $ScanFileRE) {
+            warn "Skipping input file $input_file because it matches \$Module::ScanDeps::ScanFileRE\n" if $args{warn_missing};
+            next;
+        }
+
         $type = 'module';
         $type = 'data' unless $input_file =~ /\.p[mh]$/io;
         $path = $input_file;
@@ -542,6 +561,7 @@ sub scan_deps_static {
         next if $skip->{$file}++;
         next if is_insensitive_fs()
           and $file ne lc($file) and $skip->{lc($file)}++;
+        next unless $file =~ $ScanFileRE;
 
         local *FH;
         open FH, $file or die "Cannot open $file: $!";
@@ -553,7 +573,7 @@ sub scan_deps_static {
             chomp(my $line = $_);
             foreach my $pm (scan_line($line)) {
                 last LINE if $pm eq '__END__';
-                
+
                 # Skip Tk hits from Term::ReadLine and Tcl::Tk
                 my $pathsep = qr/\/|\\|::/;
                 if ($pm =~ /^Tk\b/) {
@@ -627,6 +647,8 @@ sub scan_deps_runtime {
         my $file;
 
         foreach $file (@$files) {
+            next unless $file =~ $ScanFileRE;
+
             ($inchash, $dl_shared_objects, $incarray) = ({}, [], []);
             _compile($perl, $file, $inchash, $dl_shared_objects, $incarray);
 
@@ -710,6 +732,11 @@ sub scan_chunk {
               grep { length and !/^q[qw]?$/ } split(/[^\w:]+/, $1) ]
           if /^\s* use \s+ base \s+ (.*)/sx;
 
+        return [ 'prefork.pm',
+            map { s{::}{/}g; "$_.pm" }
+              grep { length and !/^q[qw]?$/ } split(/[^\w:]+/, $1) ]
+
+          if /^\s* use \s+ base \s+ (.*)/sx;
         return [ 'Class/Autouse.pm',
             map { s{::}{/}g; "$_.pm" }
               grep { length and !/^:|^q[qw]?$/ } split(/[^\w:]+/, $1) ]
@@ -817,11 +844,16 @@ sub _add_info {
         type => $type,
     };
 
-    push @{ $rv->{$module}{used_by} }, $used_by
-      if defined($used_by)
-      and $used_by ne $module
-      and ( (!File::Spec->case_tolerant() && !grep { $_ eq $used_by } @{ $rv->{$module}{used_by} })
-         or ( File::Spec->case_tolerant() && !grep { lc($_) eq lc($used_by) } @{ $rv->{$module}{used_by} }));
+    if (defined($used_by) and $used_by ne $module) {
+        push @{ $rv->{$module}{used_by} }, $used_by
+          if  ( (!File::Spec->case_tolerant() && !grep { $_ eq $used_by } @{ $rv->{$module}{used_by} })
+             or ( File::Spec->case_tolerant() && !grep { lc($_) eq lc($used_by) } @{ $rv->{$module}{used_by} }));
+
+        # We assume here that another _add_info will be called to provide the other parts of $rv->{$used_by}    
+        push @{ $rv->{$used_by}{uses} }, $module
+          if  ( (!File::Spec->case_tolerant() && !grep { $_ eq $module } @{ $rv->{$used_by}{uses} })
+             or ( File::Spec->case_tolerant() && !grep { lc($_) eq lc($module) } @{ $rv->{$used_by}{uses} }));
+    }
 }
 
 # This subroutine relies on not being called for modules that should be skipped
@@ -1224,7 +1256,7 @@ documentations on CPAN for further information.
 
 =head1 AUTHORS
 
-Audrey Tang E<lt>autrijus@autrijus.orgE<gt>
+Audrey Tang E<lt>cpan@audreyt.orgE<gt>
 
 To a lesser degree: Steffen Mueller E<lt>smueller@cpan.orgE<gt>
 
@@ -1252,9 +1284,9 @@ Please submit bug reports to E<lt>bug-Module-ScanDeps@rt.cpan.orgE<gt>.
 
 =head1 COPYRIGHT
 
-Copyright 2002, 2003, 2004, 2005, 2006 by
-Audrey Tang E<lt>autrijus@autrijus.orgE<gt>;
-2005, 2006 by Steffen Mueller E<lt>smueller@cpan.orgE<gt>.
+Copyright 2002-2007 by
+Audrey Tang E<lt>cpan@audreyt.orgE<gt>;
+2005-2007 by Steffen Mueller E<lt>smueller@cpan.orgE<gt>.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
