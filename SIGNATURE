@@ -15,9 +15,9 @@ not run its Makefile.PL or Build.PL.
 Hash: SHA1
 
 SHA1 e927c362d2923939970d04b1dcec4cef16a1bb34 AUTHORS
-SHA1 a6e84b6d0b7c1286cc04b54d538ec791a355ab32 Changes
-SHA1 8b3e854d9705abaa049cba5db559b293b23564c6 MANIFEST
-SHA1 85153db2ccb4a6ea124f245c64d02b768c8f2dc1 META.yml
+SHA1 ac15b8e62f06167d2003a520de7ae1a1fa88a8b5 Changes
+SHA1 96ca00b4df71ce6011117f2e1b7086590ade19b9 MANIFEST
+SHA1 240220bc404143c9758fea5467181bffc86dab31 META.yml
 SHA1 c3dbe9ed01985513157bc5c321efcc95befc9fbd Makefile.PL
 SHA1 246c7495137bf44edad838dcb85a1669a01b0edf README
 SHA1 78edb89a439463e44c33a72bbee84c54d0dc8aaf inc/Module/Install.pm
@@ -29,17 +29,35 @@ SHA1 5d6189b2cad15cf9932a28faafd55130c8247e83 inc/Module/Install/Metadata.pm
 SHA1 8015c2aceacb9b793e8a472036f93d0bac67c0db inc/Module/Install/Scripts.pm
 SHA1 02af973fae2ac3531fa6b704574b2b8cb2a08148 inc/Module/Install/Win32.pm
 SHA1 3a2eab96e91cca8d99938cda7791759ae9d97b3a inc/Module/Install/WriteAll.pm
-SHA1 b0fcb85d060c42ebffa97a3be3291645713d770b lib/Module/ScanDeps.pm
+SHA1 9731476313d725f5cd5bdec542b49b27769b290f lib/Module/ScanDeps.pm
 SHA1 76ea5d0db7a2fdd5edd213c5d494d05e0ad87703 lib/Module/ScanDeps/DataFeed.pm
 SHA1 0bd530868df1aa496be9890f493a15a79a021770 script/scandeps.pl
 SHA1 659cd8c86e779270012c45220a6e1f23d28dcc5e t/0-pod.t
 SHA1 84ba93c625e4a84e3f13fa809789780a13b5f653 t/1-static_functional_interface_real.t
+SHA1 9a1c5be5a0a9d6a367fb519862079e263cddf69c t/10-case-insensitive-keys.t
+SHA1 e2e9d1b2c9b9cd787b237ce21b7dd18379ffd526 t/11-finds-shared-lib.t
+SHA1 b0329e6037367adc569713a615aabc77df320305 t/12-ScanFileRE.t
 SHA1 bcdd451916430715377407ac6959be62166a1ac3 t/2-static_functional_interface_fake.t
 SHA1 bcc62f9c99311c136169425a1736add941944a11 t/3-static_oo_interface_real.t
-SHA1 952502933adae2aa455cf1f59f2dddfe98b97cfa t/4-static_functional_interface_options_fake.t
+SHA1 0ec7b99f235c0b4d6378104323aa95862017aa0e t/4-static_functional_interface_options_fake.t
 SHA1 c1658e8b6fcfcda6233f9e0f9c681f3192b3a079 t/5-pluggable_fake.t
 SHA1 c70250a79cbfed972d53f00e4fde8a0b405bda7a t/6-file-glob.t
+SHA1 20562f87b1f6dba7277b3261690ca3177ca5308c t/7-check-dynaloader.t
+SHA1 ea3be08baeb8d63a6a6dad28d87de723f3a309b1 t/8-check_duplicated_entries.t
+SHA1 4df2112b3ea4c6e4642331f07c1c23c01a23cc0b t/9-check_path_to_inc_name.t
 SHA1 7c2ae27e2f97cb0bb711515778a4385787c7f8ed t/Utils.pm
+SHA1 4229a7a6c63b811fe96890501126177515a597f8 t/data/ScanFileRE/auto/example/example.h
+SHA1 ded66a9e8a31de9081d1539c37f06731597c766f t/data/ScanFileRE/example.pm
+SHA1 203f10446101f319f4aa44cf86d391902fd5af16 t/data/ScanFileRE/example_too.pm
+SHA1 5003198ee6ac0524ca4f923c91aaf6b1d56ffea8 t/data/case-insensitive-keys/Test.pm
+SHA1 baff2b34b4f5617e88e8524894d0438345cdeed4 t/data/case-insensitive-keys/that_case.pl
+SHA1 9a61c3dbac421e169a8770d4fcfb15b718acca76 t/data/case-insensitive-keys/this_case.pl
+SHA1 8823e12ba4c33829d82f9869eb4c3ddd614731ff t/data/check-dynaloader/Bar.pm
+SHA1 6ef9fda8834f9c20781b65d278b90d473f450ffe t/data/check_path_to_inc_name/Scoped/Package.pm
+SHA1 77f95500cb9333025312fb27797423f4cb704295 t/data/check_path_to_inc_name/Some.pm
+SHA1 d3e5ef624ca358206a3b6ddd549e5e60e3a7f739 t/data/check_path_to_inc_name/use_scoped_package.pl
+SHA1 6ef9fda8834f9c20781b65d278b90d473f450ffe t/data/duplicated_entries/Scoped/Package.pm
+SHA1 d3e5ef624ca358206a3b6ddd549e5e60e3a7f739 t/data/duplicated_entries/use_scoped_package.pl
 SHA1 7425d8753af377912d85c70b6da071d708da7f4b t/data/file-glob-no.pl
 SHA1 37189ebe16d5aa222173b96d59bf222aa027d8be t/data/file-glob-yes.pl
 SHA1 e439bb21ada5bb1dabd63624a2eb4c34b64a3fe7 t/data/pluggable/Foo.pm
@@ -68,7 +86,7 @@ SHA1 c90f94b48746c53f3a1d3bb5eddc3bf2717308c5 t/data/static/outer_diamond_W.pm
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.4.6 (GNU/Linux)
 
-iD8DBQFG8rCoZCuimE51gxcRAl2wAJ4psLkVv7NWzW5VNZ13GtX/ZQWLpwCcDvz5
-FOJIS1QTNkptiqiS5BXInp8=
-=yOTe
+iD8DBQFHPmo2ZCuimE51gxcRAiE/AKDEaxwWRJhwgN2KQbROcHepDJSSGACgyoW8
+WhbAF4t9MgsIplP+cpyxwIA=
+=8h6V
 -----END PGP SIGNATURE-----

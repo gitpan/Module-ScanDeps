@@ -4,7 +4,7 @@ use 5.004;
 use strict;
 use vars qw( $VERSION @EXPORT @EXPORT_OK $CurrentPackage @IncludeLibs $ScanFileRE );
 
-$VERSION   = '0.77';
+$VERSION   = '0.78';
 @EXPORT    = qw( scan_deps scan_deps_runtime );
 @EXPORT_OK = qw( scan_line scan_chunk add_deps scan_deps_runtime path_to_inc_name );
 
@@ -27,7 +27,7 @@ use File::Basename ();
 use FileHandle;
 use Module::Build::ModuleInfo;
 
-$ScanFileRE = qr/\.(?i:p[ml]|t|al)/;
+$ScanFileRE = qr/(?:^|\\|\/)(?:[^.]*|.*\.(?i:p[ml]|t|al))$/;
 
 =head1 NAME
 
@@ -35,8 +35,8 @@ Module::ScanDeps - Recursively scan Perl code for dependencies
 
 =head1 VERSION
 
-This document describes version 0.77 of Module::ScanDeps, released
-September 20, 2007.
+This document describes version 0.78 of Module::ScanDeps, released
+November 17, 2007.
 
 =head1 SYNOPSIS
 
@@ -191,11 +191,12 @@ which to search modules without modifying C<@INC> itself.
 
 You can set this global variable to specify a regular expression to 
 identify what files to scan. By default it includes all files of 
-the following types: .pm, .pl, .t and .al.
+the following types: .pm, .pl, .t and .al. Additionally, all files
+without a suffix are considered.
 
 For instance, if you want to scan all files then use the following:
 
-C<$Module::ScanDeps::ScanFileRE = qr/.*/>
+C<$Module::ScanDeps::ScanFileRE = qr/./>
 
 =head1 CAVEATS
 
@@ -550,17 +551,17 @@ sub scan_deps {
 
 sub scan_deps_static {
     my ($args) = @_;
-    my ($files, $keys, $recurse, $rv, $skip, $first, $execute, $compile) =
-        @$args{qw( files keys recurse rv skip first execute compile )};
+    my ($files, $keys, $recurse, $rv, $skip, $first, $execute, $compile, $_skip) =
+        @$args{qw( files keys recurse rv skip first execute compile _skip )};
 
     $rv   ||= {};
-    $skip ||= {};
+    $_skip ||= { %{$skip || {}} };
 
     foreach my $file (@{$files}) {
         my $key = shift @{$keys};
-        next if $skip->{$file}++;
+        next if $_skip->{$file}++;
         next if is_insensitive_fs()
-          and $file ne lc($file) and $skip->{lc($file)}++;
+          and $file ne lc($file) and $_skip->{lc($file)}++;
         next unless $file =~ $ScanFileRE;
 
         local *FH;
@@ -622,6 +623,7 @@ sub scan_deps_static {
             rv      => $rv,
             skip    => $skip,
             recurse => 0,
+            _skip   => $_skip,
         }) or ($args->{_deep} and return);
         last if $count == keys %$rv;
     }
@@ -856,7 +858,7 @@ sub _add_info {
     }
 }
 
-# This subroutine relies on not being called for modules that should be skipped
+# This subroutine relies on not being called for modules that have already been visited
 sub add_deps {
     my %args =
       ((@_ and $_[0] =~ /^(?:modules|rv|used_by|warn_missing)$/)
@@ -864,11 +866,13 @@ sub add_deps {
         : (rv => (ref($_[0]) ? shift(@_) : undef), modules => [@_]));
 
     my $rv = $args{rv}   || {};
+    my $skip = $args{skip} || {};
     my $used_by = $args{used_by};
 
     foreach my $module (@{ $args{modules} }) {
         my $file = _find_in_inc($module)
           or _warn_of_missing_module($module, $args{warn_missing}), next;
+        next if $skip->{$file};
 
         if (exists $rv->{$module}) {
             _add_info( rv     => $rv,      module  => $module,
@@ -908,12 +912,13 @@ sub add_deps {
 sub _find_in_inc {
     my $file = shift;
 
-    # absolute file names
-    return $file if -f $file;
-
     foreach my $dir (grep !/\bBSDPAN\b/, @INC, @IncludeLibs) {
         return "$dir/$file" if -f "$dir/$file";
     }
+
+    # absolute file names
+    return $file if -f $file;
+
     return;
 }
 
