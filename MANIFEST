@@ -1,5 +1,10 @@
 AUTHORS
 Changes
+debian/changelog
+debian/compat
+debian/control
+debian/copyright
+debian/rules
 inc/Module/Install.pm
 inc/Module/Install/Base.pm
 inc/Module/Install/Can.pm
@@ -16,7 +21,6 @@ MANIFEST			This list of files
 META.yml
 README
 script/scandeps.pl
-SIGNATURE
 t/0-pod.t
 t/1-static_functional_interface_real.t
 t/10-case-insensitive-keys.t
@@ -31,6 +35,7 @@ t/7-check-dynaloader.t
 t/8-check_duplicated_entries.t
 t/9-check_path_to_inc_name.t
 t/data/case-insensitive-keys/Test.pm
+t/data/case-insensitive-keys/Test2.pm
 t/data/case-insensitive-keys/that_case.pl
 t/data/case-insensitive-keys/this_case.pl
 t/data/check-dynaloader/Bar.pm
@@ -68,3 +73,4 @@ t/data/static/TestB.pm
 t/data/static/TestC.pm
 t/data/static/TestD.pm
 t/Utils.pm
+SIGNATURE                                Public-key signature (added by MakeMaker)

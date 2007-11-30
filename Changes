@@ -1,3 +1,10 @@
+[Changes for 0.80 - 2007-11-30]
+* Fix to avoid duplicated entries arising from used_by references with
+  case differences.
+* Do not report input files themselves as dependencies.
+  (Regression from 0.74 onwards)
+* Remove warning from ScanFileRE tests.
+
 [Changes for 0.78 - 2007-11-17]
 * Fix ScanFileRE heuristics to allow for scanning files without
   suffixes.

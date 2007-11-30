@@ -4,7 +4,7 @@ use 5.004;
 use strict;
 use vars qw( $VERSION @EXPORT @EXPORT_OK $CurrentPackage @IncludeLibs $ScanFileRE );
 
-$VERSION   = '0.78';
+$VERSION   = '0.80';
 @EXPORT    = qw( scan_deps scan_deps_runtime );
 @EXPORT_OK = qw( scan_line scan_chunk add_deps scan_deps_runtime path_to_inc_name );
 
@@ -546,6 +546,9 @@ sub scan_deps {
         );
     }
 
+    # do not include the input files themselves as dependencies!
+    delete $args{rv}{$_} foreach @{$args{files}};
+
     return ($args{rv});
 }
 
@@ -836,6 +839,18 @@ sub _add_info {
             if (lc($key) eq lc($module)) {
                 $module = $key;
                 last;
+            }
+        }
+        if (defined($used_by)) {
+            if (lc($used_by) eq lc($module)) {
+                $used_by = $module;
+            } else {
+                foreach my $key (keys %$rv) {
+                    if (lc($key) eq lc($used_by)) {
+                        $used_by = $key;
+                        last;
+                    }
+                }
             }
         }
     }

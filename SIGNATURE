@@ -14,12 +14,17 @@ not run its Makefile.PL or Build.PL.
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA1
 
-SHA1 e927c362d2923939970d04b1dcec4cef16a1bb34 AUTHORS
-SHA1 ac15b8e62f06167d2003a520de7ae1a1fa88a8b5 Changes
-SHA1 96ca00b4df71ce6011117f2e1b7086590ade19b9 MANIFEST
-SHA1 240220bc404143c9758fea5467181bffc86dab31 META.yml
+SHA1 af7333f9ef0053a6f1770d38fe71b42685244324 AUTHORS
+SHA1 8757ba4321b03234ba086cc23d77ea290e2c5e35 Changes
+SHA1 4268778cdd43b9f8104c367380c1f1840545e817 MANIFEST
+SHA1 0c04636f93b22b499a7f10248601b2439f535cde META.yml
 SHA1 c3dbe9ed01985513157bc5c321efcc95befc9fbd Makefile.PL
 SHA1 246c7495137bf44edad838dcb85a1669a01b0edf README
+SHA1 2dc07f8ec7774a1a83b156831d945bd674347632 debian/changelog
+SHA1 9c6b057a2b9d96a4067a749ee3b3b0158d390cf1 debian/compat
+SHA1 cda9342c6002c0675288160e86d48a9c3912c003 debian/control
+SHA1 f336ae5033419b26b7a448f212b9caf18fee15ac debian/copyright
+SHA1 ce9c4829f25e71e05b2ea4dc633e9e963cbb1a48 debian/rules
 SHA1 78edb89a439463e44c33a72bbee84c54d0dc8aaf inc/Module/Install.pm
 SHA1 8ea4e37df83fd0c1c050be5c8da75545c3828d9b inc/Module/Install/Base.pm
 SHA1 1da6031583c32f0d1ec073b8376102fc51427dcc inc/Module/Install/Can.pm
@@ -29,16 +34,16 @@ SHA1 5d6189b2cad15cf9932a28faafd55130c8247e83 inc/Module/Install/Metadata.pm
 SHA1 8015c2aceacb9b793e8a472036f93d0bac67c0db inc/Module/Install/Scripts.pm
 SHA1 02af973fae2ac3531fa6b704574b2b8cb2a08148 inc/Module/Install/Win32.pm
 SHA1 3a2eab96e91cca8d99938cda7791759ae9d97b3a inc/Module/Install/WriteAll.pm
-SHA1 9731476313d725f5cd5bdec542b49b27769b290f lib/Module/ScanDeps.pm
+SHA1 9daaf3453656fb7e7c57d779596421ae560aa43a lib/Module/ScanDeps.pm
 SHA1 76ea5d0db7a2fdd5edd213c5d494d05e0ad87703 lib/Module/ScanDeps/DataFeed.pm
 SHA1 0bd530868df1aa496be9890f493a15a79a021770 script/scandeps.pl
 SHA1 659cd8c86e779270012c45220a6e1f23d28dcc5e t/0-pod.t
 SHA1 84ba93c625e4a84e3f13fa809789780a13b5f653 t/1-static_functional_interface_real.t
-SHA1 9a1c5be5a0a9d6a367fb519862079e263cddf69c t/10-case-insensitive-keys.t
+SHA1 649e1d8573c1d67f5af1b78c0701ce874fc07da0 t/10-case-insensitive-keys.t
 SHA1 e2e9d1b2c9b9cd787b237ce21b7dd18379ffd526 t/11-finds-shared-lib.t
-SHA1 b0329e6037367adc569713a615aabc77df320305 t/12-ScanFileRE.t
+SHA1 b70ff337fd83b2bdb1a19b7fe6fcf15d6871d307 t/12-ScanFileRE.t
 SHA1 bcdd451916430715377407ac6959be62166a1ac3 t/2-static_functional_interface_fake.t
-SHA1 bcc62f9c99311c136169425a1736add941944a11 t/3-static_oo_interface_real.t
+SHA1 1dbb80f481c4cc8bc7ca5f45c9cfb1a190af17a5 t/3-static_oo_interface_real.t
 SHA1 0ec7b99f235c0b4d6378104323aa95862017aa0e t/4-static_functional_interface_options_fake.t
 SHA1 c1658e8b6fcfcda6233f9e0f9c681f3192b3a079 t/5-pluggable_fake.t
 SHA1 c70250a79cbfed972d53f00e4fde8a0b405bda7a t/6-file-glob.t
@@ -50,6 +55,7 @@ SHA1 4229a7a6c63b811fe96890501126177515a597f8 t/data/ScanFileRE/auto/example/exa
 SHA1 ded66a9e8a31de9081d1539c37f06731597c766f t/data/ScanFileRE/example.pm
 SHA1 203f10446101f319f4aa44cf86d391902fd5af16 t/data/ScanFileRE/example_too.pm
 SHA1 5003198ee6ac0524ca4f923c91aaf6b1d56ffea8 t/data/case-insensitive-keys/Test.pm
+SHA1 57803d5f70d23e6d8ce3919dbe2806cb4a7a4550 t/data/case-insensitive-keys/Test2.pm
 SHA1 baff2b34b4f5617e88e8524894d0438345cdeed4 t/data/case-insensitive-keys/that_case.pl
 SHA1 9a61c3dbac421e169a8770d4fcfb15b718acca76 t/data/case-insensitive-keys/this_case.pl
 SHA1 8823e12ba4c33829d82f9869eb4c3ddd614731ff t/data/check-dynaloader/Bar.pm
@@ -86,7 +92,7 @@ SHA1 c90f94b48746c53f3a1d3bb5eddc3bf2717308c5 t/data/static/outer_diamond_W.pm
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.4.6 (GNU/Linux)
 
-iD8DBQFHPmo2ZCuimE51gxcRAiE/AKDEaxwWRJhwgN2KQbROcHepDJSSGACgyoW8
-WhbAF4t9MgsIplP+cpyxwIA=
-=8h6V
+iD8DBQFHUHtaZCuimE51gxcRAmPxAJ9I3f+a68svuTHQVzXmxLO77BnxfACgnys8
+bJk4G/02RCBszzihyQ8FKZc=
+=sFZb
 -----END PGP SIGNATURE-----

@@ -17,4 +17,4 @@ requires:
   File::Temp: 0
   Module::Build::ModuleInfo: 0
   perl: 5.004
-version: 0.78
+version: 0.80
