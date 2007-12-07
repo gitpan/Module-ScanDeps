@@ -1,4 +1,5 @@
 #!/usr/bin/perl
+use 5.006;
 use inc::Module::Install;
 
 name            'Module-ScanDeps';
@@ -9,4 +10,5 @@ requires        'File::Spec'                => '0';
 requires        'Module::Build::ModuleInfo' => '0';
 
 install_script  'script/scandeps.pl';
-sign; WriteAll;
+#sign;
+WriteAll;

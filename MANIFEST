@@ -73,4 +73,3 @@ t/data/static/TestB.pm
 t/data/static/TestC.pm
 t/data/static/TestD.pm
 t/Utils.pm
-SIGNATURE                                Public-key signature (added by MakeMaker)
