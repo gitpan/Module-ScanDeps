@@ -1,10 +1,5 @@
 AUTHORS
 Changes
-debian/changelog
-debian/compat
-debian/control
-debian/copyright
-debian/rules
 inc/Module/Install.pm
 inc/Module/Install/Base.pm
 inc/Module/Install/Can.pm
@@ -72,4 +67,5 @@ t/data/static/TestA.pm
 t/data/static/TestB.pm
 t/data/static/TestC.pm
 t/data/static/TestD.pm
+t/data/static/useVERSION.pm
 t/Utils.pm
