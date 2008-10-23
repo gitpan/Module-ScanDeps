@@ -8,6 +8,7 @@ inc/Module/Install/Makefile.pm
 inc/Module/Install/Metadata.pm
 inc/Module/Install/Win32.pm
 inc/Module/Install/WriteAll.pm
+lib/Module/.ScanDeps.pm.swp
 lib/Module/ScanDeps.pm
 lib/Module/ScanDeps/DataFeed.pm
 Makefile.PL
@@ -20,6 +21,7 @@ t/1-static_functional_interface_real.t
 t/10-case-insensitive-keys.t
 t/11-finds-shared-lib.t
 t/12-ScanFileRE.t
+t/13-static_prefork_test.t
 t/2-static_functional_interface_fake.t
 t/3-static_oo_interface_real.t
 t/4-static_functional_interface_options_fake.t

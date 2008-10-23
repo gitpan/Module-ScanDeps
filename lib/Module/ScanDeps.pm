@@ -4,7 +4,7 @@ use 5.006;
 use strict;
 use vars qw( $VERSION @EXPORT @EXPORT_OK $CurrentPackage @IncludeLibs $ScanFileRE );
 
-$VERSION   = '0.84';
+$VERSION   = '0.86';
 @EXPORT    = qw( scan_deps scan_deps_runtime );
 @EXPORT_OK = qw( scan_line scan_chunk add_deps scan_deps_runtime path_to_inc_name );
 
@@ -330,6 +330,7 @@ my %Preload;
     'MIME/Decoder.pm'               => 'sub',
     'Net/DNS/RR.pm'                 => 'sub',
     'Net/FTP.pm'                    => 'sub',
+    'Net/Server.pm'                 => 'sub',
     'Net/SSH/Perl.pm'               => 'sub',
     'PDF/API2/Resource/Font.pm'     => 'sub',
     'PDF/API2/Basic/TTF/Font.pm'    => sub {
@@ -340,10 +341,10 @@ my %Preload;
         POE/Kernel.pm POE/Session.pm
     ) ],
     'POE/Kernel.pm'                    => sub {
-	_glob_in_inc('POE/XS/Resource', 1),
-	_glob_in_inc('POE/Resource', 1),
-	_glob_in_inc('POE/XS/Loop', 1),
-	_glob_in_inc('POE/Loop', 1),
+        _glob_in_inc('POE/XS/Resource', 1),
+        _glob_in_inc('POE/Resource', 1),
+        _glob_in_inc('POE/XS/Loop', 1),
+        _glob_in_inc('POE/Loop', 1),
     },
     'Parse/AFP.pm'                  => 'sub',
     'Parse/Binary.pm'               => 'sub',
@@ -370,7 +371,7 @@ my %Preload;
     },
     'Template.pm'      => 'sub',
     'Term/ReadLine.pm' => 'sub',
-	'Test/Deep.pm'     => 'sub',
+    'Test/Deep.pm'     => 'sub',
     'Tk.pm'            => sub {
         $SeenTk = 1;
         qw( Tk/FileSelect.pm Encode/Unicode.pm );
@@ -435,8 +436,8 @@ my %Preload;
         return 'pod/perldiag.pod';
     },
     'threads/shared.pm' => [qw( attributes.pm )],
-    	# anybody using threads::shared is likely to declare variables
-	# with attribute :shared
+    # anybody using threads::shared is likely to declare variables
+    # with attribute :shared
     'utf8.pm' => [
         'utf8_heavy.pl', do {
             my $dir = 'unicore';
@@ -709,7 +710,7 @@ sub scan_line {
           }
         }
 
-        if (my ($autouse) = /^\s*use\s+autouse\s+(["'].*?["']|\w+)/)	
+        if (my ($autouse) = /^\s*use\s+autouse\s+(["'].*?["']|\w+)/)
         {
             $autouse =~ s/["']//g;
             $autouse =~ s{::}{/}g;
@@ -734,6 +735,25 @@ sub scan_line {
     return sort keys %found;
 }
 
+# short helper for scan_chunk
+sub _typical_module_loader_chunk {
+  local $_ = shift;
+  my $loader = shift;
+  my $loader_file = $loader;
+  $loader_file =~ s/::/\//;
+  $loader_file .= ".pm";
+  $loader = quotemeta($loader);
+
+  if (/^\s* use \s+ $loader \b \s* (.*)/sx) {
+    return [
+      $loader_file,
+      map { s{::}{/}g; "$_.pm" }
+      grep { length and !/^q[qw]?$/ } split(/[^\w:]+/, $1)
+    ];
+  }
+  return();
+}
+
 sub scan_chunk {
     my $chunk = shift;
 
@@ -741,31 +761,18 @@ sub scan_chunk {
     my $module = eval {
         $_ = $chunk;
 
-        return [ 'base.pm',
-            map { s{::}{/}g; "$_.pm" }
-              grep { length and !/^q[qw]?$/ } split(/[^\w:]+/, $1) ]
-          if /^\s* use \s+ base \s+ (.*)/sx;
+        # TODO: There's many more of these "loader" type modules on CPAN!
+        # scan for the typical module-loader modules
+        foreach my $loader (qw(base prefork POE encoding maybe)) {
+          my $retval = _typical_module_loader_chunk($_, $loader);
+          return $retval if $retval;
+        }
 
-        return [ 'prefork.pm',
-            map { s{::}{/}g; "$_.pm" }
-              grep { length and !/^q[qw]?$/ } split(/[^\w:]+/, $1) ]
-
-          if /^\s* use \s+ base \s+ (.*)/sx;
         return [ 'Class/Autouse.pm',
             map { s{::}{/}g; "$_.pm" }
               grep { length and !/^:|^q[qw]?$/ } split(/[^\w:]+/, $1) ]
-          if /^\s* use \s+ Class::Autouse \s+ (.*)/sx
+          if /^\s* use \s+ Class::Autouse \b \s* (.*)/sx
               or /^\s* Class::Autouse \s* -> \s* autouse \s* (.*)/sx;
-
-        return [ 'POE.pm',
-            map { s{::}{/}g; "POE/$_.pm" }
-              grep { length and !/^q[qw]?$/ } split(/[^\w:]+/, $1) ]
-          if /^\s* use \s+ POE \s+ (.*)/sx;
-
-        return [ 'encoding.pm',
-            map { _find_encoding($_) }
-              grep { length and !/^q[qw]?$/ } split(/[^\w:-]+/, $1) ]
-          if /^\s* use \s+ encoding \s+ (.*)/sx;
 
         return $1 if /(?:^|\s)(?:use|no|require)\s+([\w:\.\-\\\/\"\']+)/;
         return $1
@@ -928,8 +935,7 @@ sub add_deps {
                            type   => $type );
             }
         }
-    }
-
+    } # end for modules
     return $rv;
 }
 
