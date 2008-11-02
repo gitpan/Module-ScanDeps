@@ -1,3 +1,9 @@
+* Do not use base Exporter.
+* Detection of 'asa' and 'only::matching'.
+
+[Changes for 0.88 - 2008-10-28]
+* Add special case for File::HomeDir.
+
 [Changes for 0.87 - 2008-10-28]
 * Add special case for PPI.
 

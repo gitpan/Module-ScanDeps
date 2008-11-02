@@ -2,15 +2,15 @@ package Module::ScanDeps;
 
 use 5.006;
 use strict;
-use vars qw( $VERSION @EXPORT @EXPORT_OK $CurrentPackage @IncludeLibs $ScanFileRE );
+use vars qw( $VERSION @EXPORT @EXPORT_OK @ISA $CurrentPackage @IncludeLibs $ScanFileRE );
 
-$VERSION   = '0.87';
+$VERSION   = '0.88';
 @EXPORT    = qw( scan_deps scan_deps_runtime );
 @EXPORT_OK = qw( scan_line scan_chunk add_deps scan_deps_runtime path_to_inc_name );
 
 use Config;
-use Exporter;
-use base 'Exporter';
+require Exporter;
+our @ISA = qw(Exporter);
 use constant dl_ext  => ".$Config{dlext}";
 use constant lib_ext => $Config{lib_ext};
 use constant is_insensitive_fs => (
@@ -274,6 +274,7 @@ my %Preload;
         grep /\bMM_/, _glob_in_inc('ExtUtils', 1);
     },
     'File/Basename.pm' => [qw( re.pm )],
+    'File/HomeDir.pm' => 'sub',
     'File/Spec.pm'     => sub {
         require File::Spec;
         map { my $name = $_; $name =~ s!::!/!g; "$name.pm" } @File::Spec::ISA;
@@ -764,7 +765,7 @@ sub scan_chunk {
 
         # TODO: There's many more of these "loader" type modules on CPAN!
         # scan for the typical module-loader modules
-        foreach my $loader (qw(base prefork POE encoding maybe)) {
+        foreach my $loader (qw(asa base prefork POE encoding maybe only::matching)) {
           my $retval = _typical_module_loader_chunk($_, $loader);
           return $retval if $retval;
         }
