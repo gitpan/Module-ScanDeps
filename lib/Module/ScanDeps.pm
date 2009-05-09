@@ -4,7 +4,7 @@ use 5.006;
 use strict;
 use vars qw( $VERSION @EXPORT @EXPORT_OK @ISA $CurrentPackage @IncludeLibs $ScanFileRE );
 
-$VERSION   = '0.89';
+$VERSION   = '0.90';
 @EXPORT    = qw( scan_deps scan_deps_runtime );
 @EXPORT_OK = qw( scan_line scan_chunk add_deps scan_deps_runtime path_to_inc_name );
 
@@ -259,6 +259,7 @@ my %Preload;
     'Crypt/Random/Generator.pm' => sub {
         _glob_in_inc('Crypt/Random/Provider', 1);
     },
+    'DateTime/Locale.pm' => 'sub',
     'DBI.pm' => sub {
         grep !/\bProxy\b/, _glob_in_inc('DBD', 1);
     },
@@ -333,6 +334,8 @@ my %Preload;
     'Net/FTP.pm'                    => 'sub',
     'Net/Server.pm'                 => 'sub',
     'Net/SSH/Perl.pm'               => 'sub',
+    'PAR/Repository.pm'             => 'sub',
+    'PAR/Repository/Client.pm'      => 'sub',
     'PDF/API2/Resource/Font.pm'     => 'sub',
     'PDF/API2/Basic/TTF/Font.pm'    => sub {
         _glob_in_inc('PDF/API2/Basic/TTF', 1);
