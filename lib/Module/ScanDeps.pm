@@ -4,7 +4,7 @@ use 5.006;
 use strict;
 use vars qw( $VERSION @EXPORT @EXPORT_OK @ISA $CurrentPackage @IncludeLibs $ScanFileRE );
 
-$VERSION   = '0.90';
+$VERSION   = '0.91';
 @EXPORT    = qw( scan_deps scan_deps_runtime );
 @EXPORT_OK = qw( scan_line scan_chunk add_deps scan_deps_runtime path_to_inc_name );
 
@@ -813,6 +813,14 @@ sub scan_chunk {
                 push @modules, "Tk/$1.pm";
                 push @modules, "Tk/Scrollbar.pm";
             }
+            if (/->\s*setPalette/g) {
+                push @modules,
+                  map { "Tk/$_.pm" }
+                  qw( Button Canvas Checkbutton Entry
+                      Frame Label Labelframe Listbox
+                      Menubutton Menu Message Radiobutton
+                      Scale Scrollbar Spinbox Text );
+            }
             return \@modules;
         }
         return;
@@ -1326,7 +1334,7 @@ Please submit bug reports to E<lt>bug-Module-ScanDeps@rt.cpan.orgE<gt>.
 
 Copyright 2002-2008 by
 Audrey Tang E<lt>cpan@audreyt.orgE<gt>;
-2005-2008 by Steffen Mueller E<lt>smueller@cpan.orgE<gt>.
+2005-2009 by Steffen Mueller E<lt>smueller@cpan.orgE<gt>.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
