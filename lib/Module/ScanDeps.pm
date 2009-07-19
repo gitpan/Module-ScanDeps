@@ -1,10 +1,9 @@
 package Module::ScanDeps;
-
 use 5.006;
 use strict;
 use vars qw( $VERSION @EXPORT @EXPORT_OK @ISA $CurrentPackage @IncludeLibs $ScanFileRE );
 
-$VERSION   = '0.91';
+$VERSION   = '0.92';
 @EXPORT    = qw( scan_deps scan_deps_runtime );
 @EXPORT_OK = qw( scan_line scan_chunk add_deps scan_deps_runtime path_to_inc_name );
 
@@ -518,8 +517,7 @@ sub scan_deps {
             next;
         }
 
-        $type = 'module';
-        $type = 'data' unless $input_file =~ /\.p[mh]$/io;
+        $type = _gettype($input_file);
         $path = $input_file;
         if ($type eq 'module') {
             # necessary because add_deps does the search for shared libraries and such
@@ -744,16 +742,21 @@ sub scan_line {
 sub _typical_module_loader_chunk {
   local $_ = shift;
   my $loader = shift;
+  my $prefix='';
+  if (@_ and $_[0]) {
+    $prefix=$_[0].'::';
+  }
   my $loader_file = $loader;
   $loader_file =~ s/::/\//;
   $loader_file .= ".pm";
   $loader = quotemeta($loader);
 
-  if (/^\s* use \s+ $loader \b \s* (.*)/sx) {
+  if (/^\s* use \s+ $loader(?!\:) \b \s* (.*)/sx) {
     return [
       $loader_file,
-      map { s{::}{/}g; "$_.pm" }
-      grep { length and !/^q[qw]?$/ } split(/[^\w:]+/, $1)
+      map { my $mod="$prefix$_";$mod=~s{::}{/}g; "$mod.pm" }
+      grep { length and !/^q[qw]?$/ and !/-/ } split(/[^\w:-]+/, $1)
+      #should skip any module name that contains '-', not split it in two
     ];
   }
   return();
@@ -768,8 +771,13 @@ sub scan_chunk {
 
         # TODO: There's many more of these "loader" type modules on CPAN!
         # scan for the typical module-loader modules
-        foreach my $loader (qw(asa base prefork POE encoding maybe only::matching)) {
+        foreach my $loader (qw(asa base parent prefork POE encoding maybe only::matching)) {
           my $retval = _typical_module_loader_chunk($_, $loader);
+          return $retval if $retval;
+        }
+
+        foreach my $loader (qw(Catalyst)) {
+          my $retval = _typical_module_loader_chunk($_, $loader,'Catalyst::Plugin');
           return $retval if $retval;
         }
 
@@ -883,7 +891,6 @@ sub _add_info {
             }
         }
     }
-
     $rv->{$module} ||= {
         file => $file,
         key  => $module,
@@ -925,8 +932,7 @@ sub add_deps {
             next;
         }
 
-        my $type = 'module';
-        $type = 'data' unless $file =~ /\.p[mh]$/i;
+        my $type = _gettype($file);
         _add_info( rv     => $rv,   module  => $module,
                    file   => $file, used_by => $used_by,
                    type   => $type );
@@ -937,12 +943,12 @@ sub add_deps {
             foreach (_glob_in_inc("auto/$path")) {
                 next if $_->{file} =~ m{\bauto/$path/.*/};  # weed out subdirs
                 next if $_->{name} =~ m/(?:^|\/)\.(?:exists|packlist)$/;
-                my $ext = lc($1) if $_->{name} =~ /(\.[^.]+)$/;
+                my ($ext,$type);
+                $ext = lc($1) if $_->{name} =~ /(\.[^.]+)$/;
                 next if $ext eq lc(lib_ext());
-                my $type = 'shared' if $ext eq lc(dl_ext());
-                $type = 'autoload' if $ext eq '.ix' or $ext eq '.al';
+                $type = 'shared' if $ext eq lc(dl_ext());
+                $type = 'autoload' if ($ext eq '.ix' or $ext eq '.al');
                 $type ||= 'data';
-
                 _add_info( rv     => $rv,        module  => "auto/$path/$_->{name}",
                            file   => $_->{file}, used_by => $module,
                            type   => $type );
@@ -1202,7 +1208,7 @@ sub _gettype {
     my $name = shift;
     my $dlext = quotemeta(dl_ext());
 
-    return 'autoload' if $name =~ /(?:\.ix|\.al|\.bs)$/i;
+    return 'autoload' if $name =~ /(?:\.ix|\.al)$/i;
     return 'module'   if $name =~ /\.p[mh]$/i;
     return 'shared'   if $name =~ /\.$dlext$/i;
     return 'data';

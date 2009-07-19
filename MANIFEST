@@ -22,6 +22,7 @@ t/10-case-insensitive-keys.t
 t/11-finds-shared-lib.t
 t/12-ScanFileRE.t
 t/13-static_prefork_test.t
+t/14-scan_chunk.t
 t/2-static_functional_interface_fake.t
 t/3-static_oo_interface_real.t
 t/4-static_functional_interface_options_fake.t
