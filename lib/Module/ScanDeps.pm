@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use vars qw( $VERSION @EXPORT @EXPORT_OK @ISA $CurrentPackage @IncludeLibs $ScanFileRE );
 
-$VERSION   = '0.93';
+$VERSION   = '0.94';
 @EXPORT    = qw( scan_deps scan_deps_runtime );
 @EXPORT_OK = qw( scan_line scan_chunk add_deps scan_deps_runtime path_to_inc_name );
 
@@ -766,8 +766,8 @@ sub scan_line {
             return;
         }
         # use VERSION:
-        if (/^\s*(?:use|require)\s+([\d\._]+)/) {
-          # include feaure.pm if we have 5.9.5 or better
+        if (/^\s*(?:use|require)\s+v?(\d[\d\._]*)/) {
+          # include feature.pm if we have 5.9.5 or better
           if (version->new($1) >= version->new("5.9.5")) {
               # seems to catch 5.9, too (but not 5.9.4)
             return "feature.pm";
