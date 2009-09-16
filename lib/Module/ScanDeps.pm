@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use vars qw( $VERSION @EXPORT @EXPORT_OK @ISA $CurrentPackage @IncludeLibs $ScanFileRE );
 
-$VERSION   = '0.94';
+$VERSION   = '0.95';
 @EXPORT    = qw( scan_deps scan_deps_runtime );
 @EXPORT_OK = qw( scan_line scan_chunk add_deps scan_deps_runtime path_to_inc_name );
 
@@ -275,6 +275,7 @@ my %Preload;
         termios.ph asm/termios.ph sys/termiox.ph sys/termios.ph sys/ttycom.ph
     ) ],
     'Email/Send.pm' => 'sub',
+    'Event.pm' => [ map {"Event/$_.pm" } qw(idle io signal timer var)],
     'ExtUtils/MakeMaker.pm' => sub {
         grep /\bMM_/, _glob_in_inc('ExtUtils', 1);
     },
@@ -303,6 +304,7 @@ my %Preload;
     ) ],
     'IO/Socket.pm'     => [qw( IO/Socket/UNIX.pm )],
     'Log/Log4perl.pm' => 'sub',
+    'Log/Any.pm' => 'sub',
     'LWP/UserAgent.pm' => sub {
         return(
             qw(
@@ -340,6 +342,7 @@ my %Preload;
     'Net/SSH/Perl.pm'               => 'sub',
     'PAR/Repository.pm'             => 'sub',
     'PAR/Repository/Client.pm'      => 'sub',
+    'Perl/Critic.pm'                => 'sub', #not only Perl/Critic/Policy
     'PDF/API2/Resource/Font.pm'     => 'sub',
     'PDF/API2/Basic/TTF/Font.pm'    => sub {
         _glob_in_inc('PDF/API2/Basic/TTF', 1);
@@ -401,6 +404,7 @@ my %Preload;
     'Win32/Exe.pm'         => 'sub',
     'Win32/TieRegistry.pm' => [qw( Win32API/Registry.pm )],
     'Win32/SystemInfo.pm'  => [qw( Win32/cpuspd.dll )],
+    'Wx.pm'  => [qw( attributes.pm Alien/wxWidgets/msw_2_8_10_uni_gcc_3_4/lib/wxbase28u_gcc_custom.dll)], #still cannot find this .dll
     'XML/Parser.pm'        => sub {
         _glob_in_inc('XML/Parser/Style', 1),
         _glob_in_inc('XML/Parser/Encodings', 1),
@@ -647,7 +651,7 @@ sub scan_deps_static {
    
     while ($recurse) {
         my $count = keys %$rv;
-        my @files = sort grep -T $_->{file}, values %$rv;
+        my @files = sort grep { defined $_->{file} && -T $_->{file} } values %$rv;
         scan_deps_static({
             files    => [ map $_->{file}, @files ],
             keys     => [ map $_->{key},  @files ],
@@ -1007,9 +1011,11 @@ sub add_deps {
                 next if $_->{name} =~ m/(?:^|\/)\.(?:exists|packlist)$/;
                 my ($ext,$type);
                 $ext = lc($1) if $_->{name} =~ /(\.[^.]+)$/;
-                next if $ext eq lc(lib_ext());
-                $type = 'shared' if $ext eq lc(dl_ext());
-                $type = 'autoload' if ($ext eq '.ix' or $ext eq '.al');
+                if (defined $ext) {
+                    next if $ext eq lc(lib_ext());
+                    $type = 'shared' if $ext eq lc(dl_ext());
+                    $type = 'autoload' if ($ext eq '.ix' or $ext eq '.al');
+                }
                 $type ||= 'data';
 
                 _add_info( rv     => $rv,        module  => "auto/$path/$_->{name}",
@@ -1023,6 +1029,7 @@ sub add_deps {
 
 sub _find_in_inc {
     my $file = shift;
+    return unless defined $file;
 
     foreach my $dir (grep !/\bBSDPAN\b/, @INC, @IncludeLibs) {
         return "$dir/$file" if -f "$dir/$file";
