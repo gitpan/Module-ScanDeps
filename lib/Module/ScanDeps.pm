@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use vars qw( $VERSION @EXPORT @EXPORT_OK @ISA $CurrentPackage @IncludeLibs $ScanFileRE );
 
-$VERSION   = '0.96';
+$VERSION   = '0.97';
 @EXPORT    = qw( scan_deps scan_deps_runtime );
 @EXPORT_OK = qw( scan_line scan_chunk add_deps scan_deps_runtime path_to_inc_name );
 
@@ -254,6 +254,9 @@ my %Preload;
                 _glob_in_inc('Catalyst/DispatchType', 1));
     },
     'Catalyst/Engine.pm' => 'sub',
+    'CGI/Application/Plugin/Authentication.pm' => [qw( CGI/Application/Plugin/Authentication/Store/Cookie.pm )],
+    'CGI/Application/Plugin/AutoRunmode.pm' => [qw( Attribute/Handlers.pm )],
+
     'Class/MakeMethods.pm' => 'sub',
     'Class/MethodMaker.pm' => 'sub',
     'Config/Any.pm' =>'sub',
@@ -269,6 +272,7 @@ my %Preload;
     },
     'DBIx/Class.pm' => 'sub',
     'DBIx/SearchBuilder.pm' => 'sub',
+    'DBIx/Perlish.pm' => [qw( attributes.pm )],
     'DBIx/ReportBuilder.pm' => 'sub',
     'Device/ParallelPort.pm' => 'sub',
     'Device/SerialPort.pm' => [ qw(
@@ -397,6 +401,10 @@ my %Preload;
     'Tk/FBox.pm'        => [qw( Tk/folder.xpm Tk/file.xpm )],
     'Tk/Getopt.pm'      => [qw( Tk/openfolder.xpm Tk/win.xbm )],
     'Tk/Toplevel.pm'    => [qw( Tk/Wm.pm )],
+    'Unicode/UCD.pm'    => sub {
+        # add data files (cf. sub openunicode in Unicode::UCD)
+        grep /\.txt$/, map "unicore/$_->{name}", _glob_in_inc('unicore', 0);
+    },
     'URI.pm'            => sub {
         grep !/.\b[_A-Z]/, _glob_in_inc('URI', 1);
     },
@@ -1022,6 +1030,23 @@ sub add_deps {
                            file   => $_->{file}, used_by => $module,
                            type   => $type );
             }
+
+            ### Now, handle module and distribudion share dirs
+            # convert 'Module/Name' to 'Module-Name'
+            my $modname = $path;
+            $modname =~ s|/|-|g;
+            # TODO: get real distribution name related to module name
+            my $distname = $modname;
+            foreach (_glob_in_inc("auto/share/module/$modname")) {
+                _add_info( rv     => $rv,        module  => "auto/share/module/$modname/$_->{name}",
+                           file   => $_->{file}, used_by => $module,
+                           type   => 'data' );
+            }
+            foreach (_glob_in_inc("auto/share/dist/$distname")) {
+                _add_info( rv     => $rv,        module  => "auto/share/dist/$distname/$_->{name}",
+                           file   => $_->{file}, used_by => $module,
+                           type   => 'data' );
+            }
         }
     } # end for modules
     return $rv;
@@ -1410,7 +1435,7 @@ Please submit bug reports to E<lt>bug-Module-ScanDeps@rt.cpan.orgE<gt>.
 
 Copyright 2002-2008 by
 Audrey Tang E<lt>cpan@audreyt.orgE<gt>;
-2005-2009 by Steffen Mueller E<lt>smueller@cpan.orgE<gt>.
+2005-2010 by Steffen Mueller E<lt>smueller@cpan.orgE<gt>.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

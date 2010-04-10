@@ -1,5 +1,10 @@
 AUTHORS
 Changes
+debian/changelog
+debian/compat
+debian/control
+debian/copyright
+debian/rules
 inc/Module/Install.pm
 inc/Module/Install/Base.pm
 inc/Module/Install/Can.pm
