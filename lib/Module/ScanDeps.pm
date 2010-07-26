@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use vars qw( $VERSION @EXPORT @EXPORT_OK @ISA $CurrentPackage @IncludeLibs $ScanFileRE );
 
-$VERSION   = '0.97';
+$VERSION   = '0.98';
 @EXPORT    = qw( scan_deps scan_deps_runtime );
 @EXPORT_OK = qw( scan_line scan_chunk add_deps scan_deps_runtime path_to_inc_name );
 
@@ -307,6 +307,12 @@ my %Preload;
         IO/Pipe.pm          IO/Socket.pm        IO/Dir.pm
     ) ],
     'IO/Socket.pm'     => [qw( IO/Socket/UNIX.pm )],
+    'JSON.pm' => sub {
+        # add JSON/PP*.pm, JSON/PP/*.pm
+        # and ignore other JSON::* modules (e.g. JSON/Syck.pm, JSON/Any.pm);
+        # but accept JSON::XS, too (because JSON.pm might use it if present)
+        return( grep /^JSON\/(PP|XS)/, _glob_in_inc('JSON', 1) );
+    },
     'Log/Log4perl.pm' => 'sub',
     'Log/Any.pm' => 'sub',
     'LWP/UserAgent.pm' => sub {
@@ -366,6 +372,9 @@ my %Preload;
     'Parse/Binary.pm'               => 'sub',
     'PerlIO.pm'                     => [ 'PerlIO/scalar.pm' ],
     'Regexp/Common.pm'              => 'sub',
+    'RPC/XML/ParserFactory.pm'      => sub {
+        _glob_in_inc('RPC/XML/Parser', 1);
+    },
     'SerialJunk.pm' => [ qw(
         termios.ph asm/termios.ph sys/termiox.ph sys/termios.ph sys/ttycom.ph
     ) ],
@@ -459,15 +468,22 @@ my %Preload;
     'threads/shared.pm' => [qw( attributes.pm )],
     # anybody using threads::shared is likely to declare variables
     # with attribute :shared
-    'utf8.pm' => [
-        'utf8_heavy.pl', do {
+    'utf8.pm' => sub {
+        # NOTE: Do NOT indiscrimantly add every *.pl below unicore. This would
+        # be a major performance regression. A simple
+        #
+        #   scandeps -B -e 'use utf8;' 
+        #
+        # takes 9.8 seconds wallclock time with the current implementation,
+        # but a version which adds every *.pl file takes 24.6 seconds.
+        return 'utf8_heavy.pl', do {
             my $dir = 'unicore';
             my @subdirs = qw( To );
             my @files = map "$dir/lib/$_->{name}", _glob_in_inc("$dir/lib");
 
             if (@files) {
-                # 5.8.x
-                push @files, (map "$dir/$_.pl", qw( Exact Canonical ));
+                # 5.8.x, 5.10.x (Exact, Canonical), 5.12.x (Heavy)
+                push @files, (map "$dir/$_.pl", qw( Exact Canonical  Heavy ));
             }
             else {
                 # 5.6.x
@@ -484,10 +500,10 @@ my %Preload;
             }
             @files;
         }
-    ],
-    'charnames.pm' => [
+    },
+    'charnames.pm' => sub {
         _find_in_inc('unicore/Name.pl') ? 'unicore/Name.pl' : 'unicode/Name.pl'
-    ],
+    },
 );
 
 # }}}
