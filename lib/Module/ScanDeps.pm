@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use vars qw( $VERSION @EXPORT @EXPORT_OK @ISA $CurrentPackage @IncludeLibs $ScanFileRE );
 
-$VERSION   = '0.98';
+$VERSION   = '1.00';
 @EXPORT    = qw( scan_deps scan_deps_runtime );
 @EXPORT_OK = qw( scan_line scan_chunk add_deps scan_deps_runtime path_to_inc_name );
 
@@ -266,6 +266,14 @@ my %Preload;
     'Crypt/Random/Generator.pm' => sub {
         _glob_in_inc('Crypt/Random/Provider', 1);
     },
+    'Date/Manip.pm' => [qw( Date/Manip/DM5.pm Date/Manip/DM6.pm )],
+    'Date/Manip/Base.pm' => sub {
+        _glob_in_inc('Date/Manip/Lang', 1);
+    },
+    'Date/Manip/TZ.pm' => sub {
+        return (_glob_in_inc('Date/Manip/TZ', 1),
+                _glob_in_inc('Date/Manip/Offset', 1));
+    },
     'DateTime/Locale.pm' => 'sub',
     'DBI.pm' => sub {
         grep !/\bProxy\b/, _glob_in_inc('DBD', 1);
@@ -315,6 +323,7 @@ my %Preload;
     },
     'Log/Log4perl.pm' => 'sub',
     'Log/Any.pm' => 'sub',
+    'Log/Report/Dispatcher.pm' => 'sub',
     'LWP/UserAgent.pm' => sub {
         return(
             qw(
@@ -367,6 +376,11 @@ my %Preload;
         _glob_in_inc('POE/XS/Loop', 1),
         _glob_in_inc('POE/Loop', 1),
     },
+    'POSIX.pm'                      => sub {
+        map { my $sigmod = $_;
+              map "auto/POSIX/$sigmod/$_->{name}", _glob_in_inc("auto/POSIX/$sigmod");
+            } qw( SigAction SigRt )
+    },
     'PPI.pm'                        => 'sub',
     'Parse/AFP.pm'                  => 'sub',
     'Parse/Binary.pm'               => 'sub',
@@ -415,7 +429,7 @@ my %Preload;
         grep /\.txt$/, map "unicore/$_->{name}", _glob_in_inc('unicore', 0);
     },
     'URI.pm'            => sub {
-        grep !/.\b[_A-Z]/, _glob_in_inc('URI', 1);
+        grep !/urn/, _glob_in_inc('URI', 1);
     },
     'Win32/EventLog.pm'    => [qw( Win32/IPC.pm )],
     'Win32/Exe.pm'         => 'sub',
@@ -809,14 +823,18 @@ sub scan_line {
             return ("autouse.pm", "$autouse.pm");
         }
 
-        if (my ($libs) = /\b(?:use\s+lib\s+|(?:unshift|push)\W+\@INC\W+)(.+)/)
+        if (my ($how, $libs) = /\b(use\s+lib\s+|(?:unshift|push)\s+\@INC\s+,)(.+)/)
         {
             my $archname = defined($Config{archname}) ? $Config{archname} : '';
             my $ver = defined($Config{version}) ? $Config{version} : '';
-            foreach (grep(/\w/, split(/["';() ]/, $libs))) {
-                unshift(@INC, "$_/$ver")           if -d "$_/$ver";
-                unshift(@INC, "$_/$archname")      if -d "$_/$archname";
-                unshift(@INC, "$_/$ver/$archname") if -d "$_/$ver/$archname";
+            foreach my $dir (do { no strict; no warnings; eval $libs }) {
+                next unless defined $dir;
+                my @dirs = $dir;
+                push @dirs, "$dir/$ver", "$dir/$archname", "$dir/$ver/$archname" 
+                    if $how =~ /lib/;
+                foreach (@dirs) {
+                    unshift(@INC, $_) if -d $_;
+                }
             }
             next;
         }
@@ -828,27 +846,35 @@ sub scan_line {
 }
 
 # short helper for scan_chunk
-sub _typical_module_loader_chunk {
-  local $_ = shift;
-  my $loader = shift;
-  my $prefix='';
-  if (@_ and $_[0]) {
-    $prefix=$_[0].'::';
-  }
-  my $loader_file = $loader;
-  $loader_file =~ s/::/\//;
-  $loader_file .= ".pm";
-  $loader = quotemeta($loader);
+my %LoaderRegexp; # cache
+sub _build_loader_regexp {
+    my $loaders = shift;
+    my $prefix = (@_ && $_[0]) ? $_[0].'::' : '';
+   
+    my $loader = join '|', map quotemeta($_), split /\s+/, $loaders;
+    my $regexp = qr/^\s* use \s+ ($loader)(?!\:) \b \s* (.*)/sx;
+    # WARNING: This doesn't take the prefix into account
+    $LoaderRegexp{$loaders} = $regexp;
+    return $regexp
+}
 
-  if (/^\s* use \s+ $loader(?!\:) \b \s* (.*)/sx) {
+# short helper for scan_chunk
+sub _extract_loader_dependency {
+    my $loader = shift;
+    my $loadee = shift;
+    my $prefix = (@_ && $_[0]) ? $_[0].'::' : '';
+
+    my $loader_file = $loader;
+    $loader_file =~ s/::/\//;
+    $loader_file .= ".pm";
+
     return [
-      $loader_file,
-      map { my $mod="$prefix$_";$mod=~s{::}{/}g; "$mod.pm" }
-      grep { length and !/^q[qw]?$/ and !/-/ } split(/[^\w:-]+/, $1)
-      #should skip any module name that contains '-', not split it in two
+        $loader_file,
+        map { my $mod="$prefix$_"; $mod =~ s{::}{/}g; "$mod.pm" }
+        grep { length and !/^q[qw]?$/ and !/-/ }
+        split /[^\w:-]+/, $loadee
+        #should skip any module name that contains '-', not split it in two
     ];
-  }
-  return();
 }
 
 sub scan_chunk {
@@ -860,13 +886,17 @@ sub scan_chunk {
 
         # TODO: There's many more of these "loader" type modules on CPAN!
         # scan for the typical module-loader modules
-        foreach my $loader (qw(asa base parent prefork POE encoding maybe only::matching)) {
-          my $retval = _typical_module_loader_chunk($_, $loader);
+        my $loaders = "asa base parent prefork POE encoding maybe only::matching";
+        # grab pre-calculated regexp or re-build it (and cache it)
+        my $loader_regexp = $LoaderRegexp{$loaders} || _build_loader_regexp($loaders);
+        if ($_ =~ $loader_regexp) { # $1 == loader, $2 == loadee
+          my $retval = _extract_loader_dependency($1, $2);
           return $retval if $retval;
         }
 
-        foreach my $loader (qw(Catalyst)) {
-          my $retval = _typical_module_loader_chunk($_, $loader,'Catalyst::Plugin');
+        $loader_regexp = $LoaderRegexp{"Catalyst"} || _build_loader_regexp("Catalyst", "Catalyst::Plugin");
+        if ($_ =~ $loader_regexp) { # $1 == loader, $2 == loadee
+          my $retval = _extract_loader_dependency($1, $2, "Catalyst::Plugin");
           return $retval if $retval;
         }
 
@@ -1121,13 +1151,13 @@ sub new {
 
 sub set_file {
     my $self = shift;
-    foreach my $script (@_) {
-        my ($vol, $dir, $file) = File::Spec->splitpath($script);
-        $self->{main} = {
-            key  => $file,
-            file => $script,
-        };
-    }
+    my $script = shift;
+
+    my ($vol, $dir, $file) = File::Spec->splitpath($script);
+    $self->{main} = {
+        key  => $file,
+        file => $script,
+    };
 }
 
 sub set_options {
@@ -1229,11 +1259,11 @@ $2/s;
     $fhout->close;
     $fhin->close;
 
-    system($perl, $fname);
+    my $rc = system($perl, $fname);
 
-    _extract_info("$fname.out", $inchash, $dl_shared_objects, $incarray);
-    unlink("$fname");
-    unlink("$fname.out");
+    _extract_info("$fname.out", $inchash, $dl_shared_objects, $incarray) if $rc == 0;
+    unlink("$fname", "$fname.out");
+    die "SYSTEM ERROR in compiling $file: $rc" unless $rc == 0;
 }
 
 sub _execute {
@@ -1252,11 +1282,11 @@ sub _execute {
     $fhin->close;
 
     File::Path::rmtree( ['_Inline'], 0, 1); # XXX hack
-    system($perl, (map { "-I$_" } @IncludeLibs), $fname) == 0 or die "SYSTEM ERROR in executing $file: $?";
+    my $rc = system($perl, (map { "-I$_" } @IncludeLibs), $fname);
 
-    _extract_info("$fname.out", $inchash, $dl_shared_objects, $incarray);
-    unlink("$fname");
-    unlink("$fname.out");
+    _extract_info("$fname.out", $inchash, $dl_shared_objects, $incarray) if $rc == 0;
+    unlink("$fname", "$fname.out");
+    die "SYSTEM ERROR in executing $file: $rc" unless $rc == 0;
 }
 
 # create a new hashref, applying fixups

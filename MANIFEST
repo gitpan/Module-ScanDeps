@@ -79,4 +79,5 @@ t/data/static/TestB.pm
 t/data/static/TestC.pm
 t/data/static/TestD.pm
 t/data/static/useVERSION.pm
+t/data/use_lib.pl
 t/Utils.pm
