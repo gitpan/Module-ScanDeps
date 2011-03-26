@@ -27,4 +27,4 @@ requires:
 resources:
   license: http://dev.perl.org/licenses/
   repository: http://svn.openfoundry.org/par/Module-ScanDeps/trunk/
-version: 1.00
+version: 1.01

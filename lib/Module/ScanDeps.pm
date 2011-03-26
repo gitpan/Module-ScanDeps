@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use vars qw( $VERSION @EXPORT @EXPORT_OK @ISA $CurrentPackage @IncludeLibs $ScanFileRE );
 
-$VERSION   = '1.00';
+$VERSION   = '1.01';
 @EXPORT    = qw( scan_deps scan_deps_runtime );
 @EXPORT_OK = qw( scan_line scan_chunk add_deps scan_deps_runtime path_to_inc_name );
 
@@ -426,6 +426,7 @@ my %Preload;
     'Tk/Toplevel.pm'    => [qw( Tk/Wm.pm )],
     'Unicode/UCD.pm'    => sub {
         # add data files (cf. sub openunicode in Unicode::UCD)
+        'unicore/version',
         grep /\.txt$/, map "unicore/$_->{name}", _glob_in_inc('unicore', 0);
     },
     'URI.pm'            => sub {
