@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use vars qw( $VERSION @EXPORT @EXPORT_OK @ISA $CurrentPackage @IncludeLibs $ScanFileRE );
 
-$VERSION   = '1.01';
+$VERSION   = '1.02';
 @EXPORT    = qw( scan_deps scan_deps_runtime );
 @EXPORT_OK = qw( scan_line scan_chunk add_deps scan_deps_runtime path_to_inc_name );
 
@@ -484,37 +484,9 @@ my %Preload;
     # anybody using threads::shared is likely to declare variables
     # with attribute :shared
     'utf8.pm' => sub {
-        # NOTE: Do NOT indiscrimantly add every *.pl below unicore. This would
-        # be a major performance regression. A simple
-        #
-        #   scandeps -B -e 'use utf8;' 
-        #
-        # takes 9.8 seconds wallclock time with the current implementation,
-        # but a version which adds every *.pl file takes 24.6 seconds.
-        return 'utf8_heavy.pl', do {
-            my $dir = 'unicore';
-            my @subdirs = qw( To );
-            my @files = map "$dir/lib/$_->{name}", _glob_in_inc("$dir/lib");
-
-            if (@files) {
-                # 5.8.x, 5.10.x (Exact, Canonical), 5.12.x (Heavy)
-                push @files, (map "$dir/$_.pl", qw( Exact Canonical  Heavy ));
-            }
-            else {
-                # 5.6.x
-                $dir = 'unicode';
-                @files = map "$dir/Is/$_->{name}", _glob_in_inc("$dir/Is")
-                  or return;
-                push @subdirs, 'In';
-            }
-
-            foreach my $subdir (@subdirs) {
-                foreach (_glob_in_inc("$dir/$subdir")) {
-                    push @files, "$dir/$subdir/$_->{name}";
-                }
-            }
-            @files;
-        }
+        # Perl 5.6.x: "unicode", Perl 5.8.x and up: "unicore"
+        my $unicore = _find_in_inc('unicore/Name.pl') ? 'unicore' : 'unicode';
+        return ('utf8_heavy.pl', map "$unicore/$_->{name}", _glob_in_inc($unicore));
     },
     'charnames.pm' => sub {
         _find_in_inc('unicore/Name.pl') ? 'unicore/Name.pl' : 'unicode/Name.pl'
