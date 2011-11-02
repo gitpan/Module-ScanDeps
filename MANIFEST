@@ -40,6 +40,7 @@ t/data/case-insensitive-keys/Test2.pm
 t/data/case-insensitive-keys/that_case.pl
 t/data/case-insensitive-keys/this_case.pl
 t/data/check-dynaloader/Bar.pm
+t/data/check-dynaloader/quux.pl
 t/data/check_path_to_inc_name/Scoped/Package.pm
 t/data/check_path_to_inc_name/Some.pm
 t/data/check_path_to_inc_name/use_scoped_package.pl

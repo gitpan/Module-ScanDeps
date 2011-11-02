@@ -6,9 +6,10 @@ build_requires:
   ExtUtils::MakeMaker: 6.42
   Test::More: 0
 configure_requires:
-  ExtUtils::MakeMaker: 6.42
+  ExtUtils::MakeMaker: 0
 distribution_type: module
-generated_by: 'Module::Install version 1.00'
+dynamic_config: 0
+generated_by: 'ExtUtils::MakeMaker version 6.57_05'
 license: perl
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
@@ -16,18 +17,12 @@ meta-spec:
 name: Module-ScanDeps
 no_index:
   directory:
-    - inc
     - t
-  module:
-    - Module::ScanDeps::Cache
-    - Module::ScanDeps::DataFeed
+    - inc
 requires:
   File::Spec: 0
   File::Temp: 0
   Module::Build::ModuleInfo: 0
-  perl: 5.6.1
+  perl: 5.006001
   version: 0
-resources:
-  license: http://dev.perl.org/licenses/
-  repository: http://svn.openfoundry.org/par/Module-ScanDeps/trunk/
-version: 1.04
+version: 1.05
