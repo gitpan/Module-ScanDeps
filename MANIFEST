@@ -20,7 +20,6 @@ script/scandeps.pl
 t/0-pod.t
 t/1-static_functional_interface_real.t
 t/10-case-insensitive-keys.t
-t/11-finds-shared-lib.t
 t/12-ScanFileRE.t
 t/13-static_prefork_test.t
 t/14-scan_chunk.t
@@ -39,8 +38,6 @@ t/data/case-insensitive-keys/Test.pm
 t/data/case-insensitive-keys/Test2.pm
 t/data/case-insensitive-keys/that_case.pl
 t/data/case-insensitive-keys/this_case.pl
-t/data/check-dynaloader/Bar.pm
-t/data/check-dynaloader/quux.pl
 t/data/check_path_to_inc_name/Scoped/Package.pm
 t/data/check_path_to_inc_name/Some.pm
 t/data/check_path_to_inc_name/use_scoped_package.pl
