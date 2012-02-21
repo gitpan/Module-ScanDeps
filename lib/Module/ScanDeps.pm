@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use vars qw( $VERSION @EXPORT @EXPORT_OK @ISA $CurrentPackage @IncludeLibs $ScanFileRE );
 
-$VERSION   = '1.07';
+$VERSION   = '1.08';
 @EXPORT    = qw( scan_deps scan_deps_runtime );
 @EXPORT_OK = qw( scan_line scan_chunk add_deps scan_deps_runtime path_to_inc_name );
 
@@ -288,7 +288,7 @@ my %Preload;
         termios.ph asm/termios.ph sys/termiox.ph sys/termios.ph sys/ttycom.ph
     ) ],
     'Email/Send.pm' => 'sub',
-    'Event.pm' => [ map {"Event/$_.pm" } qw(idle io signal timer var)],
+    'Event.pm' => [ map "Event/$_.pm", qw(idle io signal timer var)],
     'ExtUtils/MakeMaker.pm' => sub {
         grep /\bMM_/, _glob_in_inc('ExtUtils', 1);
     },
@@ -298,18 +298,21 @@ my %Preload;
         require File::Spec;
         map { my $name = $_; $name =~ s!::!/!g; "$name.pm" } @File::Spec::ISA;
     },
+    'Gtk2.pm' => [qw( Cairo.pm )], # Gtk2.pm does: eval "use Cairo;"
     'HTTP/Message.pm' => [ qw(
         URI/URL.pm          URI.pm
     ) ],
     'Image/ExifTool.pm' => sub {
-        return( _glob_in_inc("Image/ExifTool", 1), qw(
-            File/RandomAccess.pm
-        ));
+        return(
+          (map $_->{name}, _glob_in_inc('Image/ExifTool', 0)), # also *.pl files
+          qw( File/RandomAccess.pm ),
+        );
     },
     'Image/Info.pm' => sub {
-        return( _glob_in_inc("Image/Info", 1), qw(
-            Image/TIFF.pm
-        ));
+        return(
+          _glob_in_inc('Image/Info', 1),
+          qw( Image/TIFF.pm ),
+        );
     },
     'IO.pm' => [ qw(
         IO/Handle.pm        IO/Seekable.pm      IO/File.pm
@@ -326,12 +329,10 @@ my %Preload;
     'Log/Any.pm' => 'sub',
     'Log/Report/Dispatcher.pm' => 'sub',
     'LWP/UserAgent.pm' => sub {
-        return(
-            qw(
-            URI/URL.pm          URI/http.pm         LWP/Protocol/http.pm
-            ),
-            _glob_in_inc("LWP/Authen", 1),
-            _glob_in_inc("LWP/Protocol", 1),
+        return( 
+          qw( URI/URL.pm URI/http.pm LWP/Protocol/http.pm ),
+          _glob_in_inc("LWP/Authen", 1),
+          _glob_in_inc("LWP/Protocol", 1),
         );
     },
     'LWP/Parallel.pm' => sub {
@@ -374,6 +375,7 @@ my %Preload;
     'Net/Server.pm'                 => 'sub',
     'Net/SSH/Perl.pm'               => 'sub',
     'Package/Stash.pm'              => [qw( Package/Stash/PP.pm Package/Stash/XS.pm )],
+    'Pango.pm'                      => [qw( Cairo.pm )], # Pango.pm does: eval "use Cairo;"
     'PAR/Repository.pm'             => 'sub',
     'PAR/Repository/Client.pm'      => 'sub',
     'Parse/AFP.pm'                  => 'sub',
@@ -390,16 +392,16 @@ my %Preload;
         _glob_in_inc('POE/Component/Client/HTTP', 1),
         qw( POE/Filter/HTTPChunk.pm POE/Filter/HTTPHead.pm ),
     },
-    'POE/Kernel.pm'                    => sub {
+    'POE/Kernel.pm'                 => sub {
         _glob_in_inc('POE/XS/Resource', 1),
         _glob_in_inc('POE/Resource', 1),
         _glob_in_inc('POE/XS/Loop', 1),
         _glob_in_inc('POE/Loop', 1),
     },
     'POSIX.pm'                      => sub {
-        map { my $sigmod = $_;
-              map "auto/POSIX/$sigmod/$_->{name}", _glob_in_inc("auto/POSIX/$sigmod");
-            } qw( SigAction SigRt )
+        map $_->{name},
+          _glob_in_inc('auto/POSIX/SigAction', 0),      # *.al files
+          _glob_in_inc('auto/POSIX/SigRt', 0),          # *.al files
     },
     'PPI.pm'                        => 'sub',
     'Regexp/Common.pm'              => 'sub',
@@ -426,7 +428,7 @@ my %Preload;
     },
     'SVN/Core.pm' => sub {
         _glob_in_inc('SVN', 1),
-        map "auto/SVN/$_->{name}", _glob_in_inc('auto/SVN'),
+        map $_->{name}, _glob_in_inc('auto/SVN', 0),    # *.so, *.bs files
     },
     'Template.pm'      => 'sub',
     'Term/ReadLine.pm' => 'sub',
@@ -447,7 +449,7 @@ my %Preload;
     'Unicode/UCD.pm'    => sub {
         # add data files (cf. sub openunicode in Unicode::UCD)
         'unicore/version',
-        grep /\.txt$/, map "unicore/$_->{name}", _glob_in_inc('unicore', 0);
+        grep /\.txt$/, map $_->{name}, _glob_in_inc('unicore', 0);
     },
     'URI.pm'            => sub {
         grep !/urn/, _glob_in_inc('URI', 1);
@@ -506,7 +508,7 @@ my %Preload;
     'utf8.pm' => sub {
         # Perl 5.6.x: "unicode", Perl 5.8.x and up: "unicore"
         my $unicore = _find_in_inc('unicore/Name.pl') ? 'unicore' : 'unicode';
-        return ('utf8_heavy.pl', map "$unicore/$_->{name}", _glob_in_inc($unicore));
+        return ('utf8_heavy.pl', map $_->{name}, _glob_in_inc($unicore, 0));
     },
     'charnames.pm' => sub {
         _find_in_inc('unicore/Name.pl') ? 'unicore/Name.pl' : 'unicode/Name.pl'
@@ -719,7 +721,7 @@ sub scan_deps_runtime {
             next unless $file =~ $ScanFileRE;
 
             ($inchash, $dl_shared_objects, $incarray) = ({}, [], []);
-            _compile($perl, $file, $inchash, $dl_shared_objects, $incarray);
+            _compile_or_execute($compile, $perl, $file, $inchash, $dl_shared_objects, $incarray);
 
             my $rv_sub = _make_rv($inchash, $dl_shared_objects, $incarray);
             _merge_rv($rv_sub, $rv);
@@ -730,7 +732,7 @@ sub scan_deps_runtime {
         my $exc;
         foreach $exc (@$excarray) {
             ($inchash, $dl_shared_objects, $incarray) = ({}, [], []);
-            _execute($perl, $exc, $inchash, $dl_shared_objects, $incarray);
+            _compile_or_execute($compile, $perl, $exc, $inchash, $dl_shared_objects, $incarray);
         }
 
         # XXX only retains data from last execute ...  Why? I suspect
@@ -914,8 +916,10 @@ sub scan_chunk {
         return "DBD/$1.pm"    if /\b[Dd][Bb][Ii]:(\w+):/;
         if (/(?:(:encoding)|\b(?:en|de)code)\(\s*['"]?([-\w]+)/) {
             my $mod = _find_encoding($2);
-            return [ 'PerlIO.pm', $mod ] if $1 and $mod;
-            return $mod if $mod;
+            my @mods = ( 'Encoding.pm' );       # always needed
+            push @mods, 'PerlIO.pm' if $1;      # needed for ":encoding(...)"
+            push @mods, $mod if $mod;           # "external" Encode module
+            return \@mods;
         }
         return $1 if /^(?:do|require)\s+[^"]*"(.*?)"/;
         return $1 if /^(?:do|require)\s+[^']*'(.*?)'/;
@@ -1053,7 +1057,7 @@ sub add_deps {
 
             foreach (_glob_in_inc("auto/$path")) {
                 next if $_->{file} =~ m{\bauto/$path/.*/};  # weed out subdirs
-                next if $_->{name} =~ m/(?:^|\/)\.(?:exists|packlist)$/;
+                next if $_->{name} =~ m{/\.(?:exists|packlist)$};
                 my ($ext,$type);
                 $ext = lc($1) if $_->{name} =~ /(\.[^.]+)$/;
                 if (defined $ext) {
@@ -1063,7 +1067,7 @@ sub add_deps {
                 }
                 $type ||= 'data';
 
-                _add_info( rv     => $rv,        module  => "auto/$path/$_->{name}",
+                _add_info( rv     => $rv,        module  => $_->{name},
                            file   => $_->{file}, used_by => $module,
                            type   => $type );
             }
@@ -1075,12 +1079,12 @@ sub add_deps {
             # TODO: get real distribution name related to module name
             my $distname = $modname;
             foreach (_glob_in_inc("auto/share/module/$modname")) {
-                _add_info( rv     => $rv,        module  => "auto/share/module/$modname/$_->{name}",
+                _add_info( rv     => $rv,        module  => $_->{name},
                            file   => $_->{file}, used_by => $module,
                            type   => 'data' );
             }
             foreach (_glob_in_inc("auto/share/dist/$distname")) {
-                _add_info( rv     => $rv,        module  => "auto/share/dist/$distname/$_->{name}",
+                _add_info( rv     => $rv,        module  => $_->{name},
                            file   => $_->{file}, used_by => $module,
                            type   => 'data' );
             }
@@ -1112,19 +1116,17 @@ sub _glob_in_inc {
 
     $subdir =~ s/\$CurrentPackage/$CurrentPackage/;
 
-    foreach my $dir (map "$_/$subdir", grep !/\bBSDPAN\b/, @INC, @IncludeLibs) {
+    foreach my $inc (grep !/\bBSDPAN\b/, @INC, @IncludeLibs) {
+        my $dir = "$inc/$subdir";
         next unless -d $dir;
         File::Find::find(
             sub {
-                my $name = $File::Find::name;
-                $name =~ s!^\Q$dir\E/!!;
-                return if $pm_only and lc($name) !~ /\.p[mh]$/i;
+                return unless -f;
+                return if $pm_only and !/\.p[mh]$/i;
+                (my $name = $File::Find::name) =~ s!^\Q$inc\E/!!;
                 push @files, $pm_only
-                  ? "$subdir/$name"
-                  : {             file => $File::Find::name,
-                    name => $name,
-                  }
-                  if -f;
+                  ? $name
+                  : { file => $File::Find::name, name => $name };
             },
             $dir
         );
@@ -1232,11 +1234,8 @@ sub get_files {
 
 # scan_deps_runtime utility functions
 
-sub _compile    { _compile_or_execute(1, @_) }
-sub _execute    { _compile_or_execute(0, @_) }
-
 sub _compile_or_execute {
-    my ($do_compile, $perl, $file, $inchash, $dl_shared_objects, $incarray) = @_;
+    my ($compile, $perl, $file, $inchash, $dl_shared_objects, $incarray) = @_;
 
     require Module::ScanDeps::DataFeed; 
     # ... so we can find it's full pathname in %INC
@@ -1250,14 +1249,14 @@ sub _compile_or_execute {
     # NOTE: We don't directly assign to $0 as it has magic (i.e.
     # assigning has side effects and may actually fail, cf. perlvar(1)).
     # Instead we alias *0 to a package variable holding the correct value.
-    print $feed_fh "BEGIN { ", 
+    print $feed_fh "BEGIN {\n", 
                    Data::Dumper->Dump([ $file ], [ "Module::ScanDeps::DataFeed::_0" ]),
-                   "*0 = \\\$Module::ScanDeps::DataFeed::_0; }\n";
+                   "*0 = \\\$Module::ScanDeps::DataFeed::_0;\n",
+                   "}\n";
 
-    print $feed_fh $do_compile ? "INIT {\n" : "END {\n";
-    # NOTE: When compiling the block will run _after_ all CHECK blocks
-    # (but _before_ the first INIT block) and will terminate the program.
-    # When executing the block will run as the first END block and 
+    print $feed_fh $compile ? "CHECK {\n" : "END {\n";
+    # NOTE: When compiling the block will run as the last CHECK block;
+    # when executing the block will run as the first END block and 
     # the programs continues.
 
     # correctly escape strings containing filenames
@@ -1265,19 +1264,18 @@ sub _compile_or_execute {
                        [ $INC{"Module/ScanDeps/DataFeed.pm"}, $dump_file ],
                        [ qw( datafeedpm dump_file ) ]);
 
-    print $feed_fh <<'...';
     # save %INC etc so that further requires dont't pollute them
+    print $feed_fh <<'...';
     %Module::ScanDeps::DataFeed::_INC = %INC;
     @Module::ScanDeps::DataFeed::_INC = @INC;
     @Module::ScanDeps::DataFeed::_dl_shared_objects = @DynaLoader::dl_shared_objects;
     @Module::ScanDeps::DataFeed::_dl_modules = @DynaLoader::dl_modules;
 
-        require $datafeedpm;
+    require $datafeedpm;
 
     Module::ScanDeps::DataFeed::_dump_info($dump_file);
+}
 ...
-
-    print $feed_fh $do_compile ? "exit(0);\n}\n" : "}\n";
 
     # append the file to compile
     {
@@ -1288,14 +1286,19 @@ sub _compile_or_execute {
     close $feed_fh;
 
     File::Path::rmtree( ['_Inline'], 0, 1); # XXX hack
-    my $rc = system($perl, (map { "-I$_" } @IncludeLibs), $feed_file);
+    
+    my @cmd = ($perl);
+    push @cmd, "-c" if $compile;
+    push @cmd, map { "-I$_" } @IncludeLibs;
+    my $rc = system(@cmd, $feed_file);
 
-    _extract_info($dump_file, $inchash, $dl_shared_objects, $incarray) if $rc == 0;
+    _extract_info($dump_file, $inchash, $dl_shared_objects, $incarray) 
+        if $rc == 0;
     unlink($feed_file, $dump_file);
-    die $do_compile
-            ? "SYSTEM ERROR in compiling $file: $rc" 
-            : "SYSTEM ERROR in executing $file: $rc" 
-            unless $rc == 0;
+    die $compile
+        ? "SYSTEM ERROR in compiling $file: $rc" 
+        : "SYSTEM ERROR in executing $file: $rc" 
+        unless $rc == 0;
 }
 
 # create a new hashref, applying fixups
