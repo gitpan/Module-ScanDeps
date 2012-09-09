@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use vars qw( $VERSION @EXPORT @EXPORT_OK @ISA $CurrentPackage @IncludeLibs $ScanFileRE );
 
-$VERSION   = '1.08';
+$VERSION   = '1.09';
 @EXPORT    = qw( scan_deps scan_deps_runtime );
 @EXPORT_OK = qw( scan_line scan_chunk add_deps scan_deps_runtime path_to_inc_name );
 
@@ -257,6 +257,7 @@ my %Preload;
     'CGI/Application/Plugin/Authentication.pm' => [qw( CGI/Application/Plugin/Authentication/Store/Cookie.pm )],
     'CGI/Application/Plugin/AutoRunmode.pm' => [qw( Attribute/Handlers.pm )],
 
+    'Class/Load.pm' => [qw( Class/Load/PP.pm )],
     'Class/MakeMethods.pm' => 'sub',
     'Class/MethodMaker.pm' => 'sub',
     'Config/Any.pm' =>'sub',
@@ -808,11 +809,12 @@ sub scan_line {
           }
         }
 
-        if (my ($autouse) = /^use \s+ autouse \s+ (["'].*?["']|\w+)/x)
+        if (my ($pragma, $args) = /^use \s+ (autouse|if) \s+ (.+)/x)
         {
-            $autouse =~ s/["']//g;
-            $autouse =~ s{::}{/}g;
-            return ("autouse.pm", "$autouse.pm");
+            my @args = do { no strict; no warnings; eval $args };
+            my $module = $pragma eq "autouse" ? $args[0] : $args[1];
+            $module =~ s{::}{/}g;
+            return ("$pragma.pm", "$module.pm");
         }
 
         if (my ($how, $libs) = /^(use \s+ lib \s+ | (?:unshift|push) \s+ \@INC \s+ ,) (.+)/x)
@@ -879,7 +881,7 @@ sub scan_chunk {
 
         # TODO: There's many more of these "loader" type modules on CPAN!
         # scan for the typical module-loader modules
-        my $loaders = "asa base parent prefork POE encoding maybe only::matching";
+        my $loaders = "asa base parent prefork POE encoding maybe only::matching Mojo::Base";
         # grab pre-calculated regexp or re-build it (and cache it)
         my $loader_regexp = $LoaderRegexp{$loaders} || _build_loader_regexp($loaders);
         if ($_ =~ $loader_regexp) { # $1 == loader, $2 == loadee
