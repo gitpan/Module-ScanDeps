@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use vars qw( $VERSION @EXPORT @EXPORT_OK @ISA $CurrentPackage @IncludeLibs $ScanFileRE );
 
-$VERSION   = '1.09';
+$VERSION   = '1.10';
 @EXPORT    = qw( scan_deps scan_deps_runtime );
 @EXPORT_OK = qw( scan_line scan_chunk add_deps scan_deps_runtime path_to_inc_name );
 
@@ -275,6 +275,7 @@ my %Preload;
         return (_glob_in_inc('Date/Manip/TZ', 1),
                 _glob_in_inc('Date/Manip/Offset', 1));
     },
+    'DateTime/Format/Builder/Parser.pm' => 'sub',
     'DateTime/Locale.pm' => 'sub',
     'DateTime/TimeZone.pm' => 'sub',
     'DBI.pm' => sub {
@@ -379,6 +380,7 @@ my %Preload;
     'Pango.pm'                      => [qw( Cairo.pm )], # Pango.pm does: eval "use Cairo;"
     'PAR/Repository.pm'             => 'sub',
     'PAR/Repository/Client.pm'      => 'sub',
+    'Params/Validate.pm'            => 'sub',
     'Parse/AFP.pm'                  => 'sub',
     'Parse/Binary.pm'               => 'sub',
     'Perl/Critic.pm'                => 'sub', #not only Perl/Critic/Policy
