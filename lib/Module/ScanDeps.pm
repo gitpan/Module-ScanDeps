@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use vars qw( $VERSION @EXPORT @EXPORT_OK @ISA $CurrentPackage @IncludeLibs $ScanFileRE );
 
-$VERSION   = '1.10';
+$VERSION   = '1.11';
 @EXPORT    = qw( scan_deps scan_deps_runtime );
 @EXPORT_OK = qw( scan_line scan_chunk add_deps scan_deps_runtime path_to_inc_name );
 
@@ -374,6 +374,7 @@ my %Preload;
     },
     'Net/DNS/RR.pm'                 => 'sub',
     'Net/FTP.pm'                    => 'sub',
+    'Net/HTTPS.pm'                  => [qw( IO/Socket/SSL.pm Net/SSL.pm )],
     'Net/Server.pm'                 => 'sub',
     'Net/SSH/Perl.pm'               => 'sub',
     'Package/Stash.pm'              => [qw( Package/Stash/PP.pm Package/Stash/XS.pm )],
@@ -473,7 +474,17 @@ my %Preload;
     'XMLRPC/Lite.pm' => sub {
         _glob_in_inc('XMLRPC/Transport', 1),;
     },
-    'YAML.pm' => [qw( YAML/Loader.pm YAML/Dumper.pm )],
+    'YAML.pm'           => [qw( YAML/Loader.pm YAML/Dumper.pm )],
+    'YAML/Any.pm'       => sub { 
+        # try to figure out what YAML::Any would have used
+        my $impl = eval "use YAML::Any; YAML::Any->implementation;";
+        unless ($@) 
+        { 
+            $impl =~ s!::!/!g; 
+            return "$impl.pm"; 
+        }
+        _glob_in_inc('YAML', 1);        # fallback
+    },
     'diagnostics.pm' => sub {
         # shamelessly taken and adapted from diagnostics.pm
         use Config;
