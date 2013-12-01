@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use vars qw( $VERSION @EXPORT @EXPORT_OK @ISA $CurrentPackage @IncludeLibs $ScanFileRE );
 
-$VERSION   = '1.11';
+$VERSION   = '1.12';
 @EXPORT    = qw( scan_deps scan_deps_runtime );
 @EXPORT_OK = qw( scan_line scan_chunk add_deps scan_deps_runtime path_to_inc_name );
 
@@ -200,7 +200,7 @@ C<$Module::ScanDeps::ScanFileRE = qr/./>
 
 =head1 CAVEATS
 
-This module intentially ignores the B<BSDPAN> hack on FreeBSD -- the
+This module intentionally ignores the B<BSDPAN> hack on FreeBSD -- the
 additional directory is removed from C<@INC> altogether.
 
 The static-scanning heuristic is not likely to be 100% accurate, especially
@@ -219,12 +219,14 @@ But this one does not:
 =cut
 
 my $SeenTk;
+my %SeenRuntimeLoader;
 
 # Pre-loaded module dependencies {{{
 my %Preload;
 %Preload = (
     'AnyDBM_File.pm'  => [qw( SDBM_File.pm )],
     'Authen/SASL.pm'  => 'sub',
+    'B/Hooks/EndOfScope.pm' => [qw( B/Hooks/EndOfScope/PP.pm B/Hooks/EndOfScope/XS.pm )],
     'Bio/AlignIO.pm'  => 'sub',
     'Bio/Assembly/IO.pm'  => 'sub',
     'Bio/Biblio/IO.pm'  => 'sub',
@@ -256,7 +258,9 @@ my %Preload;
     'Catalyst/Engine.pm' => 'sub',
     'CGI/Application/Plugin/Authentication.pm' => [qw( CGI/Application/Plugin/Authentication/Store/Cookie.pm )],
     'CGI/Application/Plugin/AutoRunmode.pm' => [qw( Attribute/Handlers.pm )],
-
+    'charnames.pm' => sub {
+        _find_in_inc('unicore/Name.pl') ? 'unicore/Name.pl' : 'unicode/Name.pl'
+    },
     'Class/Load.pm' => [qw( Class/Load/PP.pm )],
     'Class/MakeMethods.pm' => 'sub',
     'Class/MethodMaker.pm' => 'sub',
@@ -289,6 +293,37 @@ my %Preload;
     'Device/SerialPort.pm' => [ qw(
         termios.ph asm/termios.ph sys/termiox.ph sys/termios.ph sys/ttycom.ph
     ) ],
+    'diagnostics.pm' => sub {
+        # shamelessly taken and adapted from diagnostics.pm
+        use Config;
+        my($privlib, $archlib) = @Config{qw(privlibexp archlibexp)};
+        if ($^O eq 'VMS') {
+            require VMS::Filespec;
+            $privlib = VMS::Filespec::unixify($privlib);
+            $archlib = VMS::Filespec::unixify($archlib);
+        }
+
+        for (
+              "pod/perldiag.pod",
+              "Pod/perldiag.pod",
+              "pod/perldiag-$Config{version}.pod",
+              "Pod/perldiag-$Config{version}.pod",
+              "pods/perldiag.pod",
+              "pods/perldiag-$Config{version}.pod",
+        ) {
+            return $_ if _find_in_inc($_);
+        }
+        
+        for (
+              "$archlib/pods/perldiag.pod",
+              "$privlib/pods/perldiag-$Config{version}.pod",
+              "$privlib/pods/perldiag.pod",
+        ) {
+            return $_ if -f $_;
+        }
+
+        return 'pod/perldiag.pod';
+    },
     'Email/Send.pm' => 'sub',
     'Event.pm' => [ map "Event/$_.pm", qw(idle io signal timer var)],
     'ExtUtils/MakeMaker.pm' => sub {
@@ -327,16 +362,11 @@ my %Preload;
         # but accept JSON::XS, too (because JSON.pm might use it if present)
         return( grep /^JSON\/(PP|XS)/, _glob_in_inc('JSON', 1) );
     },
-    'Log/Log4perl.pm' => 'sub',
+    'Locale/Maketext/Lexicon.pm'    => 'sub',
+    'Locale/Maketext/GutsLoader.pm' => [qw( Locale/Maketext/Guts.pm )],
     'Log/Any.pm' => 'sub',
+    'Log/Log4perl.pm' => 'sub',
     'Log/Report/Dispatcher.pm' => 'sub',
-    'LWP/UserAgent.pm' => sub {
-        return( 
-          qw( URI/URL.pm URI/http.pm LWP/Protocol/http.pm ),
-          _glob_in_inc("LWP/Authen", 1),
-          _glob_in_inc("LWP/Protocol", 1),
-        );
-    },
     'LWP/Parallel.pm' => sub {
         _glob_in_inc( 'LWP/Parallel', 1 ),
         qw(
@@ -348,17 +378,22 @@ my %Preload;
         qw( LWP/Parallel.pm ),
         @{ _get_preload('LWP/Parallel.pm') }
     },
-    'Locale/Maketext/Lexicon.pm'    => 'sub',
-    'Locale/Maketext/GutsLoader.pm' => [qw( Locale/Maketext/Guts.pm )],
+    'LWP/UserAgent.pm' => sub {
+        return( 
+          qw( URI/URL.pm URI/http.pm LWP/Protocol/http.pm ),
+          _glob_in_inc("LWP/Authen", 1),
+          _glob_in_inc("LWP/Protocol", 1),
+        );
+    },
     'Mail/Audit.pm'                => 'sub',
     'Math/BigInt.pm'                => 'sub',
     'Math/BigFloat.pm'              => 'sub',
     'Math/Symbolic.pm'              => 'sub',
+    'MIME/Decoder.pm'               => 'sub',
     'Module/Build.pm'               => 'sub',
     'Module/Pluggable.pm'           => sub {
         _glob_in_inc('$CurrentPackage/Plugin', 1);
     },
-    'MIME/Decoder.pm'               => 'sub',
     'Moose.pm'                      => sub {
         _glob_in_inc('Moose', 1),
         _glob_in_inc('Class/MOP', 1),
@@ -372,6 +407,8 @@ my %Preload;
         qw( MozRepl/Log.pm MozRepl/Client.pm Module/Pluggable/Fast.pm ),
         _glob_in_inc('MozRepl/Plugin', 1),
     },
+    'Module/Implementation.pm'      => \&_warn_of_runtime_loader,
+    'Module/Runtime.pm'             => \&_warn_of_runtime_loader,
     'Net/DNS/RR.pm'                 => 'sub',
     'Net/FTP.pm'                    => 'sub',
     'Net/HTTPS.pm'                  => [qw( IO/Socket/SSL.pm Net/SSL.pm )],
@@ -384,13 +421,16 @@ my %Preload;
     'Params/Validate.pm'            => 'sub',
     'Parse/AFP.pm'                  => 'sub',
     'Parse/Binary.pm'               => 'sub',
-    'Perl/Critic.pm'                => 'sub', #not only Perl/Critic/Policy
-    'PerlIO.pm'                     => [ 'PerlIO/scalar.pm' ],
     'PDF/API2/Resource/Font.pm'     => 'sub',
     'PDF/API2/Basic/TTF/Font.pm'    => sub {
         _glob_in_inc('PDF/API2/Basic/TTF', 1);
     },
     'PDF/Writer.pm'                 => 'sub',
+    'Perl/Critic.pm'                => 'sub', #not only Perl/Critic/Policy
+    'PerlIO.pm'                     => [ 'PerlIO/scalar.pm' ],
+    'Pod/Usage.pm'                  => sub {  # from Pod::Usage (as of 1.61)
+         $] >= 5.005_58 ? 'Pod/Text.pm' : 'Pod/PlainText.pm'
+     },
     'POE.pm'                        => [qw( POE/Kernel.pm POE/Session.pm )],
     'POE/Component/Client/HTTP.pm'  => sub {
         _glob_in_inc('POE/Component/Client/HTTP', 1),
@@ -437,6 +477,9 @@ my %Preload;
     'Template.pm'      => 'sub',
     'Term/ReadLine.pm' => 'sub',
     'Test/Deep.pm'     => 'sub',
+    'threads/shared.pm' => [qw( attributes.pm )],
+    # anybody using threads::shared is likely to declare variables
+    # with attribute :shared
     'Tk.pm'            => sub {
         $SeenTk = 1;
         qw( Tk/FileSelect.pm Encode/Unicode.pm );
@@ -457,6 +500,11 @@ my %Preload;
     },
     'URI.pm'            => sub {
         grep !/urn/, _glob_in_inc('URI', 1);
+    },
+    'utf8.pm' => sub {
+        # Perl 5.6.x: "unicode", Perl 5.8.x and up: "unicore"
+        my $unicore = _find_in_inc('unicore/Name.pl') ? 'unicore' : 'unicode';
+        return ('utf8_heavy.pl', map $_->{name}, _glob_in_inc($unicore, 0));
     },
     'Win32/EventLog.pm'    => [qw( Win32/IPC.pm )],
     'Win32/Exe.pm'         => 'sub',
@@ -484,48 +532,6 @@ my %Preload;
             return "$impl.pm"; 
         }
         _glob_in_inc('YAML', 1);        # fallback
-    },
-    'diagnostics.pm' => sub {
-        # shamelessly taken and adapted from diagnostics.pm
-        use Config;
-        my($privlib, $archlib) = @Config{qw(privlibexp archlibexp)};
-        if ($^O eq 'VMS') {
-            require VMS::Filespec;
-            $privlib = VMS::Filespec::unixify($privlib);
-            $archlib = VMS::Filespec::unixify($archlib);
-        }
-
-        for (
-              "pod/perldiag.pod",
-              "Pod/perldiag.pod",
-              "pod/perldiag-$Config{version}.pod",
-              "Pod/perldiag-$Config{version}.pod",
-              "pods/perldiag.pod",
-              "pods/perldiag-$Config{version}.pod",
-        ) {
-            return $_ if _find_in_inc($_);
-        }
-        
-        for (
-              "$archlib/pods/perldiag.pod",
-              "$privlib/pods/perldiag-$Config{version}.pod",
-              "$privlib/pods/perldiag.pod",
-        ) {
-            return $_ if -f $_;
-        }
-
-        return 'pod/perldiag.pod';
-    },
-    'threads/shared.pm' => [qw( attributes.pm )],
-    # anybody using threads::shared is likely to declare variables
-    # with attribute :shared
-    'utf8.pm' => sub {
-        # Perl 5.6.x: "unicode", Perl 5.8.x and up: "unicore"
-        my $unicore = _find_in_inc('unicore/Name.pl') ? 'unicore' : 'unicode';
-        return ('utf8_heavy.pl', map $_->{name}, _glob_in_inc($unicore, 0));
-    },
-    'charnames.pm' => sub {
-        _find_in_inc('unicore/Name.pl') ? 'unicore/Name.pl' : 'unicode/Name.pl'
     },
 );
 
@@ -824,8 +830,34 @@ sub scan_line {
 
         if (my ($pragma, $args) = /^use \s+ (autouse|if) \s+ (.+)/x)
         {
-            my @args = do { no strict; no warnings; eval $args };
-            my $module = $pragma eq "autouse" ? $args[0] : $args[1];
+            # NOTE: There are different ways the MODULE may
+            # be specified for the "autouse" and "if" pragmas, e.g.
+            #   use autouse Module => qw(func1 func2);
+            #   use autouse "Module", qw(func1);
+            # To avoid to parse them ourself, we simply try to eval the 
+            # string after the pragma (in a list context). The MODULE
+            # should be the first ("autouse") or second ("if") element
+            # of the list.
+            my $module;
+            { 
+                no strict; no warnings; 
+                if ($pragma eq "autouse") {
+                    ($module) = eval $args;
+                }
+                else {
+                    # The syntax of the "if" pragma is
+                    #   use if COND, MODULE => ARGUMENTS
+                    # The COND may contain undefined functions (i.e. undefined
+                    # in Module::ScanDeps' context) which would throw an 
+                    # exception. Sneak  "1 || " in front of COND so that
+                    # COND will not be evaluated. This will work in most
+                    # cases, but there are operators with lower precedence
+                    # than "||" which will cause this trick to fail.
+                    (undef, $module) = eval "1 || $args";
+                }
+                # punt if there was a syntax error
+                return if $@ or !defined $module;
+            };
             $module =~ s{::}{/}g;
             return ("$pragma.pm", "$module.pm");
         }
@@ -1087,7 +1119,7 @@ sub add_deps {
                            type   => $type );
             }
 
-            ### Now, handle module and distribudion share dirs
+            ### Now, handle module and distribution share dirs
             # convert 'Module/Name' to 'Module-Name'
             my $modname = $path;
             $modname =~ s|/|-|g;
@@ -1279,7 +1311,7 @@ sub _compile_or_execute {
                        [ $INC{"Module/ScanDeps/DataFeed.pm"}, $dump_file ],
                        [ qw( datafeedpm dump_file ) ]);
 
-    # save %INC etc so that further requires dont't pollute them
+    # save %INC etc so that further requires don't pollute them
     print $feed_fh <<'...';
     %Module::ScanDeps::DataFeed::_INC = %INC;
     @Module::ScanDeps::DataFeed::_INC = @INC;
@@ -1438,6 +1470,15 @@ sub _abs_path {
     );
 }
 
+
+sub _warn_of_runtime_loader {
+    my $module = shift;
+    return if $SeenRuntimeLoader{$module}++;
+    $module =~ s/\.pm$//;
+    $module =~ s|/|::|g;
+    warn "# Use of runtime loader module $module detected.  Results of static scanning may be incomplete.\n";
+    return;
+}
 
 sub _warn_of_missing_module {
     my $module = shift;

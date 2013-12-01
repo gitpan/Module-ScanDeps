@@ -48,6 +48,7 @@ t/data/file-glob-yes.pl
 t/data/pluggable/Foo.pm
 t/data/pluggable/Foo/Plugin/Bar.pm
 t/data/pluggable/Foo/Plugin/Baz.pm
+t/data/rt90869.pl
 t/data/ScanFileRE/auto/example/example.h
 t/data/ScanFileRE/example.pm
 t/data/ScanFileRE/example_too.pm
@@ -73,4 +74,5 @@ t/data/static/TestC.pm
 t/data/static/TestD.pm
 t/data/static/useVERSION.pm
 t/data/use_lib.pl
+t/rt90869.t
 t/Utils.pm

@@ -3,21 +3,19 @@
 use strict;
 use warnings;
 
+use Test::More;
+use Test::Requires qw( prefork );
+
 use lib 't';
+use Utils;
+
 BEGIN {
-  require Test::More;
-  if (not eval "require prefork; 1;" or $@) {
-    Test::More->import(skip_all => "This test requires prefork.pm which is not installed. Skipping.");
-    exit(0);
-  }
-  else {
     # Mwuahahaha!
     delete $INC{"prefork.pm"};
     %prefork:: = ();
-  }
+
+    plan 'no_plan'; # no_plan because the number of objects in the dependency tree (and hence the number of tests) can change
 }
-use Test::More qw(no_plan); # no_plan because the number of objects in the dependency tree (and hence the number of tests) can change
-use Utils;
 
 my $rv;
 my $root;
