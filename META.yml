@@ -26,10 +26,12 @@ no_index:
 requires:
   File::Spec: 0
   File::Temp: 0
-  Module::Build::ModuleInfo: 0
+  Getopt::Long: 0
+  Module::Metadata: 0
+  Text::ParseWords: 0
   perl: 5.8.1
   version: 0
 resources:
   license: http://dev.perl.org/licenses/
   repository: http://svn.openfoundry.org/par/Module-ScanDeps/trunk/
-version: '1.14'
+version: '1.15'
